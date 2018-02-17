@@ -5,7 +5,9 @@
  * - An ADC channel
  */
 #include "gpio.h"
+#ifdef STM32F051x8
 #include "stm32f0xx_adc.h"
+#endif
 
 class AdcChannel
 {
