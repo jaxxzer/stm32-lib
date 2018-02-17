@@ -1,0 +1,6 @@
+build/
+example-*.hex
+example-*.bin
+example-*.elf
+src/link/stm32-mem.ld
+.vscode/
