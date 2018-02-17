@@ -56,6 +56,13 @@ void Uart::USART1_Init(void)
 
     // PC6=Tx PC7=Rx
 #ifdef STM32F051x8
+	Gpio pB6 = Gpio(GPIOB, GPIO_Pin_6);
+	Gpio pB7 = Gpio(GPIOB, GPIO_Pin_7);
+    pB6.initAFPP();
+    pB7.initAFPP();
+    GPIO_PinAFConfig(GPIOB, GPIO_PinSource6, GPIO_AF_0);
+    GPIO_PinAFConfig(GPIOB, GPIO_PinSource7, GPIO_AF_0);
+
 
 #else
     Gpio pA9 = Gpio(GPIOA, GPIO_Pin_9); // Tx
@@ -69,8 +76,10 @@ void Uart::USART1_Init(void)
 
     /* USART configuration structure for USART1 */
     USART_InitTypeDef usart_initStruct;
+    USART_StructInit(&usart_initStruct);
 
-    usart_initStruct.USART_BaudRate = 460800;
+//    usart_initStruct.USART_BaudRate = 460800; // fast as I could get the f103 + cp2102 (supposedly 1Mbit)
+    usart_initStruct.USART_BaudRate = 115200;
 //    usart_initStruct.USART_BaudRate = 576000;
     usart_initStruct.USART_WordLength = USART_WordLength_8b;
     usart_initStruct.USART_StopBits = USART_StopBits_1;
