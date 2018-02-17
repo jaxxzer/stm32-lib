@@ -161,6 +161,8 @@ void Gpio::initAnalogIn(void)
 {
 #ifdef STM32F10X_MD
 	_configuration.GPIO_Mode = GPIO_Mode_AIN;
+#else
+	_configuration.GPIO_Mode = GPIO_Mode_AN;
 #endif
 
 	init();
