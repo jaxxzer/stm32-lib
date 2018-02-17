@@ -1,0 +1,43 @@
+interrupts = [
+'WWDG_IRQHandler'
+,'LVD_IRQHandler'      
+,'RTC_IRQHandler'      
+,'FMC_IRQHandler'      
+,'RCU_IRQHandler'      
+,'EXTI0_1_IRQHandler'  
+,'EXTI2_3_IRQHandler'  
+,'EXTI4_15_IRQHandler' 
+,'TSI_IRQHandler'      
+,'DMA1_Channel1_IRQHandler'     
+,'DMA1_Channel2_3_IRQHandler'   
+,'DMA1_Channel4_5_IRQHandler'   
+,'ADC_CMP_IRQHandler'  
+,'TIM1_BRK_UP_TRG_COM_IRQHandler'    
+,'TIM1_CC_IRQHandler'
+,'TIM2_IRQHandler'   
+,'TIM3_IRQHandler'   
+,'TIM6_DAC_IRQHandler' 
+,'TIM14_IRQHandler'  
+,'TIM15_IRQHandler'  
+,'TIM16_IRQHandler'  
+,'TIM17_IRQHandler'  
+,'I2C1_EV_IRQHandler'  
+,'I2C2_EV_IRQHandler'  
+,'SPI1_IRQHandler'     
+,'SPI2_IRQHandler'     
+,'USART1_IRQHandler'   
+,'USART2_IRQHandler'     
+,'CEC_IRQHandler'        
+,'I2C1_ER_IRQHandler'   
+,'I2C2_ER_IRQHandler'  
+,'I2C3_EV_IRQHandler'  
+,'I2C3_ER_IRQHandler'  
+,'USBFS_WKUP_IRQHandler'       
+,'DMA1_Channel6_7_IRQHandler'   
+,'SPI3_IRQHandler'     
+,'USBFS_IRQHandler']
+
+for interrupt in interrupts:
+    print(".weak %s" % interrupt)
+    print(".thumb_set %s,Default_Handler" % interrupt)
+    print()
