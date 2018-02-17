@@ -12,7 +12,6 @@
 #ifndef TIMER_H_
 #define TIMER_H_
 
-#include <stm32f10x_tim.h>
 
 class Timer
 {
@@ -114,11 +113,11 @@ void Timer::outputChannelInitPwmComplimentary(uint8_t channel, uint16_t dutyCycl
     outputChannelInit.TIM_OCMode = TIM_OCMode_PWM1;
     outputChannelInit.TIM_Pulse = dutyCycle; // AKA CCR1 ~ 100us pulse
     outputChannelInit.TIM_OutputState = TIM_OutputState_Enable;
-    outputChannelInit.TIM_OCPolarity = TIM_OCPolarity_High;
+    outputChannelInit.TIM_OCPolarity = TIM_OCPolarity_Low;
     outputChannelInit.TIM_OutputNState = TIM_OutputNState_Enable;
-    outputChannelInit.TIM_OCNPolarity = TIM_OCNPolarity_High;
-    outputChannelInit.TIM_OCIdleState = TIM_OCIdleState_Set;
-    outputChannelInit.TIM_OCNIdleState = TIM_OCNIdleState_Set;
+    outputChannelInit.TIM_OCNPolarity = TIM_OCNPolarity_Low;
+    outputChannelInit.TIM_OCIdleState = TIM_OCIdleState_Reset;
+    outputChannelInit.TIM_OCNIdleState = TIM_OCNIdleState_Reset;
 
 
     switch (channel) {
@@ -188,38 +187,38 @@ void Timer::setDutyCycle(uint8_t channel, uint16_t dutyCycle)
 // Timer interrupt sources
 void Timer::enableInterrupt(uint16_t interrupt, uint8_t priority)
 {
-	NVIC_InitTypeDef NVIC_InitStructure;
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = priority;
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
-	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-
-	switch (interrupt) {
-	case TIM_IT_Update:
-    	NVIC_InitStructure.NVIC_IRQChannel = TIM1_UP_IRQn;
-		break;
-    case TIM_IT_CC1:
-    	break;
-    case TIM_IT_CC2:
-    	break;
-    case TIM_IT_CC3:
-    	break;
-    case TIM_IT_CC4:
-    	break;
-    case TIM_IT_COM:
-    	break;
-    case TIM_IT_Trigger:
-    	break;
-    case TIM_IT_Break:
-    	break;
-    default:
-
-    	break;
-
-    }
-
-	NVIC_Init(&NVIC_InitStructure);
-
-	TIM_ITConfig(TIM1, TIM_IT_Update, ENABLE);
+//	NVIC_InitTypeDef NVIC_InitStructure;
+//	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = priority;
+//	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+//	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+//
+//	switch (interrupt) {
+//	case TIM_IT_Update:
+//    	NVIC_InitStructure.NVIC_IRQChannel = TIM1_UP_IRQn;
+//		break;
+//    case TIM_IT_CC1:
+//    	break;
+//    case TIM_IT_CC2:
+//    	break;
+//    case TIM_IT_CC3:
+//    	break;
+//    case TIM_IT_CC4:
+//    	break;
+//    case TIM_IT_COM:
+//    	break;
+//    case TIM_IT_Trigger:
+//    	break;
+//    case TIM_IT_Break:
+//    	break;
+//    default:
+//
+//    	break;
+//
+//    }
+//
+//	NVIC_Init(&NVIC_InitStructure);
+//
+//	TIM_ITConfig(TIM1, TIM_IT_Update, ENABLE);
 
 }
 

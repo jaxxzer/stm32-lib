@@ -70,7 +70,7 @@ void Pwm::init(void)
 void Pwm::initComplimentary(void)
 {
 	_gpioInit();
-	_timer->init(50000, 72000000); // period, frequency
+	_timer->init(50000, 48000000); // period, frequency
 
 	_timer->outputChannelInitPwmComplimentary(_channel, _dutyCycle);
 	TIM_CtrlPWMOutputs(TIM1, ENABLE);

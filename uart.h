@@ -41,7 +41,7 @@ void Uart::USART1_Init(void)
 
 	/* Enable the USARTx Interrupt */
 	NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQn;
-#ifdef FUCKME
+#ifdef STM32F051x8
 	NVIC_InitStructure.NVIC_IRQChannelPriority = 0;
 #else
 	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
@@ -55,13 +55,8 @@ void Uart::USART1_Init(void)
 //    GPIO_PinAFConfig(GPIOA, GPIO_PinSource10, GPIO_AF_1);
 
     // PC6=Tx PC7=Rx
-#ifdef FUCKME
-    gpio_initStruct.GPIO_Pin = GPIO_Pin_9 | GPIO_Pin_10;
-    gpio_initStruct.GPIO_PuPd = GPIO_PuPd_NOPULL;
-    gpio_initStruct.GPIO_OType = GPIO_OType_PP;
-    gpio_initStruct.GPIO_Speed = GPIO_Speed_2MHz;
-    gpio_initStruct.GPIO_Mode = GPIO_Mode_AF;
-    GPIO_Init(GPIOA, &gpio_initStruct);
+#ifdef STM32F051x8
+
 #else
     Gpio pA9 = Gpio(GPIOA, GPIO_Pin_9); // Tx
     pA9.initAFPP();

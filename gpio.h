@@ -69,7 +69,7 @@ Gpio::Gpio(GPIO_TypeDef* port, uint16_t pin)
 void Gpio::_clockEnable(void)
 {
 	switch ((uint32_t)_port) {
-#ifdef FUCKME
+#ifdef STM32F051x8
 	case GPIOA_BASE:
 		RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA, ENABLE);
 	    break;
@@ -82,7 +82,7 @@ void Gpio::_clockEnable(void)
 	case GPIOD_BASE:
 		RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOD, ENABLE);
 		break;
-#endif
+#else
 	case GPIOA_BASE:
 		RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
 	    break;
@@ -95,6 +95,8 @@ void Gpio::_clockEnable(void)
 	case GPIOD_BASE:
 		RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOD, ENABLE);
 		break;
+#endif
+
 	default:
 		break; // failure
 	}
@@ -105,6 +107,9 @@ void Gpio::init(void)
 	_configuration.GPIO_Pin = _pin;
 	_configuration.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_Init(_port, &_configuration);
+#ifdef STM32F051x8
+
+#endif
 }
 
 void Gpio::gpioInit(GPIO_InitTypeDef* gpioInitStruct) {
@@ -114,43 +119,49 @@ void Gpio::gpioInit(GPIO_InitTypeDef* gpioInitStruct) {
 
 void Gpio::initAFPP(void)
 {
-#ifdef FUCKME
-	_configuration.GPIO_Mode = GPIO_Mode_OUT;
+#ifdef STM32F051x8
+	_configuration.GPIO_Mode = GPIO_Mode_AF;
 	_configuration.GPIO_OType = GPIO_OType_PP;
-	_configuration.GPIO_Speed = GPIO_Speed_2MHz;
-#endif
+#else
 	_configuration.GPIO_Mode = GPIO_Mode_AF_PP;
+#endif
 	init();
 }
 
 void Gpio::initInFloating(void)
 {
+#ifdef STM32F051x8
+	_configuration.GPIO_Mode = GPIO_Mode_IN;
+#else
 	_configuration.GPIO_Mode = GPIO_Mode_IN_FLOATING;
-//	_configuration.GPIO_Mode = GPIO_Mode_AF_OD;
+#endif
 	init();
 }
 void Gpio::initOutputPP(void)
 {
-#ifdef FUCKME
+#ifdef STM32F051x8
 	_configuration.GPIO_Mode = GPIO_Mode_OUT;
 	_configuration.GPIO_OType = GPIO_OType_PP;
-	_configuration.GPIO_Speed = GPIO_Speed_2MHz;
-#endif
+#else
 	_configuration.GPIO_Mode = GPIO_Mode_Out_PP;
-
+#endif
 	init();
 }
 
 void Gpio::initSwoRemapped(void)
 {
 
+#ifdef STM32F10X_MD
 	GPIO_PinRemapConfig(GPIO_PartialRemap1_TIM2, ENABLE);
+#endif
 	initAFPP();
 }
 
 void Gpio::initAnalogIn(void)
 {
+#ifdef STM32F10X_MD
 	_configuration.GPIO_Mode = GPIO_Mode_AIN;
+#endif
 
 	init();
 }
