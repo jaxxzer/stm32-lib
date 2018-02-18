@@ -90,7 +90,7 @@ void Uart::USART1_Init(void)
     USART_Init(USART1, &usart_initStruct);
 
     /* Enable RXNE interrupt */
-    USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);
+//    USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);
 
     /* Enable USART1 */
     USART_Cmd(USART1, ENABLE);
