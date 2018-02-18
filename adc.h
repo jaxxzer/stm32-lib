@@ -8,7 +8,7 @@
 #ifdef STM32F051x8
 #include "stm32f0xx_adc.h"
 #endif
-
+#define ADC1_DR_Address    0x40012440
 class AdcChannel
 {
 public:
@@ -169,7 +169,7 @@ void Adc::initIndependent(void) {
 
 void Adc::initRegSimul(void)
 {
-	  ADC_Cmd(ADC1, DISABLE);
+	  //ADC_Cmd(ADC1, DISABLE);
 
 
 	  RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);
@@ -181,13 +181,13 @@ void Adc::initRegSimul(void)
 	DMA_StructInit(&DMA_InitStructure);
 	/* DMA1 channel1 configuration ----------------------------------------------*/
 	  DMA_DeInit(DMA1_Channel1);
-	  DMA_InitStructure.DMA_PeripheralBaseAddr = ((uint32_t)ADC1->DR);//ADC1->DR;
+	  DMA_InitStructure.DMA_PeripheralBaseAddr = ((uint32_t)ADC1_DR_Address);//ADC1->DR;
 	  DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)dmaBuf;
 	  DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralSRC;
 	  DMA_InitStructure.DMA_BufferSize = _numChannels * _numSamples;
 	  DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
 	  DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
-	  DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Word;
+	  DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Word; // TODO halfword
 	  DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Word;
 	  DMA_InitStructure.DMA_Mode = DMA_Mode_Circular;
 	  DMA_InitStructure.DMA_Priority = DMA_Priority_High;
@@ -208,6 +208,8 @@ void Adc::initRegSimul(void)
 #else
 	  ADC_InitStructure.ADC_Resolution = ADC_Resolution_12b;
 	  ADC_InitStructure.ADC_ContinuousConvMode = ENABLE;
+	  ADC_InitStructure.ADC_ContinuousConvMode = ENABLE;
+//	  ADC_InitStructure.ADC_ExternalTrigConvEdge = ADC_ExternalTrigConvEdge_Rising;
 	  ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;
 #endif
 	  ADC_Init(ADC1, &ADC_InitStructure);
@@ -232,7 +234,10 @@ void Adc::initRegSimul(void)
 		  if (!ADC_GetCalibrationFactor(ADC1)) {
 			  printf("ADC failed to init channel %d", tmp->_channel);
 		  };
+		  ADC_DMARequestModeConfig(ADC1, ADC_DMAMode_Circular);
 #endif
+			ADC_ClockModeConfig(ADC1, ADC_ClockMode_SynClkDiv2);
+
 	  /* Enable ADC1 DMA */
 	  ADC_DMACmd(ADC1, ENABLE);
 
@@ -257,6 +262,7 @@ void Adc::initRegSimul(void)
 	  ADC_StartOfConversion(ADC1);
 
 #endif
+		while (!ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC));
 
 	  waitConversion();
 }
