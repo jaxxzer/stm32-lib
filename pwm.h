@@ -83,5 +83,20 @@ void Pwm::setDutyCycle(uint16_t pulse) {
     _timer->setDutyCycle(_channel, _dutyCycle);
 }
 
+void Pwm::enable(void)
+{
+
+}
+
+void Pwm::diasble(void)
+{
+
+}
+
+void Pwm::toggleEnable(void)
+{
+
+}
+
 
 #endif /* PWM_H_ */
