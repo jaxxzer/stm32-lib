@@ -36,6 +36,9 @@ public:
 	void init(void);
 	void initComplimentary(void);
     void setDutyCycle(uint16_t pulse);
+    void enable(void);
+    void disable(void);
+    void toggle(void);
 
 private:
 	Gpio* _gpio;
@@ -63,14 +66,14 @@ void Pwm::init(void)
 {
 	_gpioInit();
 
-	_timer->init(50000, 1000000); // period, frequency
+	_timer->init(50000, 8000000); // period, frequency
 	_timer->outputChannelInitPwm(_channel, _dutyCycle);
 }
 
 void Pwm::initComplimentary(void)
 {
 	_gpioInit();
-	_timer->init(50000, 48000000); // period, frequency
+	_timer->init(50000, 8000000); // period, frequency
 
 	_timer->outputChannelInitPwmComplimentary(_channel, _dutyCycle);
 	TIM_CtrlPWMOutputs(TIM1, ENABLE);
@@ -93,7 +96,7 @@ void Pwm::diasble(void)
 
 }
 
-void Pwm::toggleEnable(void)
+void Pwm::toggle(void)
 {
 
 }
