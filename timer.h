@@ -118,11 +118,11 @@ void Timer::outputChannelInitPwmComplimentary(uint8_t channel, uint16_t dutyCycl
     outputChannelInit.TIM_OCMode = TIM_OCMode_PWM1;
     outputChannelInit.TIM_Pulse = dutyCycle; // AKA CCR1 ~ 100us pulse
     outputChannelInit.TIM_OutputState = TIM_OutputState_Enable;
-    outputChannelInit.TIM_OCPolarity = TIM_OCPolarity_Low;
+    outputChannelInit.TIM_OCPolarity = TIM_OCPolarity_High;
     outputChannelInit.TIM_OutputNState = TIM_OutputNState_Enable;
-    outputChannelInit.TIM_OCNPolarity = TIM_OCNPolarity_Low;
+    outputChannelInit.TIM_OCNPolarity = TIM_OCNPolarity_High;
     outputChannelInit.TIM_OCIdleState = TIM_OCIdleState_Reset;
-    outputChannelInit.TIM_OCNIdleState = TIM_OCNIdleState_Reset;
+    outputChannelInit.TIM_OCNIdleState = TIM_OCNIdleState_Reset; // State when Main output enable (MOE) = 0
 
 
     switch (channel) {
