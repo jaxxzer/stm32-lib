@@ -80,6 +80,8 @@ void Pwm::initComplimentary(void)
 
 }
 
+
+
 // Duty cycle in ticks
 void Pwm::setDutyCycle(uint16_t pulse) {
     _dutyCycle = pulse;

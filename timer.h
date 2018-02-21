@@ -34,6 +34,7 @@ public:
     void setFrequency(uint16_t f);
     void setPeriod(uint16_t period);
     uint16_t getPeriod(void);
+    void playNote(uint16_t frequency, uint16_t duration_ms);
 
     TIM_TypeDef* peripheral(void) { return _peripheral; };
 
@@ -80,6 +81,12 @@ void Timer::init(uint16_t period, uint32_t tickFrequency)
     timerInitStructure.TIM_RepetitionCounter = 0;
     TIM_TimeBaseInit(_peripheral, &timerInitStructure);
     TIM_Cmd(_peripheral, ENABLE);
+}
+
+void Timer::playNote(uint16_t frequency, uint16_t duration_ms)
+{
+	setFrequency(frequency);
+	DelayMil(duration_ms);
 }
 
 void Timer::outputChannelInitPwm(uint8_t channel, uint16_t dutyCycle)
