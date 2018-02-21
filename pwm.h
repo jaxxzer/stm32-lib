@@ -91,7 +91,7 @@ void Pwm::enable(void)
 
 }
 
-void Pwm::diasble(void)
+void Pwm::disable(void)
 {
 
 }
