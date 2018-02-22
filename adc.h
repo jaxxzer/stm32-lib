@@ -42,11 +42,12 @@ public:
 	void startConversion(void);
 	void dmaDone(void);
 	void waitConversion(void);
+	void DmaConfig(void);
 
 	static uint8_t _numChannels;
 	static uint8_t _numSamples;
 
-	volatile uint32_t* dmaBuf;
+	volatile uint16_t* dmaBuf;
 
 
 private:
@@ -88,17 +89,17 @@ AdcChannel* Adc::addChannel(uint8_t channel)
 		 delete[] dmaBuf;
 	 }
 
-	 dmaBuf = new uint32_t[_numSamples * _numChannels];
+	 dmaBuf = new uint16_t[_numSamples * _numChannels];
 
 	initRegSimul();
 	return chanx;
 }
 
-const uint8_t MAX_CHANNELS = 3;
-const uint8_t MAX_SAMPLES = 40;
+//const uint8_t MAX_CHANNELS = 8;
+//const uint8_t MAX_SAMPLES = 40;
 uint8_t Adc::_numChannels = 0;
-uint8_t Adc::_numSamples = 40;
-__IO uint32_t ADC_DualConvertedValueTab[MAX_CHANNELS * MAX_SAMPLES];
+uint8_t Adc::_numSamples = 3;
+//__IO uint32_t ADC_DualConvertedValueTab[MAX_CHANNELS * MAX_SAMPLES];
 
 void Adc::_enableClock(void)
 {
@@ -172,29 +173,10 @@ void Adc::initRegSimul(void)
 	  //ADC_Cmd(ADC1, DISABLE);
 
 
-	  RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);
 
 	ADC_InitTypeDef ADC_InitStructure;
 	ADC_StructInit(&ADC_InitStructure);
 
-	DMA_InitTypeDef DMA_InitStructure;
-	DMA_StructInit(&DMA_InitStructure);
-	/* DMA1 channel1 configuration ----------------------------------------------*/
-	  DMA_DeInit(DMA1_Channel1);
-	  DMA_InitStructure.DMA_PeripheralBaseAddr = ((uint32_t)ADC1_DR_Address);//ADC1->DR;
-	  DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)dmaBuf;
-	  DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralSRC;
-	  DMA_InitStructure.DMA_BufferSize = _numChannels * _numSamples;
-	  DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
-	  DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
-	  DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Word; // TODO halfword
-	  DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Word;
-	  DMA_InitStructure.DMA_Mode = DMA_Mode_Circular;
-	  DMA_InitStructure.DMA_Priority = DMA_Priority_High;
-	  DMA_InitStructure.DMA_M2M = DMA_M2M_Disable;
-	  DMA_Init(DMA1_Channel1, &DMA_InitStructure);
-	  /* Enable DMA1 Channel1 */
-	  DMA_Cmd(DMA1_Channel1, ENABLE);
 
 #ifdef STM32F10X_MD
 	  /* ADC1 configuration ------------------------------------------------------*/
@@ -208,9 +190,9 @@ void Adc::initRegSimul(void)
 #else
 	  ADC_InitStructure.ADC_Resolution = ADC_Resolution_12b;
 	  ADC_InitStructure.ADC_ContinuousConvMode = ENABLE;
-	  ADC_InitStructure.ADC_ContinuousConvMode = ENABLE;
 //	  ADC_InitStructure.ADC_ExternalTrigConvEdge = ADC_ExternalTrigConvEdge_Rising;
 	  ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;
+	  ADC_InitStructure.ADC_ScanDirection = ADC_ScanDirection_Upward;
 #endif
 	  ADC_Init(ADC1, &ADC_InitStructure);
 	  /* ADC1 regular channels configuration */
@@ -237,12 +219,12 @@ void Adc::initRegSimul(void)
 		  ADC_DMARequestModeConfig(ADC1, ADC_DMAMode_Circular);
 #endif
 			ADC_ClockModeConfig(ADC1, ADC_ClockMode_SynClkDiv2);
-
-	  /* Enable ADC1 DMA */
-	  ADC_DMACmd(ADC1, ENABLE);
+//
+//	  /* Enable ADC1 DMA */
+//	  ADC_DMACmd(ADC1, ENABLE);
 
 	  /* Enable ADC1 */
-	  ADC_Cmd(ADC1, ENABLE);
+	  //ADC_Cmd(ADC1, ENABLE);
 
 	  // TODO should this dbe done before enablinging like F0?
 #ifdef STMF10X_MD
@@ -259,12 +241,12 @@ void Adc::initRegSimul(void)
 	  ADC_SoftwareStartConvCmd(ADC1, ENABLE);
 
 #else
-	  ADC_StartOfConversion(ADC1);
+//	  ADC_StartOfConversion(ADC1);
 
 #endif
-		while (!ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC));
+//		while (!ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC));
 
-	  waitConversion();
+//	  waitConversion();
 }
 void Adc::waitConversion(void)
 {
@@ -280,13 +262,37 @@ void Adc::waitConversion(void)
 //	  while(!DMA_GetFlagStatus(DMA1_FLAG_TC1));
 //	  /* Clear DMA1 channel1 transfer complete flag */
 }
-void Adc::startConversion(void)
-{
-	//ADC_SoftwareStartConvCmd(_adc, ENABLE);
-	  DMA_SetCurrDataCounter(DMA1_Channel1, _numChannels * _numSamples);
-	  DMA_Cmd(DMA1_Channel1, ENABLE);
 
+void Adc::DmaConfig(void)
+{
+	  RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);
+
+	DMA_InitTypeDef DMA_InitStructure;
+	DMA_StructInit(&DMA_InitStructure);
+	/* DMA1 channel1 configuration ----------------------------------------------*/
+	  DMA_DeInit(DMA1_Channel1);
+	  DMA_InitStructure.DMA_PeripheralBaseAddr = ((uint32_t)ADC1_DR_Address);//ADC1->DR;
+	  DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)dmaBuf;
+	  DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralSRC;
+	  DMA_InitStructure.DMA_BufferSize = _numChannels * _numSamples;
+	  DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
+	  DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
+	  DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_HalfWord; // TODO halfword
+	  DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_HalfWord;
+	  DMA_InitStructure.DMA_Mode = DMA_Mode_Circular;
+	  DMA_InitStructure.DMA_Priority = DMA_Priority_High;
+	  DMA_InitStructure.DMA_M2M = DMA_M2M_Disable;
+	  DMA_Init(DMA1_Channel1, &DMA_InitStructure);
+	  /* Enable DMA1 Channel1 */
+	  DMA_Cmd(DMA1_Channel1, ENABLE);
 }
+//void Adc::startConversion(void)
+//{
+//	//ADC_SoftwareStartConvCmd(_adc, ENABLE);
+//	  DMA_SetCurrDataCounter(DMA1_Channel1, _numChannels * _numSamples);
+//	  DMA_Cmd(DMA1_Channel1, ENABLE);
+//
+//}
 
 
 void Adc::dmaDone(void)
