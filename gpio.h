@@ -42,6 +42,8 @@ public:
 	void gpioInit(GPIO_InitTypeDef* gpioInitStruct);
 	void initAFPP(void);
 	void initInFloating(void);
+	void initInPullUp(void);
+	void initInPullDown(void);
 	void initOutputPP(void);
 	void initSwoRemapped(void);
 	void initAnalogIn(void);
@@ -50,7 +52,9 @@ public:
 	void set(void);
 	void reset(void);
 	void toggle(void);
-	bool state(void);
+	bool readOutput(void);
+	bool readInput(void);
+
 private:
 	void _clockEnable(void);
 	GPIO_TypeDef* _port;
@@ -117,6 +121,28 @@ void Gpio::gpioInit(GPIO_InitTypeDef* gpioInitStruct) {
 	init();
 }
 
+void Gpio::initInPullUp(void)
+{
+#ifdef STM32F051x8
+	_configuration.GPIO_Mode = GPIO_Mode_IN;
+	_configuration.GPIO_PuPd = GPIO_PuPd_UP;
+	#else
+	_configuration.GPIO_Mode = GPIO_Mode_IPU;
+#endif
+	init();
+}
+
+void Gpio::initInPullDown(void)
+{
+#ifdef STM32F051x8
+	_configuration.GPIO_Mode = GPIO_Mode_IN;
+	_configuration.GPIO_PuPd = GPIO_PuPd_DWON;
+	#else
+	_configuration.GPIO_Mode = GPIO_Mode_IPD;
+#endif
+	init();
+}
+
 void Gpio::initAFPP(void)
 {
 #ifdef STM32F051x8
@@ -179,14 +205,20 @@ void Gpio::reset(void)
 	GPIO_ResetBits(_port, _pin);
 }
 
-bool Gpio::state(void)
+bool Gpio::readOutput(void)
 {
 	return GPIO_ReadOutputDataBit(_port, _pin);
 }
 
+bool Gpio::readInput(void)
+{
+	return GPIO_ReadInputDataBit(_port, _pin);
+}
+
+
 void Gpio::toggle(void)
 {
-	BitAction new_state = (BitAction)!state();
+	BitAction new_state = (BitAction)!readOutput();
 	GPIO_WriteBit(_port, _pin, new_state);
 }
 
