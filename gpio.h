@@ -204,6 +204,10 @@ void Gpio::set(bool set)
 	}
 }
 
+//void Gpio::enableInterrupt(void)
+//{
+//
+//}
 void Gpio::reset(void)
 {
 	GPIO_ResetBits(_port, _pin);
