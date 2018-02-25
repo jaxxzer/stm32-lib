@@ -49,7 +49,7 @@ public:
 	void initAnalogIn(void);
 	void init(void);
 	bool deinit(void);
-	void set(void);
+	void set(bool set = true);
 	void reset(void);
 	void toggle(void);
 	bool readOutput(void);
@@ -195,9 +195,13 @@ void Gpio::initAnalogIn(void)
 }
 
 
-void Gpio::set(void)
+void Gpio::set(bool set)
 {
-	GPIO_SetBits(_port, _pin);
+	if (set) {
+		GPIO_SetBits(_port, _pin);
+	} else {
+		reset();
+	}
 }
 
 void Gpio::reset(void)
