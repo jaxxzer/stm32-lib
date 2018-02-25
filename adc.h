@@ -256,6 +256,8 @@ void Adc::startConversion(void)
 void Adc::calibrate(void)
 {
 #ifdef STM32F10X_MD
+	  ADC_Cmd(ADC1, ENABLE);
+
 	  /* Enable ADC1 reset calibration register */
 	  ADC_ResetCalibration(ADC1);
 	  /* Check the end of ADC1 reset calibration register */
