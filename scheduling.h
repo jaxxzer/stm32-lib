@@ -10,19 +10,23 @@
 
 
 
-volatile uint32_t Milliseconds = 0, Seconds = 0;
+volatile uint32_t MicroSeconds = 0;
+
+void DelayMicros(uint32_t us) {
+	volatile uint32_t tStart = MicroSeconds;
+	while(MicroSeconds < tStart + us) asm volatile("nop");
+}
 
 // Thanks https://hsel.co.uk/2014/06/20/stm32f0-tutorial-2-systick/
 //Delay function for millisecond delay
 void DelayMil(uint32_t MilS){
-	volatile uint32_t MSStart = Milliseconds;
-	while((Milliseconds - MSStart)<MilS) asm volatile("nop");
+	DelayMicros(MilS*1000);
 }
+
 
 //Delay function for second delay
 void DelaySec(uint32_t S){
-	volatile uint32_t Ss = Seconds;
-	while((Seconds - Ss)<S) asm volatile("nop");
+	DelayMicros(S*1000000);
 }
 
 
