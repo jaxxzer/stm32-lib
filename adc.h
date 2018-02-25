@@ -304,6 +304,7 @@ void Adc::DmaConfig(void)
 	DMA_Init(DMA1_Channel1, &DMA_InitStructure);
 	/* Enable DMA1 Channel1 */
 	DMA_Cmd(DMA1_Channel1, ENABLE);
+	ADC_DMACmd(ADC1, ENABLE);
 }
 
 void Adc::dmaDone(void)
