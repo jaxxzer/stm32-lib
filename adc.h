@@ -270,7 +270,7 @@ void Adc::calibrate(void)
 	  while(ADC_GetCalibrationStatus(ADC1));
 #else
 	if (!ADC_GetCalibrationFactor(ADC1)) {
-	  printf("ADC failed to init channel %d", tmp->_channel);
+	  printf("ADC failed to calibrate");
 	};
 	ADC_DMARequestModeConfig(ADC1, ADC_DMAMode_Circular);
 	ADC_ClockModeConfig(ADC1, ADC_ClockMode_SynClkDiv2);
