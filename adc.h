@@ -204,7 +204,7 @@ void Adc::initRegSimul(void)
 		AdcChannel* tmp = _head;
 		uint8_t rank = 1;
 		while (tmp) {
-#if STM32F10X_MD
+#ifdef STM32F10X_MD
 			ADC_RegularChannelConfig(ADC1, tmp->_channel, rank++, ADC_SampleTime_239Cycles5);
 #else
 			// F0 doesnt let you program the "rank"
@@ -213,7 +213,6 @@ void Adc::initRegSimul(void)
 			tmp = tmp->next;
 		}
 
-		calibrate();
 }
 void Adc::enable(void)
 {
@@ -256,10 +255,8 @@ void Adc::startConversion(void)
 void Adc::calibrate(void)
 {
 #ifdef STM32F10X_MD
-	  ADC_Cmd(ADC1, ENABLE);
 
-	  /* Enable ADC1 reset calibration register */
-	  ADC_ResetCalibration(ADC1);
+
 	  /* Check the end of ADC1 reset calibration register */
 	  while(ADC_GetResetCalibrationStatus(ADC1));
 
@@ -299,14 +296,6 @@ void Adc::DmaConfig(void)
 	  /* Enable DMA1 Channel1 */
 	  DMA_Cmd(DMA1_Channel1, ENABLE);
 }
-//void Adc::startConversion(void)
-//{
-//	//ADC_SoftwareStartConvCmd(_adc, ENABLE);
-//	  DMA_SetCurrDataCounter(DMA1_Channel1, _numChannels * _numSamples);
-//	  DMA_Cmd(DMA1_Channel1, ENABLE);
-//
-//}
-
 
 void Adc::dmaDone(void)
 {
