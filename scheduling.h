@@ -29,5 +29,17 @@ void DelaySec(uint32_t S){
 	DelayMicros(S*1000000);
 }
 
+#ifdef __cplusplus
+ extern "C" {
+#endif
+ void SysTick_Handler(void){
+ 	MicroSeconds+=100; //Increment millisecond variable
+
+ }
+#ifdef __cplusplus
+ }
+#endif
+
+
 
 #endif /* SCHEDULING_H_ */

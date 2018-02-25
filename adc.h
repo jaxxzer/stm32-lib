@@ -43,6 +43,10 @@ public:
 	void dmaDone(void);
 	void waitConversion(void);
 	void DmaConfig(void);
+	void enable();
+	void waitReady();
+	void calibrate();
+
 
 	static uint8_t _numChannels;
 	static uint8_t _numSamples;
@@ -195,58 +199,35 @@ void Adc::initRegSimul(void)
 	  ADC_InitStructure.ADC_ScanDirection = ADC_ScanDirection_Upward;
 #endif
 	  ADC_Init(ADC1, &ADC_InitStructure);
+
 	  /* ADC1 regular channels configuration */
 		AdcChannel* tmp = _head;
 		uint8_t rank = 1;
 		while (tmp) {
 #if STM32F10X_MD
-
 			ADC_RegularChannelConfig(ADC1, tmp->_channel, rank++, ADC_SampleTime_239Cycles5);
-
-
 #else
 			// F0 doesnt let you program the "rank"
 			ADC_ChannelConfig(ADC1, tmp->_channel, ADC_SampleTime_1_5Cycles);
 #endif
 			tmp = tmp->next;
-
 		}
-#ifdef STM32F051x8
 
-		  if (!ADC_GetCalibrationFactor(ADC1)) {
-			  printf("ADC failed to init channel %d", tmp->_channel);
-		  };
-		  ADC_DMARequestModeConfig(ADC1, ADC_DMAMode_Circular);
-#endif
-			ADC_ClockModeConfig(ADC1, ADC_ClockMode_SynClkDiv2);
-//
-//	  /* Enable ADC1 DMA */
-//	  ADC_DMACmd(ADC1, ENABLE);
-
-	  /* Enable ADC1 */
-	  //ADC_Cmd(ADC1, ENABLE);
-
-	  // TODO should this dbe done before enablinging like F0?
-#ifdef STMF10X_MD
-	  /* Enable ADC1 reset calibration register */
-	  ADC_ResetCalibration(ADC1);
-	  /* Check the end of ADC1 reset calibration register */
-	  while(ADC_GetResetCalibrationStatus(ADC1));
-
-	  /* Start ADC1 calibration */
-	  ADC_StartCalibration(ADC1);
-	  /* Check the end of ADC1 calibration */
-	  while(ADC_GetCalibrationStatus(ADC1));
-	  /* Start ADC1 Software Conversion */
-	  ADC_SoftwareStartConvCmd(ADC1, ENABLE);
-
+		calibrate();
+}
+void Adc::enable(void)
+{
+	ADC_Cmd(ADC1, ENABLE);
+	waitReady();
+}
+void Adc::waitReady(void)
+{
+#ifdef STM32F10X_MD
+	//DelayMil(1); //tStab??
 #else
-//	  ADC_StartOfConversion(ADC1);
-
+	while(!ADC_GetFlagStatus(ADC1, ADC_FLAG_ADRDY));
 #endif
-//		while (!ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC));
-
-//	  waitConversion();
+;
 }
 void Adc::waitConversion(void)
 {
@@ -263,6 +244,36 @@ void Adc::waitConversion(void)
 //	  /* Clear DMA1 channel1 transfer complete flag */
 }
 
+void Adc::startConversion(void)
+{
+#ifdef STM32F10X_MD
+	  ADC_SoftwareStartConvCmd(ADC1, ENABLE);
+#else
+	  ADC_StartOfConversion(ADC1);
+#endif
+}
+
+void Adc::calibrate(void)
+{
+#ifdef STM32F10X_MD
+	  /* Enable ADC1 reset calibration register */
+	  ADC_ResetCalibration(ADC1);
+	  /* Check the end of ADC1 reset calibration register */
+	  while(ADC_GetResetCalibrationStatus(ADC1));
+
+	  /* Start ADC1 calibration */
+	  ADC_StartCalibration(ADC1);
+	  /* Check the end of ADC1 calibration */
+	  while(ADC_GetCalibrationStatus(ADC1));
+#else
+
+	if (!ADC_GetCalibrationFactor(ADC1)) {
+	  printf("ADC failed to init channel %d", tmp->_channel);
+	};
+	ADC_DMARequestModeConfig(ADC1, ADC_DMAMode_Circular);
+	ADC_ClockModeConfig(ADC1, ADC_ClockMode_SynClkDiv2);
+#endif
+}
 void Adc::DmaConfig(void)
 {
 	  RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);
