@@ -262,17 +262,13 @@ void Adc::startConversion(void)
 void Adc::calibrate(void)
 {
 #ifdef STM32F10X_MD
-
-
 	  /* Check the end of ADC1 reset calibration register */
 	  while(ADC_GetResetCalibrationStatus(ADC1));
-
 	  /* Start ADC1 calibration */
 	  ADC_StartCalibration(ADC1);
 	  /* Check the end of ADC1 calibration */
 	  while(ADC_GetCalibrationStatus(ADC1));
 #else
-
 	if (!ADC_GetCalibrationFactor(ADC1)) {
 	  printf("ADC failed to init channel %d", tmp->_channel);
 	};
@@ -280,6 +276,7 @@ void Adc::calibrate(void)
 	ADC_ClockModeConfig(ADC1, ADC_ClockMode_SynClkDiv2);
 #endif
 }
+
 void Adc::DmaConfig(void)
 {
 	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);
