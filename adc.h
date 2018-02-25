@@ -8,7 +8,13 @@
 #ifdef STM32F051x8
 #include "stm32f0xx_adc.h"
 #endif
+
+#ifdef STM32F10X_MD
+#define ADC1_DR_Address    ((uint32_t)0x4001244C)
+#else
 #define ADC1_DR_Address    0x40012440
+#endif
+
 class AdcChannel
 {
 public:
@@ -29,8 +35,7 @@ class Adc
 public:
 	Adc(ADC_TypeDef* adcx)
 		: dmaBuf(NULL)
-
-				, _adc(adcx)
+		, _adc(adcx)
 		, _head(NULL)
 	{
 		_enableClock();
@@ -219,15 +224,17 @@ void Adc::enable(void)
 	ADC_Cmd(ADC1, ENABLE);
 	waitReady();
 }
+
 void Adc::waitReady(void)
 {
 #ifdef STM32F10X_MD
-	//DelayMil(1); //tStab??
+	DelayMil(1); //tStab??
 #else
 	while(!ADC_GetFlagStatus(ADC1, ADC_FLAG_ADRDY));
 #endif
 ;
 }
+
 void Adc::waitConversion(void)
 {
 	  /* Test on DMA1 channel1 transfer complete flag */
@@ -275,26 +282,28 @@ void Adc::calibrate(void)
 }
 void Adc::DmaConfig(void)
 {
-	  RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);
+	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);
+
+	DMA_DeInit(DMA1_Channel1);
 
 	DMA_InitTypeDef DMA_InitStructure;
 	DMA_StructInit(&DMA_InitStructure);
 	/* DMA1 channel1 configuration ----------------------------------------------*/
-	  DMA_DeInit(DMA1_Channel1);
-	  DMA_InitStructure.DMA_PeripheralBaseAddr = ((uint32_t)ADC1_DR_Address);//ADC1->DR;
-	  DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)dmaBuf;
-	  DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralSRC;
-	  DMA_InitStructure.DMA_BufferSize = _numChannels * _numSamples;
-	  DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
-	  DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
-	  DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_HalfWord; // TODO halfword
-	  DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_HalfWord;
-	  DMA_InitStructure.DMA_Mode = DMA_Mode_Circular;
-	  DMA_InitStructure.DMA_Priority = DMA_Priority_High;
-	  DMA_InitStructure.DMA_M2M = DMA_M2M_Disable;
-	  DMA_Init(DMA1_Channel1, &DMA_InitStructure);
-	  /* Enable DMA1 Channel1 */
-	  DMA_Cmd(DMA1_Channel1, ENABLE);
+	DMA_DeInit(DMA1_Channel1);
+	DMA_InitStructure.DMA_PeripheralBaseAddr = ((uint32_t)ADC1_DR_Address);//ADC1->DR;
+	DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)dmaBuf;
+	DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralSRC;
+	DMA_InitStructure.DMA_BufferSize = _numChannels * _numSamples;
+	DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
+	DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
+	DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_HalfWord; // TODO halfword
+	DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_HalfWord;
+	DMA_InitStructure.DMA_Mode = DMA_Mode_Circular;
+	DMA_InitStructure.DMA_Priority = DMA_Priority_High;
+	DMA_InitStructure.DMA_M2M = DMA_M2M_Disable;
+	DMA_Init(DMA1_Channel1, &DMA_InitStructure);
+	/* Enable DMA1 Channel1 */
+	DMA_Cmd(DMA1_Channel1, ENABLE);
 }
 
 void Adc::dmaDone(void)
