@@ -135,19 +135,19 @@ void Timer::outputChannelInitPwmComplimentary(uint8_t channel, uint16_t dutyCycl
     switch (channel) {
     case TIM_Channel_1:
         TIM_OC1Init(_peripheral, &outputChannelInit);
-        TIM_OC1PreloadConfig(_peripheral, TIM_OCPreload_Disable);
+        TIM_OC1PreloadConfig(_peripheral, TIM_OCPreload_Enable);
     	break;
     case TIM_Channel_2:
         TIM_OC2Init(_peripheral, &outputChannelInit);
-        TIM_OC2PreloadConfig(_peripheral, TIM_OCPreload_Disable);
+        TIM_OC2PreloadConfig(_peripheral, TIM_OCPreload_Enable);
     	break;
     case TIM_Channel_3:
         TIM_OC3Init(_peripheral, &outputChannelInit);
-        TIM_OC3PreloadConfig(_peripheral, TIM_OCPreload_Disable);
+        TIM_OC3PreloadConfig(_peripheral, TIM_OCPreload_Enable);
     	break;
     case TIM_Channel_4:
         TIM_OC4Init(_peripheral, &outputChannelInit);
-        TIM_OC4PreloadConfig(_peripheral, TIM_OCPreload_Disable);
+        TIM_OC4PreloadConfig(_peripheral, TIM_OCPreload_Enable);
     	break;
     default:
     	break;
