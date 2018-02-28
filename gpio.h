@@ -136,7 +136,7 @@ void Gpio::initInPullDown(void)
 {
 #ifdef STM32F051x8
 	_configuration.GPIO_Mode = GPIO_Mode_IN;
-	_configuration.GPIO_PuPd = GPIO_PuPd_DWON;
+	_configuration.GPIO_PuPd = GPIO_PuPd_DOWN;
 	#else
 	_configuration.GPIO_Mode = GPIO_Mode_IPD;
 #endif
