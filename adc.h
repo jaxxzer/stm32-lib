@@ -74,7 +74,7 @@ AdcChannel* Adc::addChannel(uint8_t channel)
 	{
 	case ADC_Channel_0...ADC_Channel_7:
 		gpiox = GPIOA;
-		pinx = GPIO_Pin_0 + (channel - ADC_Channel_0);
+		pinx = 0 + (channel - ADC_Channel_0);
 		break;
 	default:
 		return NULL;

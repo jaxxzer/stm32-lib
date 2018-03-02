@@ -56,8 +56,8 @@ void Uart::USART1_Init(void)
 
     // PC6=Tx PC7=Rx
 #ifdef STM32F051x8
-	Gpio pB6 = Gpio(GPIOB, GPIO_Pin_6);
-	Gpio pB7 = Gpio(GPIOB, GPIO_Pin_7);
+	Gpio pB6 = Gpio(GPIOB, 6);
+	Gpio pB7 = Gpio(GPIOB, 7);
     pB6.initAFPP();
     pB7.initAFPP();
     GPIO_PinAFConfig(GPIOB, GPIO_PinSource6, GPIO_AF_0);
@@ -65,9 +65,9 @@ void Uart::USART1_Init(void)
 
 
 #else
-    Gpio pA9 = Gpio(GPIOA, GPIO_Pin_9); // Tx
+    Gpio pA9 = Gpio(GPIOA, 9); // Tx
     pA9.initAFPP();
-    Gpio pA10 = Gpio(GPIOA, GPIO_Pin_10); // Rx
+    Gpio pA10 = Gpio(GPIOA, 10); // Rx
     pA10.initInFloating();
 #endif
 

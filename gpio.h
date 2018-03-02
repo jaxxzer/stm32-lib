@@ -54,18 +54,21 @@ public:
 	void toggle(void);
 	bool readOutput(void);
 	bool readInput(void);
+	void configAF(uint8_t af);
 
 private:
 	void _clockEnable(void);
 	GPIO_TypeDef* _port;
 	uint16_t _pin;
+	uint16_t _pinSource;
 	GPIO_InitTypeDef _configuration;
 
 };
 
 Gpio::Gpio(GPIO_TypeDef* port, uint16_t pin)
 	: _port(port)
-	, _pin(pin)
+	, _pin(1<<pin)
+    , _pinSource(pin)
 {
 	_clockEnable();
 	GPIO_StructInit(&_configuration);
@@ -120,6 +123,10 @@ void Gpio::init(void)
 void Gpio::gpioInit(GPIO_InitTypeDef* gpioInitStruct) {
 	_configuration = *gpioInitStruct;
 	init();
+}
+
+void Gpio::configAF(uint8_t af) {
+    GPIO_PinAFConfig(_port, _pinSource, af);
 }
 
 void Gpio::initInPullUp(void)
