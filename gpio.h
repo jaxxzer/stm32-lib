@@ -68,6 +68,7 @@ Gpio::Gpio(GPIO_TypeDef* port, uint16_t pin)
 	, _pin(pin)
 {
 	_clockEnable();
+	GPIO_StructInit(&_configuration);
 }
 
 void Gpio::_clockEnable(void)
