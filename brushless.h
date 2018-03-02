@@ -72,7 +72,7 @@ public:
     volatile bool initialized;
 	volatile bool armed;
 	volatile bool running;
-
+	void HallHandler(bool);
     Uart* usart1;
 
     Gpio* high1;
@@ -85,6 +85,10 @@ public:
     Pwm* pwm1;
     Pwm* pwm2;
 	Pwm* pwm3;
+
+	Pwm* pwmR;
+	Pwm* pwmG;
+	Pwm* pwmB;
 
 	Gpio* hall1;
 //	Gpio hall2;
@@ -106,6 +110,7 @@ public:
 
 	Timer* pwmTimer;
 	Timer* commutationTimer;
+	Timer* greenLedTimer;
 
 	void setRGB(uint8_t g);
 
@@ -132,6 +137,8 @@ private:
     void commutationStatePreload(void);
 };
 
+Brushless* b = new Brushless();
+
 Brushless::Brushless()
 {
 
@@ -141,7 +148,7 @@ void Brushless::initialize(void)
 {
 	ledInit();
 //	adcInit();
-//	hallInit();
+	hallInit();
 }
 
 void Brushless::usartInit(void) {
@@ -217,14 +224,14 @@ void Brushless::hallInit(void) {
 ////~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~////
 void Brushless::ledInit(void)
 {
-	Timer ledTimer = Timer(TIM2);
+	greenLedTimer = new Timer(TIM2);
 	Gpio pB3 = Gpio(GPIOB, 3);
 	pB3.configAF(2);
-	Pwm ledPwm = Pwm(&pB3, &ledTimer, TIM_Channel_2);
-	ledPwm.init();
+	pwmG = new Pwm(&pB3, greenLedTimer, TIM_Channel_2);
+	pwmG->init();
 	TIM_CtrlPWMOutputs(TIM2, ENABLE);
-	ledTimer.setPeriod(2048);
-	ledPwm.setDutyCycle(2040);
+	greenLedTimer->setPeriod(2048);
+	pwmG->setDutyCycle(2040);
 }
 
 void Brushless::init3PhaseOutput(void) {
@@ -483,6 +490,13 @@ void Brushless::playNote(uint16_t frequency, uint16_t duration_ms)
 	pwmTimer->playNote(frequency, duration_ms);
 }
 
+inline void Brushless::HallHandler(bool state) {
+	if (!pwmG) {
+		return;
+	}
+	pwmG->setDutyCycle(state * 49 + 2000);
+
+}
 volatile bool flip = true;
 
 /// ~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@
@@ -497,7 +511,7 @@ extern "C" {
 		if (TIM_GetITStatus(TIM3, TIM_IT_CC2)) {
 			static bool flag = false;
 			flag = !flag;
-//			led->setDutyCycle(flag * 49 + 2000);
+			b->HallHandler(flag);
 			TIM_ClearFlag(TIM3, TIM_FLAG_CC2);
 		} else if (TIM_GetITStatus(TIM3, TIM_IT_Update)) {
 			TIM_ClearFlag(TIM3, TIM_FLAG_Update);
