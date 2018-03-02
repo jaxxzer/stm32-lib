@@ -72,7 +72,9 @@ public:
     volatile bool initialized;
 	volatile bool armed;
 	volatile bool running;
+
 	void HallHandler(bool);
+
     Uart* usart1;
 
     Gpio* high1;
@@ -140,15 +142,27 @@ private:
 Brushless* b = new Brushless();
 
 Brushless::Brushless()
+	: initialized(false)
+	, running(false)
+	, armed(false)
+	, pwmTimer(NULL)
+	, commutationTimer(NULL)
+	, greenLedTimer(NULL)
 {
 
 }
 
 void Brushless::initialize(void)
 {
+	usartInit();
 	ledInit();
 //	adcInit();
 	hallInit();
+	init3PhaseOutput();
+	audioStatePreload();
+	playStartupTune();
+	allLow();
+
 }
 
 void Brushless::usartInit(void) {
@@ -254,35 +268,36 @@ void Brushless::init3PhaseOutput(void) {
 	//	b.initComplement();
 
 	low1 = new Gpio(GPIOA, 7); // TIM1_CH1N
-	low1->initAFPP();
-	low1->configAF(2);
-
 	high1 = new Gpio(GPIOA, 8);  // TIM1_CH1
-	Pwm pwmCH1 = Pwm(high1, pwmTimer, TIM_Channel_1);
-	pwmCH1.initComplimentary();
-	high1->configAF(2);
+	pwm1 = new Pwm(high1, pwmTimer, TIM_Channel_1);
 
 	low2 = new Gpio(GPIOB, 0); // TIM1_CH2N
-	low2->initAFPP();
-	low2->configAF(2);
-
 	high2 =  new Gpio(GPIOA, 9);  // TIM1_CH2
-	Pwm pwmCH2 = Pwm(high2, pwmTimer, TIM_Channel_2);
-	pwmCH2.initComplimentary();
-	high2->configAF(2);
+	pwm2 =  new Pwm(high2, pwmTimer, TIM_Channel_2);
 
 	low3 = new Gpio(GPIOB, 1); // TIM1_CH3N
-	low3->initAFPP();
-	low3->configAF(2);
-
 	high3 = new Gpio(GPIOA, 10); // TIM1_CH3
-	Pwm pwmCH3 = Pwm(high3, pwmTimer, TIM_Channel_3);
-	pwmCH3.initComplimentary();
-	high3->configAF(2);
+	pwm3 = new Pwm(high3, pwmTimer, TIM_Channel_3);
+
+	low1->initAFPP();
+	pwm1->initComplimentary();
+	low2->initAFPP();
+	pwm2->initComplimentary();
+	low3->initAFPP();
+	pwm3->initComplimentary();
+
+	TIM1->BDTR |= 0x8800;
 
 	noOutput();
 
-	TIM1->BDTR |= 0x8800;
+	low1->configAF(2);
+	low2->configAF(2);
+	low3->configAF(2);
+
+	high1->configAF(2);
+	high2->configAF(2);
+	high3->configAF(2);
+
 	TIM_CtrlPWMOutputs(TIM1, ENABLE);
 	initialized = true;
 }
@@ -300,7 +315,7 @@ void Brushless::noOutput(void) {
 
 void Brushless::allLow(void)
 {
-	TIM_Cmd(commutationTimer->peripheral(), DISABLE);
+	//TIM_Cmd(commutationTimer->peripheral(), DISABLE);
 	TIM_SelectOCxM(pwmTimer->peripheral(), TIM_Channel_1, TIM_ForcedAction_InActive);
 	TIM_SelectOCxM(pwmTimer->peripheral(), TIM_Channel_2, TIM_ForcedAction_InActive);
 	TIM_SelectOCxM(pwmTimer->peripheral(), TIM_Channel_3, TIM_ForcedAction_InActive);
@@ -358,6 +373,13 @@ void Brushless::audioStatePreload(void)
 	TIM_BDTRStructInit(&TIM_BDTRInitStructure);
 	TIM_BDTRInitStructure.TIM_DeadTime = 28; // 2.0 us // 0x02 for 250ns
 	TIM_BDTRConfig(TIM1, &TIM_BDTRInitStructure);
+	  TIM1->CCER = COM_MASK1 | COM_MASK1N | COM_MASK2 | COM_MASK3;
+
+	TIM1->BDTR |= 0x8800;
+	TIM_CtrlPWMOutputs(TIM1, ENABLE);
+	TIM_SelectOCxM(TIM1, TIM_Channel_1, TIM_OCMode_PWM1);
+
+
 }
 
 void Brushless::commutationStatePreload(void)

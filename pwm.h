@@ -76,7 +76,6 @@ void Pwm::initComplimentary(void)
 	_timer->init(50000, 8000000); // period, frequency
 
 	_timer->outputChannelInitPwmComplimentary(_channel, _dutyCycle);
-	TIM_CtrlPWMOutputs(TIM1, ENABLE);
 
 }
 
