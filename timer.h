@@ -9,8 +9,7 @@
 /*
 * - A timer peripheral
 */
-#ifndef TIMER_H_
-#define TIMER_H_
+#pragma once
 
 class TimerChannel
 {
@@ -246,5 +245,3 @@ void InitializeFrequencyTimer(uint16_t period = 1000)// AKA TIMx_ARR = 500000 mi
     TIM_TimeBaseInit(TIM1, &timerInitStructure);
     TIM_Cmd(TIM1, ENABLE);
 }
-
-#endif /* TIMER_H_ */

@@ -1,3 +1,5 @@
+#pragma once
+
 // What do we need for an ADC?
 /*
  * - A Gpio
@@ -15,6 +17,8 @@
 #define ADC1_DR_Address    0x40012440
 #endif
 
+class Adc;
+
 class AdcChannel
 {
 public:
@@ -28,6 +32,15 @@ public:
 	AdcChannel* next;
 	uint32_t _accumulator;
 	uint16_t _average;
+
+	void waitValue(uint16_t value, uint16_t margin, uint8_t filter = 0) {
+		// filter unused
+//		while(_average > value + margin && _average < value - margin) {
+//			_adc->startConversion();
+//			_adc->waitConversion();
+//		}
+	}
+
 };
 
 class Adc
@@ -51,7 +64,6 @@ public:
 	void enable();
 	void waitReady();
 	void calibrate();
-
 
 	static uint8_t _numChannels;
 	static uint8_t _numSamples;
