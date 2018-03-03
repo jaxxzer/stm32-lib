@@ -46,7 +46,7 @@ class Led;
 #define COM_MASK_STEP5 COM_MASK1  | COM_MASK1N | COM_MASK2  | COM_MASK3N
 
 //static const uint8_t magPoles = 12;
-
+uint8_t volume = 10;
 class Brushless
 {
 public:
@@ -74,7 +74,7 @@ public:
 	volatile bool running;
 
 	void HallHandler(bool);
-
+	void setVolume(uint8_t volume);
     Uart* usart1;
 
     Gpio* high1;
@@ -324,6 +324,13 @@ void Brushless::allLow(void)
 	running = false;
 }
 
+void Brushless::setVolume(uint8_t volume) {
+	pwm1->setDutyCycle(30 + volume);
+	pwm2->setDutyCycle(500 + volume);
+	pwm3->setDutyCycle(500 + volume);
+	TIM_SetCompare4(TIM1, 35 + volume); // short pulse next time
+}
+
 void Brushless::audioStatePreload(void)
 {
 	pwmTimer->outputChannelInitPwmComplimentary(TIM_Channel_4, 62);
@@ -492,12 +499,13 @@ void Brushless::commutate(void) {
 
 // Check state
 void Brushless::playStartupTune(void) {
-	for (uint8_t j = 0; j < 10; j++) {
+	for (uint8_t j = 0; j < 1; j++) {
+		setVolume(j*10);
 		for (uint8_t i = 0; i < 10; i++) {
-			playNote(1000 + i * 100, 20);
+			playNote(1000 + i * 400, 50);
 		}
-		for (uint8_t i = 10; i > 0; i--) {
-			playNote(1000 + i * 10, 20);
+		for (uint8_t i = 10; i > 1; i--) {
+			playNote(1000 + i * 400, 50);
 		}
 	}
 	playNote(3000, 1000);
