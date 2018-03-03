@@ -66,14 +66,14 @@ void Pwm::init(void)
 {
 	_gpioInit();
 
-	_timer->init(50000, 8000000); // period, frequency
+	_timer->init(50000, 4800000); // period, frequency
 	_timer->outputChannelInitPwm(_channel, _dutyCycle);
 }
 
 void Pwm::initComplimentary(void)
 {
 	_gpioInit();
-	_timer->init(50000, 8000000); // period, frequency
+	_timer->init(50000, 48000000); // period, frequency
 
 	_timer->outputChannelInitPwmComplimentary(_channel, _dutyCycle);
 

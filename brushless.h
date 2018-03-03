@@ -74,7 +74,7 @@ public:
 	volatile bool running;
 
 	void HallHandler(bool);
-	void setVolume(uint8_t volume);
+	void setVolume(uint16_t volume);
     Uart* usart1;
 
     Gpio* high1;
@@ -166,7 +166,7 @@ void Brushless::initialize(void)
 	init3PhaseOutput();
 	audioStatePreload();
 	playStartupTune();
-//	allLow();
+	allLow();
 
 }
 
@@ -336,11 +336,9 @@ void Brushless::allLow(void)
 	running = false;
 }
 
-void Brushless::setVolume(uint8_t volume) {
-	pwm1->setDutyCycle(30 + volume);
-	pwm2->setDutyCycle(500 + volume);
-	pwm3->setDutyCycle(500 + volume);
-	TIM_SetCompare4(TIM1, 35 + volume); // short pulse next time
+void Brushless::setVolume(uint16_t volume) {
+	pwm2->setDutyCycle(600 + volume);
+	pwm3->setDutyCycle(600 + volume);
 }
 
 void Brushless::audioStatePreload(void)
@@ -379,8 +377,8 @@ void Brushless::audioStatePreload(void)
 	/// CCR1 = 35 // should be less but takes a long time to switch for some reason (this takes 51.5 microseconds currently)
 
 	pwm1->setDutyCycle(200);
-	pwm2->setDutyCycle(1000);
-	pwm3->setDutyCycle(1000);
+	pwm2->setDutyCycle(600);
+	pwm3->setDutyCycle(600);
 	TIM_SetCompare4(TIM1, 100); // short pulse next time
 
 	TIM_ITConfig(TIM1, TIM_IT_CC2, ENABLE);
@@ -511,19 +509,19 @@ void Brushless::commutate(void) {
 
 // Check state
 void Brushless::playStartupTune(void) {
-//	for (uint8_t j = 0; j < 1; j++) {
-//		setVolume(j*10);
-//		for (uint8_t i = 0; i < 10; i++) {
-//			playNote(1000 + i * 400, 50);
-//		}
-//		for (uint8_t i = 10; i > 1; i--) {
-//			playNote(1000 + i * 400, 50);
-//		}
-//	}
+	for (uint8_t j = 0; j < 10; j++) {
+		setVolume(j*50);
+		for (uint8_t i = 0; i < 10; i++) {
+			playNote(1000 + i * 400, 50);
+		}
+		for (uint8_t i = 10; i > 1; i--) {
+			playNote(1000 + i * 400, 50);
+		}
+	}
 //	playNote(3000, 1000);
-	playNote(1000, 500);
-
-//	noOutput();
+	playNote(800, 1000);
+//	while(1);
+	noOutput();
 }
 
 void Brushless::playNote(uint16_t frequency, uint16_t duration_ms)
