@@ -1,7 +1,7 @@
 #pragma once
 
 #include "gpio.h"
-
+#include "LowPassFilter.h"
 class Led;
 
 /// BLHeli_32 Wraith
@@ -51,6 +51,8 @@ class Brushless
 {
 public:
     Brushless(void);
+    Uart* usart1;
+
 
     bool setRpmTarget(const uint32_t rpm_target); // mHz
     uint32_t getRpmTarget(void);
@@ -73,9 +75,8 @@ public:
 	volatile bool armed;
 	volatile bool running;
 
-	void HallHandler(bool);
+	void HallHandler(uint16_t capture_time);
 	void setVolume(uint16_t volume);
-    Uart* usart1;
 
     Gpio* high1;
     Gpio* high2;
@@ -93,6 +94,7 @@ public:
 	Pwm* pwmB;
 
 	Gpio* hall1;
+	LowPassFilter<int32_t> mHz;
 //	Gpio hall2;
 //	Gpio hall3;
 
@@ -151,7 +153,7 @@ Brushless::Brushless()
 	, greenLedTimer(NULL)
 	, hallCount(0)
 {
-
+	mHz.set_cutoff_frequency(0.1f);
 }
 
 void Brushless::initialize(void)
@@ -171,8 +173,8 @@ void Brushless::initialize(void)
 }
 
 void Brushless::usartInit(void) {
-	Uart uart1 = Uart(USART1);
-	uart1.init();
+	usart1 = new Uart(USART1);
+	usart1->init();
 }
 
 void Brushless::adcInit(void)
@@ -229,7 +231,7 @@ void Brushless::hallInit(void) {
 		TIM_ICInit(TIM3, &TIM_ICInitStructure);
 
 		TIM_TimeBaseInitTypeDef timerInitStructure;
-		timerInitStructure.TIM_Prescaler = 500; // Everything is in microseconds
+		timerInitStructure.TIM_Prescaler = 20000; // Everything is in microseconds
 		timerInitStructure.TIM_CounterMode = TIM_CounterMode_Up;
 		timerInitStructure.TIM_Period = 65000; // AKA ARR, period in ticks
 		timerInitStructure.TIM_ClockDivision = TIM_CKD_DIV1;
@@ -395,8 +397,6 @@ void Brushless::audioStatePreload(void)
 	TIM1->BDTR |= 0x8800;
 	TIM_CtrlPWMOutputs(TIM1, ENABLE);
 	TIM_SelectOCxM(TIM1, TIM_Channel_1, TIM_OCMode_PWM1);
-
-
 }
 
 void Brushless::commutationStatePreload(void)
@@ -509,8 +509,8 @@ void Brushless::commutate(void) {
 
 // Check state
 void Brushless::playStartupTune(void) {
-	for (uint8_t j = 0; j < 10; j++) {
-		setVolume(j*50);
+	for (uint8_t j = 0; j < 1; j++) {
+//		setVolume(j*50);
 		for (uint8_t i = 0; i < 10; i++) {
 			playNote(1000 + i * 400, 50);
 		}
@@ -532,12 +532,20 @@ void Brushless::playNote(uint16_t frequency, uint16_t duration_ms)
 	pwmTimer->playNote(frequency, duration_ms);
 }
 
-inline void Brushless::HallHandler(bool state) {
-	printf("\rCount: %d", ++hallCount);
+inline void Brushless::HallHandler(uint16_t captureTime) {
+	static uint32_t last = 0;
+	const uint32_t t = MicroSeconds;
+	const float dt = (t - last) / 1000000.0f;
+	last = t;
+
+	usart1->cls();
+	printf("\rCount: %d \tRPM: %d\tCapture: %d\tdt: %d", ++hallCount, mHz.apply(captureTime, dt), captureTime, dt);
 
 	if (!pwmG) {
 		return;
 	}
+	static bool state = false;
+	state = !state;
 	pwmG->setDutyCycle(state * 49 + 2000);
 
 }
@@ -553,9 +561,9 @@ extern "C" {
 	void TIM3_IRQHandler(void)
 	{
 		if (TIM_GetITStatus(TIM3, TIM_IT_CC2)) {
-			static bool flag = false;
-			flag = !flag;
-			b->HallHandler(flag);
+			TIM3->CNT = 0;
+
+			b->HallHandler(TIM3->CCR2);
 
 			TIM_ClearFlag(TIM3, TIM_FLAG_CC2);
 		} else if (TIM_GetITStatus(TIM3, TIM_IT_Update)) {

@@ -16,6 +16,9 @@ public:
 	void init(void);
 	void USART1_Init(void);
 	void write(char* p, uint8_t len);
+	void write(uint8_t p);
+	void cls(void);
+
 private:
 	USART_TypeDef* _usart;
 
@@ -29,6 +32,20 @@ void Uart::init(void)
 {
 	USART1_Init();
 }
+
+void Uart::write(uint8_t ch) {
+	// Code to write character 'ch' on the UART
+	USART_SendData(USART1,ch);
+	while (USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET);
+}
+
+void Uart::cls(void) {
+	write(27);       // ESC command
+	printf("[2J");    // clear screen command
+	write(27);
+	printf("[H"); // goto home
+}
+
 
 /*****************************************************
  * Initialize USART1: enable interrupt on reception
