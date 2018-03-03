@@ -153,12 +153,13 @@ Brushless::Brushless()
 	, greenLedTimer(NULL)
 	, hallCount(0)
 {
-	mHz.set_cutoff_frequency(0.1f);
+	mHz.set_cutoff_frequency(1.0f);
 }
 
 void Brushless::initialize(void)
 {
 	usartInit();
+	usart1->cls();
 	printf("\n\rInitializing Wraith32");
 	printf("\n\r\t- SystemCoreClock: %d", SystemCoreClock);
 	ledInit();
