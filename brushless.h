@@ -125,6 +125,7 @@ public:
 	// Updated @ 1000Hz
 	uint16_t voltage(void);
 	uint16_t current(void);
+	volatile uint32_t hallCount;
 
 
 private:
@@ -148,6 +149,7 @@ Brushless::Brushless()
 	, pwmTimer(NULL)
 	, commutationTimer(NULL)
 	, greenLedTimer(NULL)
+	, hallCount(0)
 {
 
 }
@@ -155,13 +157,16 @@ Brushless::Brushless()
 void Brushless::initialize(void)
 {
 	usartInit();
+	printf("\n\rInitializing Wraith32");
+	printf("\n\r\t- SystemCoreClock: %d", SystemCoreClock);
 	ledInit();
 //	adcInit();
+
 	hallInit();
 	init3PhaseOutput();
 	audioStatePreload();
 	playStartupTune();
-	allLow();
+//	allLow();
 
 }
 
@@ -192,6 +197,8 @@ void Brushless::adcInit(void)
 }
 
 void Brushless::hallInit(void) {
+	printf("\n\r\t- Initializing Hall Sensor");
+
 	////~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~////
 	////~~~~~~~~~~~~~~~~~~~ HALL configuration ~~~~~~~~~~~~~~////
 	////~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~////
@@ -206,7 +213,7 @@ void Brushless::hallInit(void) {
 
 		/* Enable the TIM3 global Interrupt */
 		NVIC_InitStructure.NVIC_IRQChannel = TIM3_IRQn;
-		NVIC_InitStructure.NVIC_IRQChannelPriority = 0;
+		NVIC_InitStructure.NVIC_IRQChannelPriority = 1;
 		//	  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
 		//	  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
 		NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
@@ -238,6 +245,7 @@ void Brushless::hallInit(void) {
 ////~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~////
 void Brushless::ledInit(void)
 {
+	printf("\n\r\t- Initializing LED indicator 1");
 	greenLedTimer = new Timer(TIM2);
 	Gpio pB3 = Gpio(GPIOB, 3);
 	pB3.configAF(2);
@@ -252,9 +260,13 @@ void Brushless::init3PhaseOutput(void) {
 	////~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~////
 	////~~~~~~~~~~ Commutation Timer Configuration ~~~~~~~~~~////
 	////~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~////
+
 	if (initialized) {
+		printf("WARNING: Initialize called more than once");
 		return;
 	}
+	printf("\n\rInit 3 Phase Output");
+
 
 	if (!pwmTimer) {
 		pwmTimer = new Timer(TIM1);
@@ -310,7 +322,7 @@ void Brushless::noOutput(void) {
 	TIM_ITConfig(pwmTimer->peripheral(), TIM_IT_CC2, DISABLE);
 	TIM_ITConfig(pwmTimer->peripheral(), TIM_IT_CC3, DISABLE);
 	TIM_ITConfig(pwmTimer->peripheral(), TIM_IT_CC4, DISABLE);
-	allLow();
+//	allLow();
 }
 
 void Brushless::allLow(void)
@@ -350,7 +362,7 @@ void Brushless::audioStatePreload(void)
 	//		NVIC_Init(&NVIC_InitStructure);
 	#else
 		NVIC_InitStructure.NVIC_IRQChannel = TIM1_CC_IRQn;
-		NVIC_InitStructure.NVIC_IRQChannelPriority = 1; // commutation has second highest priority after reading input
+		NVIC_InitStructure.NVIC_IRQChannelPriority = 0; // audio priority commutation has second highest priority after reading input
 		NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 		NVIC_Init(&NVIC_InitStructure);
 	#endif
@@ -366,10 +378,10 @@ void Brushless::audioStatePreload(void)
 	/// CCR3 = 500
 	/// CCR1 = 35 // should be less but takes a long time to switch for some reason (this takes 51.5 microseconds currently)
 
-	pwm1->setDutyCycle(30);
-	pwm2->setDutyCycle(500);
-	pwm3->setDutyCycle(500);
-	TIM_SetCompare4(TIM1, 35); // short pulse next time
+	pwm1->setDutyCycle(200);
+	pwm2->setDutyCycle(1000);
+	pwm3->setDutyCycle(1000);
+	TIM_SetCompare4(TIM1, 100); // short pulse next time
 
 	TIM_ITConfig(TIM1, TIM_IT_CC2, ENABLE);
 	TIM_ITConfig(TIM1, TIM_IT_CC3, ENABLE);
@@ -378,7 +390,7 @@ void Brushless::audioStatePreload(void)
 	//TODO set other members here
 	TIM_BDTRInitTypeDef TIM_BDTRInitStructure;
 	TIM_BDTRStructInit(&TIM_BDTRInitStructure);
-	TIM_BDTRInitStructure.TIM_DeadTime = 28; // 2.0 us // 0x02 for 250ns
+	TIM_BDTRInitStructure.TIM_DeadTime = 156; // 2.0 us // 0x02 for 250ns
 	TIM_BDTRConfig(TIM1, &TIM_BDTRInitStructure);
 	  TIM1->CCER = COM_MASK1 | COM_MASK1N | COM_MASK2 | COM_MASK3;
 
@@ -499,17 +511,19 @@ void Brushless::commutate(void) {
 
 // Check state
 void Brushless::playStartupTune(void) {
-	for (uint8_t j = 0; j < 1; j++) {
-		setVolume(j*10);
-		for (uint8_t i = 0; i < 10; i++) {
-			playNote(1000 + i * 400, 50);
-		}
-		for (uint8_t i = 10; i > 1; i--) {
-			playNote(1000 + i * 400, 50);
-		}
-	}
-	playNote(3000, 1000);
-	noOutput();
+//	for (uint8_t j = 0; j < 1; j++) {
+//		setVolume(j*10);
+//		for (uint8_t i = 0; i < 10; i++) {
+//			playNote(1000 + i * 400, 50);
+//		}
+//		for (uint8_t i = 10; i > 1; i--) {
+//			playNote(1000 + i * 400, 50);
+//		}
+//	}
+//	playNote(3000, 1000);
+	playNote(1000, 500);
+
+//	noOutput();
 }
 
 void Brushless::playNote(uint16_t frequency, uint16_t duration_ms)
@@ -521,6 +535,8 @@ void Brushless::playNote(uint16_t frequency, uint16_t duration_ms)
 }
 
 inline void Brushless::HallHandler(bool state) {
+	printf("\rCount: %d", ++hallCount);
+
 	if (!pwmG) {
 		return;
 	}
@@ -542,6 +558,7 @@ extern "C" {
 			static bool flag = false;
 			flag = !flag;
 			b->HallHandler(flag);
+
 			TIM_ClearFlag(TIM3, TIM_FLAG_CC2);
 		} else if (TIM_GetITStatus(TIM3, TIM_IT_Update)) {
 			TIM_ClearFlag(TIM3, TIM_FLAG_Update);

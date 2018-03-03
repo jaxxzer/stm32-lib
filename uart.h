@@ -78,8 +78,9 @@ void Uart::USART1_Init(void)
     USART_InitTypeDef usart_initStruct;
     USART_StructInit(&usart_initStruct);
 
-//    usart_initStruct.USART_BaudRate = 460800; // fast as I could get the f103 + cp2102 (supposedly 1Mbit)
-        usart_initStruct.USART_BaudRate = 115200;
+//        usart_initStruct.USART_BaudRate = 921600; // fast as I could get the f103 + cp2102 (supposedly 1Mbit)
+        usart_initStruct.USART_BaudRate = 460800; // fast as I could get the f103 + cp2102 (supposedly 1Mbit)
+//        usart_initStruct.USART_BaudRate = 115200;
     //    usart_initStruct.USART_BaudRate = 230400;
 //    usart_initStruct.USART_BaudRate = 576000;
     usart_initStruct.USART_WordLength = USART_WordLength_8b;
