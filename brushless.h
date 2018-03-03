@@ -45,6 +45,8 @@ class Led;
 #define COM_MASK_STEP4 COM_MASK1  | COM_MASK2  | COM_MASK2N | COM_MASK3N
 #define COM_MASK_STEP5 COM_MASK1  | COM_MASK1N | COM_MASK2  | COM_MASK3N
 
+Adc adcA(ADC1);
+
 //static const uint8_t magPoles = 12;
 uint8_t volume = 10;
 class Brushless
@@ -92,7 +94,7 @@ public:
 	Pwm* pwmR;
 	Pwm* pwmG;
 	Pwm* pwmB;
-
+ void analogInToFreq(void);
 	Gpio* hall1;
 	LowPassFilter<int32_t> mHz;
 //	Gpio hall2;
@@ -163,13 +165,18 @@ void Brushless::initialize(void)
 	printf("\n\rInitializing Wraith32");
 	printf("\n\r\t- SystemCoreClock: %d", SystemCoreClock);
 	ledInit();
-//	adcInit();
+	adcInit();
 
 	hallInit();
 	init3PhaseOutput();
 	audioStatePreload();
 	playStartupTune();
-	allLow();
+//	allLow();
+
+	while (1) {
+		adcA.waitConversion();
+		analogInToFreq();
+	}
 
 }
 
@@ -183,20 +190,21 @@ void Brushless::adcInit(void)
 	////~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~////
 	////~~~~~~~~~~~~~~~~~~~ ADC configuration ~~~~~~~~~~~~~~~////
 	////~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~////
-//	Adc adcA(ADC1);
-//	AdcChannel* adcChan0 = adcA.addChannel(ADC_Channel_0); // pA0, Phase C
-//	AdcChannel* adcChan1 = adcA.addChannel(ADC_Channel_1); // pA1, Virtual Neutral
-//	AdcChannel* adcChan2 = adcA.addChannel(ADC_Channel_2); // pA2, Input Signal
-//	AdcChannel* adcChan3 = adcA.addChannel(ADC_Channel_3); // pA3, Voltage Measurement
-//	AdcChannel* adcChan4 = adcA.addChannel(ADC_Channel_4); // pA4, Phase A
-//	AdcChannel* adcChan5 = adcA.addChannel(ADC_Channel_5); // pA5, Phase B
-//	AdcChannel* adcChan6 = adcA.addChannel(ADC_Channel_6); // PA6, Current Measurement
-//
-//	adcA.calibrate();
-//	adcA.enable();
-//	adcA.DmaConfig();
-//	adcA.startConversion();
-//	adcA.waitConversion();
+
+
+	adcPhaseC = adcA.addChannel(ADC_Channel_0); // pA0, Phase C
+	adcPhaseNeutral = adcA.addChannel(ADC_Channel_1); // pA1, Virtual Neutral
+	adcInput = adcA.addChannel(ADC_Channel_2); // pA2, Input Signal
+	adcVoltage = adcA.addChannel(ADC_Channel_3); // pA3, Voltage Measurement
+	adcPhaseA = adcA.addChannel(ADC_Channel_4); // pA4, Phase A
+	adcPhaseB = adcA.addChannel(ADC_Channel_5); // pA5, Phase B
+	adcCurrent = adcA.addChannel(ADC_Channel_6); // PA6, Current Measurement
+
+	adcA.calibrate();
+	adcA.enable();
+	adcA.DmaConfig();
+	adcA.startConversion();
+	adcA.waitConversion();
 }
 
 void Brushless::hallInit(void) {
@@ -340,8 +348,8 @@ void Brushless::allLow(void)
 }
 
 void Brushless::setVolume(uint16_t volume) {
-	pwm2->setDutyCycle(600 + volume);
-	pwm3->setDutyCycle(600 + volume);
+	pwm2->setDutyCycle(300 + volume);
+	pwm3->setDutyCycle(300 + volume);
 }
 
 void Brushless::audioStatePreload(void)
@@ -380,8 +388,8 @@ void Brushless::audioStatePreload(void)
 	/// CCR1 = 35 // should be less but takes a long time to switch for some reason (this takes 51.5 microseconds currently)
 
 	pwm1->setDutyCycle(200);
-	pwm2->setDutyCycle(600);
-	pwm3->setDutyCycle(600);
+	pwm2->setDutyCycle(300);
+	pwm3->setDutyCycle(300);
 	TIM_SetCompare4(TIM1, 100); // short pulse next time
 
 	TIM_ITConfig(TIM1, TIM_IT_CC2, ENABLE);
@@ -510,19 +518,52 @@ void Brushless::commutate(void) {
 
 // Check state
 void Brushless::playStartupTune(void) {
-	for (uint8_t j = 0; j < 1; j++) {
-//		setVolume(j*50);
-		for (uint8_t i = 0; i < 10; i++) {
-			playNote(1000 + i * 400, 50);
+//	uint16_t volume = 0;
+//
+//	for (uint8_t j = 0; j < 5; j++) {
+//
+//		for (uint8_t i = 0; i < 10; i++) {
+//			playNote(1000 + i * 400, 20);
+//					setVolume(volume);
+//					volume = volume + 10;
+//
+//		}
+//		for (uint8_t i = 10; i > 0; i--) {
+//			playNote(1000 + i * 400, 20);
+//			setVolume(volume);
+//			volume = volume + 10;
+//		}
+//	}
+
+	uint16_t volume = 1300;
+
+	for (uint8_t j = 0; j < 50; j++) {
+
+		for (uint8_t i = 0; i < 3; i++) {
+			playNote(1000 + i * 400, 100);
+					setVolume(volume);
+					if (volume >= 40) {
+					volume = volume - volume / 15.0f;
+					} else {
+						goto done;
+					}
+
 		}
-		for (uint8_t i = 10; i > 1; i--) {
-			playNote(1000 + i * 400, 50);
-		}
+
 	}
 //	playNote(3000, 1000);
 	playNote(800, 1000);
+
+	done:
+	setVolume(1300);
+
 //	while(1);
-	noOutput();
+//	noOutput();
+}
+
+void Brushless::analogInToFreq(void) {
+	uint16_t f = map(adcInput->_average, 0, 4095, 800, 6000);
+	pwmTimer->setFrequency(f);
 }
 
 void Brushless::playNote(uint16_t frequency, uint16_t duration_ms)
@@ -540,7 +581,7 @@ inline void Brushless::HallHandler(uint16_t captureTime) {
 	last = t;
 
 	usart1->cls();
-	printf("\rCount: %d \tRPM: %d\tCapture: %d\tdt: %d", ++hallCount, mHz.apply(captureTime, dt), captureTime, dt);
+	printf("\rCount: %d \tRPM: %d\tCapture: %d\tin: %d", ++hallCount, mHz.apply(captureTime, dt), captureTime, adcInput->_average);
 
 	if (!pwmG) {
 		return;
