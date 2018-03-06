@@ -14,7 +14,16 @@ class Led;
 /// - CH2: Green PB3 AF
 /// TIM3: LED
 /// - CH1: Blue PB4 AF
-/// TIM4: Commutation
+
+/// TIM6:
+/// - Commutation
+
+/// TIM14:
+/// TIM15:
+/// TIM16
+/// TIM17:
+
+
 
 
 /// ADC1: Only ADC available on this M0
@@ -109,6 +118,7 @@ public:
 	AdcChannel* adcCurrent;
 	void adcInit(void);
 	void hallInit(void);
+	void update(void);
 
 //	Led* ledRed;
 //	Led* ledGreen;
@@ -171,11 +181,16 @@ void Brushless::initialize(void)
 	init3PhaseOutput();
 	audioStatePreload();
 	playStartupTune();
-//	allLow();
+		noOutput();
+
+	allLow();
+
+	commutationStatePreload();
 
 	while (1) {
-		adcA.waitConversion();
-		analogInToFreq();
+		update();
+		commutate();
+//		analogInToFreq();
 	}
 
 }
@@ -333,7 +348,6 @@ void Brushless::noOutput(void) {
 	TIM_ITConfig(pwmTimer->peripheral(), TIM_IT_CC2, DISABLE);
 	TIM_ITConfig(pwmTimer->peripheral(), TIM_IT_CC3, DISABLE);
 	TIM_ITConfig(pwmTimer->peripheral(), TIM_IT_CC4, DISABLE);
-//	allLow();
 }
 
 void Brushless::allLow(void)
@@ -410,7 +424,11 @@ void Brushless::audioStatePreload(void)
 
 void Brushless::commutationStatePreload(void)
 {
-
+	allLow();
+	pwm1->setDutyCycle(80);
+	pwm2->setDutyCycle(80);
+	pwm3->setDutyCycle(80);
+	pwmTimer->setFrequency(24000); // ARR adjustment in frequency terms
 
 }
 
@@ -518,47 +536,40 @@ void Brushless::commutate(void) {
 
 // Check state
 void Brushless::playStartupTune(void) {
-//	uint16_t volume = 0;
-//
-//	for (uint8_t j = 0; j < 5; j++) {
-//
-//		for (uint8_t i = 0; i < 10; i++) {
-//			playNote(1000 + i * 400, 20);
-//					setVolume(volume);
-//					volume = volume + 10;
-//
-//		}
-//		for (uint8_t i = 10; i > 0; i--) {
-//			playNote(1000 + i * 400, 20);
-//			setVolume(volume);
-//			volume = volume + 10;
-//		}
-//	}
-
 	uint16_t volume = 1300;
-
 	for (uint8_t j = 0; j < 50; j++) {
-
 		for (uint8_t i = 0; i < 3; i++) {
 			playNote(1000 + i * 400, 100);
-					setVolume(volume);
-					if (volume >= 40) {
-					volume = volume - volume / 15.0f;
-					} else {
-						goto done;
-					}
-
+			setVolume(volume);
+			if (volume >= 40) {
+				volume = volume - volume / 20.0f;
+			} else {
+				goto done;
+			}
 		}
-
 	}
-//	playNote(3000, 1000);
-	playNote(800, 1000);
+	done: {}
+}
 
-	done:
-	setVolume(1300);
+void Brushless::update(void)
+{
+	adcA.waitConversion();
 
-//	while(1);
-//	noOutput();
+	static uint32_t tNow = 0;
+	static uint32_t tLastInput = 0;
+	static uint32_t tLastRpm = 0;
+	static const uint32_t inputUpdatePeriod = 500;
+	static const uint32_t rpmUpdatePeriod = 200;
+	tNow = MicroSeconds;
+
+	if (tNow > tLastInput + inputUpdatePeriod) {
+		tLastInput = tNow;
+		printf("{\"Input\":%d,\"Voltage\":%d,\"Current\":%d}", adcInput->_average, adcVoltage->_average, adcCurrent->_average);
+	}
+	if (tNow > tLastRpm + rpmUpdatePeriod) {
+		tLastRpm = tNow;
+		printf("{\"RPM\":%d}", mHz.get());
+	}
 }
 
 void Brushless::analogInToFreq(void) {
@@ -580,8 +591,9 @@ inline void Brushless::HallHandler(uint16_t captureTime) {
 	const float dt = (t - last) / 1000000.0f;
 	last = t;
 
-	usart1->cls();
-	printf("\rCount: %d \tRPM: %d\tCapture: %d\tin: %d", ++hallCount, mHz.apply(captureTime, dt), captureTime, adcInput->_average);
+	++hallCount;
+
+	mHz.apply(captureTime, dt);
 
 	if (!pwmG) {
 		return;
@@ -635,6 +647,12 @@ extern "C" {
 			}
 			TIM1->SR = (uint16_t)~TIM_IT_CC4;
 		}
+	}
+
+	void TIM6_IRQHandler(void)
+	{
+		b->commutate();
+		TIM_ClearFlag(TIM6, TIM_FLAG_Update);
 	}
 }
 
