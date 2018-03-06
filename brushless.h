@@ -36,6 +36,12 @@ class Led;
 /// - CH6: pA6 AF Current Measuerment
 
 
+
+/// Priorities:
+/// - Input updates
+///   - Commutation
+///   - Audio Switching
+///     - Hall update/ADC Update
 #define COM_MASK1      (TIM_CCx_Enable << TIM_Channel_1)
 #define COM_MASK2      (TIM_CCx_Enable << TIM_Channel_2)
 #define COM_MASK3      (TIM_CCx_Enable << TIM_Channel_3)
@@ -88,6 +94,7 @@ public:
 
 	void HallHandler(uint16_t capture_time);
 	void setVolume(uint16_t volume);
+	void setDutyCycle(uint16_t duty);
 
     Gpio* high1;
     Gpio* high2;
@@ -129,6 +136,8 @@ public:
 	Timer* greenLedTimer;
 
 	void setRGB(uint8_t g);
+	uint16_t pwmFrequency;
+	float pwmPeriod;
 
 	void waitThrottleLow() {
 		adcInput->waitValue(0, 10); // value, margin
@@ -166,6 +175,8 @@ Brushless::Brushless()
 	, hallCount(0)
 {
 	mHz.set_cutoff_frequency(1.0f);
+	pwmFrequency = 16000;
+
 }
 
 void Brushless::initialize(void)
@@ -187,6 +198,7 @@ void Brushless::initialize(void)
 
 	commutationStatePreload();
 
+	DelayMil(10000);
 	while (1) {
 		update();
 		commutate();
@@ -199,6 +211,7 @@ void Brushless::usartInit(void) {
 	usart1 = new Uart(USART1);
 	usart1->init();
 }
+
 
 void Brushless::adcInit(void)
 {
@@ -424,15 +437,30 @@ void Brushless::audioStatePreload(void)
 
 void Brushless::commutationStatePreload(void)
 {
-	allLow();
-	pwm1->setDutyCycle(80);
-	pwm2->setDutyCycle(80);
-	pwm3->setDutyCycle(80);
-	pwmTimer->setFrequency(24000); // ARR adjustment in frequency terms
 
+	allLow();
+	setDutyCycle(0);
+//	pwmTimer->peripheral()->EGR |= 1;
+//	while (pwmTimer->peripheral()->EGR & 1); // neccessary/useful/safe?
+
+
+	pwmTimer->setFrequency(pwmFrequency); // ARR adjustment in frequency terms
+	pwmPeriod = 1000000.0f / pwmFrequency; // microseconds
 	TIM1->BDTR = 0x8800 | 0b0001010;
 
+	printf("\n\rSet pwm frequency to: %d Hz", pwmFrequency);
+	// TODO derive actual resolution with dead time consideraitons
+	printf("\n\rThis results in a period of %d microseconds and %d ARR value", (uint16_t)(pwmPeriod), pwmTimer->peripheral()->ARR);
+	printf("\n\rDTG is %d", pwmTimer->peripheral()->BDTR & 0x7F);
+	setDutyCycle(adcInput->_average);
+}
 
+void Brushless::setDutyCycle(uint16_t duty) {
+
+	uint16_t dutyCycle = map(duty, 0, 1<<12, 0, pwmTimer->peripheral()->ARR);
+	pwm1->setDutyCycle(dutyCycle);
+	pwm2->setDutyCycle(dutyCycle);
+	pwm3->setDutyCycle(dutyCycle);
 }
 
 void Brushless::commutate(void) {
@@ -556,6 +584,8 @@ void Brushless::playStartupTune(void) {
 void Brushless::update(void)
 {
 	adcA.waitConversion();
+
+	setDutyCycle(adcInput->_average);
 
 	static uint32_t tNow = 0;
 	static uint32_t tLastInput = 0;
