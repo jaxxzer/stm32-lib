@@ -430,6 +430,9 @@ void Brushless::commutationStatePreload(void)
 	pwm3->setDutyCycle(80);
 	pwmTimer->setFrequency(24000); // ARR adjustment in frequency terms
 
+	TIM1->BDTR = 0x8800 | 0b0001010;
+
+
 }
 
 void Brushless::commutate(void) {
@@ -501,7 +504,6 @@ void Brushless::commutate(void) {
 	case 1:
 		TIM_SelectOCxM(TIM1, TIM_Channel_1, TIM_ForcedAction_InActive);
 		TIM_SelectOCxM(TIM1, TIM_Channel_2, TIM_ForcedAction_Active); // Sense 1
-		TIM_SelectOCxM(TIM1, TIM_Channel_3, TIM_OCMode_PWM1);
 		TIM_SelectOCxM(TIM1, TIM_Channel_3, TIM_OCMode_PWM1);
 		TIM1->CCER = COM_MASK1 | COM_MASK2N | COM_MASK3 | COM_MASK3N;
 		break;
