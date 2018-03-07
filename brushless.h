@@ -197,7 +197,7 @@ void Brushless::initialize(void)
 	allLow();
 
 	commutationStatePreload();
-	setupCommutationTimer();
+//	setupCommutationTimer();
 	while (1) {
 		update();
 //		commutate();
@@ -535,19 +535,25 @@ void Brushless::commutate(void) {
 
 	TIM_GenerateEvent(TIM1, TIM_EventSource_COM);
 
-	state = (state + 1) % 6; // 3 bits, represent phases
+	state = (state + 1) % 2; // 3 bits, represent phases
 	switch (state) {
 	case 0:
 		TIM_SelectOCxM(TIM1, TIM_Channel_1, TIM_OCMode_PWM1);
 		TIM_SelectOCxM(TIM1, TIM_Channel_2, TIM_ForcedAction_Active);
-		TIM_SelectOCxM(TIM1, TIM_Channel_3, TIM_ForcedAction_InActive); // Sense 3
+		TIM_SelectOCxM(TIM1, TIM_Channel_3, TIM_ForcedAction_InActive);
+
 		TIM1->CCER = COM_MASK1 | COM_MASK1N | COM_MASK2N | COM_MASK3;
 		break;
 	case 1:
-		TIM_SelectOCxM(TIM1, TIM_Channel_1, TIM_ForcedAction_InActive);
-		TIM_SelectOCxM(TIM1, TIM_Channel_2, TIM_ForcedAction_Active); // Sense 1
-		TIM_SelectOCxM(TIM1, TIM_Channel_3, TIM_OCMode_PWM1);
-		TIM1->CCER = COM_MASK1 | COM_MASK2N | COM_MASK3 | COM_MASK3N;
+		TIM_SelectOCxM(TIM1, TIM_Channel_1, TIM_ForcedAction_Active);
+		TIM_SelectOCxM(TIM1, TIM_Channel_2, TIM_OCMode_PWM1);
+		TIM_SelectOCxM(TIM1, TIM_Channel_3, TIM_ForcedAction_InActive);
+
+		TIM1->CCER = COM_MASK1N | COM_MASK2 | COM_MASK2N | COM_MASK3;
+//		TIM_SelectOCxM(TIM1, TIM_Channel_1, TIM_ForcedAction_InActive);
+//		TIM_SelectOCxM(TIM1, TIM_Channel_2, TIM_ForcedAction_Active); // Sense 1
+//		TIM_SelectOCxM(TIM1, TIM_Channel_3, TIM_OCMode_PWM1);
+//		TIM1->CCER = COM_MASK1 | COM_MASK2N | COM_MASK3 | COM_MASK3N;
 		break;
 	case 2:
 		TIM_SelectOCxM(TIM1, TIM_Channel_1, TIM_ForcedAction_Active);
@@ -556,10 +562,7 @@ void Brushless::commutate(void) {
 		TIM1->CCER = COM_MASK1N | COM_MASK2 | COM_MASK3 | COM_MASK3N;
 		break;
 	case 3:
-		TIM_SelectOCxM(TIM1, TIM_Channel_1, TIM_ForcedAction_Active);
-		TIM_SelectOCxM(TIM1, TIM_Channel_2, TIM_OCMode_PWM1);
-		TIM_SelectOCxM(TIM1, TIM_Channel_3, TIM_ForcedAction_InActive);
-		TIM1->CCER = COM_MASK1N | COM_MASK2 | COM_MASK2N | COM_MASK3;
+
 		break;
 	case 4:
 		TIM_SelectOCxM(TIM1, TIM_Channel_1, TIM_ForcedAction_InActive);
@@ -667,6 +670,7 @@ extern "C" {
 	/// Update:
 	void TIM3_IRQHandler(void)
 	{
+		b->commutate();
 		if (TIM_GetITStatus(TIM3, TIM_IT_CC2)) {
 			TIM3->CNT = 0;
 
@@ -704,8 +708,8 @@ extern "C" {
 
 	void TIM6_DAC_IRQHandler(void)
 	{
-		b->commutate();
-		TIM_ClearFlag(TIM6, TIM_FLAG_Update);
+//		b->commutate();
+//		TIM_ClearFlag(TIM6, TIM_FLAG_Update);
 	}
 }
 
