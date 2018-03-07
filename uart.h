@@ -18,6 +18,7 @@ public:
 	void write(char* p, uint8_t len);
 	void write(uint8_t p);
 	void cls(void);
+	void bkspc(void);
 
 private:
 	USART_TypeDef* _usart;
@@ -44,6 +45,10 @@ void Uart::cls(void) {
 	printf("[2J");    // clear screen command
 	write(27);
 	printf("[H"); // goto home
+}
+
+void Uart::bkspc(void) {
+	write(0x08);       // ESC command
 }
 
 

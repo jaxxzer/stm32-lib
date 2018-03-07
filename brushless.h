@@ -69,7 +69,7 @@ class Brushless
 public:
     Brushless(void);
     Uart* usart1;
-
+    void setupCommutationTimer(void);
 
     bool setRpmTarget(const uint32_t rpm_target); // mHz
     uint32_t getRpmTarget(void);
@@ -197,11 +197,10 @@ void Brushless::initialize(void)
 	allLow();
 
 	commutationStatePreload();
-
-	DelayMil(10000);
+	setupCommutationTimer();
 	while (1) {
 		update();
-		commutate();
+//		commutate();
 //		analogInToFreq();
 	}
 
@@ -212,7 +211,22 @@ void Brushless::usartInit(void) {
 	usart1->init();
 }
 
+void Brushless::setupCommutationTimer(void) {
+	commutationTimer = new Timer(TIM6);
+	commutationTimer->init(65000, 3000000);
+		commutationTimer->setPrescaler(15);
 
+	commutationTimer->setFrequency(750);
+	NVIC_InitTypeDef NVIC_InitStructure;
+//	NVIC_StructInit(&NVIC_InitStructure);
+	NVIC_InitStructure.NVIC_IRQChannel = TIM6_DAC_IRQn;
+	NVIC_InitStructure.NVIC_IRQChannelPriority = 0;
+	//	  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
+	//	  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+	NVIC_Init(&NVIC_InitStructure);
+	TIM_ITConfig(TIM6, TIM_IT_Update, ENABLE);
+}
 void Brushless::adcInit(void)
 {
 	////~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~////
@@ -268,7 +282,7 @@ void Brushless::hallInit(void) {
 		TIM_ICInit(TIM3, &TIM_ICInitStructure);
 
 		TIM_TimeBaseInitTypeDef timerInitStructure;
-		timerInitStructure.TIM_Prescaler = 20000; // Everything is in microseconds
+		timerInitStructure.TIM_Prescaler = 1000; // Everything is in microseconds
 		timerInitStructure.TIM_CounterMode = TIM_CounterMode_Up;
 		timerInitStructure.TIM_Period = 65000; // AKA ARR, period in ticks
 		timerInitStructure.TIM_ClockDivision = TIM_CKD_DIV1;
@@ -567,6 +581,7 @@ void Brushless::commutate(void) {
 // Check state
 void Brushless::playStartupTune(void) {
 	uint16_t volume = 1300;
+	printf("Playing startup tune |");
 	for (uint8_t j = 0; j < 50; j++) {
 		for (uint8_t i = 0; i < 3; i++) {
 			playNote(1000 + i * 400, 100);
@@ -611,9 +626,15 @@ void Brushless::analogInToFreq(void) {
 
 void Brushless::playNote(uint16_t frequency, uint16_t duration_ms)
 {
+
 	if (!pwmTimer) {
 		return;
 	}
+	static uint8_t playState;
+	static const char status[] = { '|', '/', '-', '\\' };
+	usart1->bkspc();
+	//	printf("%c", status[playState++%4]);
+		usart1->write(status[playState++%4]);
 	pwmTimer->playNote(frequency, duration_ms);
 }
 
@@ -681,7 +702,7 @@ extern "C" {
 		}
 	}
 
-	void TIM6_IRQHandler(void)
+	void TIM6_DAC_IRQHandler(void)
 	{
 		b->commutate();
 		TIM_ClearFlag(TIM6, TIM_FLAG_Update);

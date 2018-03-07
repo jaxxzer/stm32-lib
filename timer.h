@@ -68,6 +68,21 @@ void Timer::init(uint16_t period, uint32_t tickFrequency)
     case TIM3_BASE:
         RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);
         break;
+    case TIM6_BASE:
+        RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM6, ENABLE);
+        break;
+    case TIM14_BASE:
+        RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM14, ENABLE);
+        break;
+//    case TIM15_BASE:
+//        RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM15, ENABLE);
+//        break;
+//    case TIM16_BASE:
+//        RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM16, ENABLE);
+//        break;
+//    case TIM17_BASE:
+//        RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM17, ENABLE);
+//        break;
     default:
         break;
     }
