@@ -26,12 +26,15 @@ public:
 		: _gpio(gpiox)
 		, _channel(channel)
 		, next(NULL)
+        , enabled(true)
 {}
 	Gpio* _gpio;
 	uint8_t _channel;
 	AdcChannel* next;
 	uint32_t _accumulator;
 	uint16_t _average;
+	bool enabled;
+
 
 	void waitValue(uint16_t value, uint16_t margin, uint8_t filter = 0) {
 		// filter unused
@@ -66,7 +69,7 @@ public:
 	void calibrate();
 
 	static uint8_t _numChannels;
-	static uint8_t _numSamples;
+	static uint16_t _numSamples;
 
 	volatile uint16_t* dmaBuf;
 
@@ -78,6 +81,10 @@ private:
 
 };
 
+bool disableChannel(uint8_t channel)
+{
+
+}
 AdcChannel* Adc::addChannel(uint8_t channel)
 {
 	GPIO_TypeDef* gpiox;
@@ -91,6 +98,8 @@ AdcChannel* Adc::addChannel(uint8_t channel)
 	default:
 		return NULL;
 	}
+
+	// TODO we should insert here instead of counting on them being added in order
 
 	Gpio* gpio = new Gpio(gpiox, pinx);
 	gpio->initAnalogIn();
@@ -119,7 +128,7 @@ AdcChannel* Adc::addChannel(uint8_t channel)
 //const uint8_t MAX_CHANNELS = 8;
 //const uint8_t MAX_SAMPLES = 40;
 uint8_t Adc::_numChannels = 0;
-uint8_t Adc::_numSamples = 2;
+uint16_t Adc::_numSamples = 100;
 //__IO uint32_t ADC_DualConvertedValueTab[MAX_CHANNELS * MAX_SAMPLES];
 
 void Adc::_enableClock(void)

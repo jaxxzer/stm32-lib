@@ -62,15 +62,18 @@ class Led;
 
 Adc adcA(ADC1);
 
+//#define UINT16_MAX 1<<16
+//#define INT16_MAX 1<<15
+
 //static const uint8_t magPoles = 12;
 uint8_t volume = 10;
 class Brushless
 {
 public:
     Brushless(void);
-    Uart* usart1;
+    Uart usart1;
     void setupCommutationTimer(void);
-
+    static uint16_t adcCaptureBuffer[100000];
     bool setRpmTarget(const uint32_t rpm_target); // mHz
     uint32_t getRpmTarget(void);
     uint32_t getRpm(void);
@@ -92,37 +95,42 @@ public:
 	volatile bool armed;
 	volatile bool running;
 
+	static const uint16_t _volume_max = 700;
+	static const uint16_t _volume_min = 500;
+	void setVolume(uint16_t volume); //0~max;
+
+
 	void HallHandler(uint16_t capture_time);
-	void setVolume(uint16_t volume);
 	void setDutyCycle(uint16_t duty);
+	Gpio ledG{GPIOB, 3};
+    Gpio high1;
+    Gpio high2;
+    Gpio high3;
+    Gpio low1;
+    Gpio low2;
+    Gpio low3;
 
-    Gpio* high1;
-    Gpio* high2;
-    Gpio* high3;
-    Gpio* low1;
-    Gpio* low2;
-    Gpio* low3;
+    Pwm pwm1;
+    Pwm pwm2;
+	Pwm pwm3;
 
-    Pwm* pwm1;
-    Pwm* pwm2;
-	Pwm* pwm3;
+//	Pwm pwmR;
+	Pwm pwmG;
+//	Pwm pwmB;
 
-	Pwm* pwmR;
-	Pwm* pwmG;
-	Pwm* pwmB;
+
  void analogInToFreq(void);
-	Gpio* hall1;
 	LowPassFilter<int32_t> mHz;
 //	Gpio hall2;
 //	Gpio hall3;
 
 	AdcChannel* adcPhaseC;
-	AdcChannel* adcPhaseNeutral;
+//	AdcChannel* adcPhaseNeutral;
 	AdcChannel* adcInput;
-	AdcChannel* adcVoltage;
-	AdcChannel* adcPhaseA;
-	AdcChannel* adcPhaseB;
-	AdcChannel* adcCurrent;
+//	AdcChannel* adcVoltage;
+//	AdcChannel* adcPhaseA;
+//	AdcChannel* adcPhaseB;
+//	AdcChannel* adcCurrent;
 	void adcInit(void);
 	void hallInit(void);
 	void update(void);
@@ -131,16 +139,16 @@ public:
 //	Led* ledGreen;
 //	Led* ledBlue;
 
-	Timer* pwmTimer;
-	Timer* commutationTimer;
-	Timer* greenLedTimer;
+	Timer pwmTimer;
+	Timer commutationTimer;
+	Timer greenLedTimer;
 
 	void setRGB(uint8_t g);
 	uint16_t pwmFrequency;
 	float pwmPeriod;
 
 	void waitThrottleLow() {
-		adcInput->waitValue(0, 10); // value, margin
+//		adcInput.waitValue(0, 10); // value, margin
 	}
 
 	void allLow(void);
@@ -163,15 +171,33 @@ private:
     void commutationStatePreload(void);
 };
 
-Brushless* b = new Brushless();
+uint16_t Brushless::adcCaptureBuffer[100000];
+
+
+Brushless b = Brushless();
+
+
 
 Brushless::Brushless()
 	: initialized(false)
 	, running(false)
 	, armed(false)
-	, pwmTimer(NULL)
-	, commutationTimer(NULL)
-	, greenLedTimer(NULL)
+	, pwmTimer(TIM1)
+	, commutationTimer(TIM6)
+	, greenLedTimer(TIM2)
+    , usart1(USART1)
+   // , ledG(GPIOB, 3)
+	, pwmG(&ledG, &greenLedTimer, TIM_Channel_2)
+
+	,low1(GPIOA, 7) // TIM1_CH1N
+	,high1(GPIOA, 8)  // TIM1_CH1
+	,pwm1(&high1, &pwmTimer, TIM_Channel_1)
+	,low2(GPIOB, 0) // TIM1_CH2N
+	,high2(GPIOA, 9) // TIM1_CH2
+	,pwm2(&high2, &pwmTimer, TIM_Channel_2)
+	,low3(GPIOB, 1) // TIM1_CH3N
+	,high3(GPIOA, 10) // TIM1_CH3
+	,pwm3(&high3, &pwmTimer, TIM_Channel_3)
 	, hallCount(0)
 {
 	mHz.set_cutoff_frequency(1.0f);
@@ -182,7 +208,7 @@ Brushless::Brushless()
 void Brushless::initialize(void)
 {
 	usartInit();
-	usart1->cls();
+	usart1.cls();
 	printf("\n\rInitializing Wraith32");
 	printf("\n\r\t- SystemCoreClock: %d", SystemCoreClock);
 	ledInit();
@@ -207,16 +233,15 @@ void Brushless::initialize(void)
 }
 
 void Brushless::usartInit(void) {
-	usart1 = new Uart(USART1);
-	usart1->init();
+	usart1 = Uart(USART1);
+	usart1.init();
 }
 
 void Brushless::setupCommutationTimer(void) {
-	commutationTimer = new Timer(TIM6);
-	commutationTimer->init(65000, 3000000);
-		commutationTimer->setPrescaler(15);
+	commutationTimer.init(65000, 3000000);
+		commutationTimer.setPrescaler(15);
 
-	commutationTimer->setFrequency(750);
+	commutationTimer.setFrequency(750);
 	NVIC_InitTypeDef NVIC_InitStructure;
 //	NVIC_StructInit(&NVIC_InitStructure);
 	NVIC_InitStructure.NVIC_IRQChannel = TIM6_DAC_IRQn;
@@ -235,12 +260,12 @@ void Brushless::adcInit(void)
 
 
 	adcPhaseC = adcA.addChannel(ADC_Channel_0); // pA0, Phase C
-	adcPhaseNeutral = adcA.addChannel(ADC_Channel_1); // pA1, Virtual Neutral
+//	adcPhaseNeutral = adcA.addChannel(ADC_Channel_1); // pA1, Virtual Neutral
 	adcInput = adcA.addChannel(ADC_Channel_2); // pA2, Input Signal
-	adcVoltage = adcA.addChannel(ADC_Channel_3); // pA3, Voltage Measurement
-	adcPhaseA = adcA.addChannel(ADC_Channel_4); // pA4, Phase A
-	adcPhaseB = adcA.addChannel(ADC_Channel_5); // pA5, Phase B
-	adcCurrent = adcA.addChannel(ADC_Channel_6); // PA6, Current Measurement
+//	adcVoltage = adcA.addChannel(ADC_Channel_3); // pA3, Voltage Measurement
+//	adcPhaseA = adcA.addChannel(ADC_Channel_4); // pA4, Phase A
+//	adcPhaseB = adcA.addChannel(ADC_Channel_5); // pA5, Phase B
+//	adcCurrent = adcA.addChannel(ADC_Channel_6); // PA6, Current Measurement
 
 	adcA.calibrate();
 	adcA.enable();
@@ -299,14 +324,11 @@ void Brushless::hallInit(void) {
 void Brushless::ledInit(void)
 {
 	printf("\n\r\t- Initializing LED indicator 1");
-	greenLedTimer = new Timer(TIM2);
-	Gpio pB3 = Gpio(GPIOB, 3);
-	pB3.configAF(2);
-	pwmG = new Pwm(&pB3, greenLedTimer, TIM_Channel_2);
-	pwmG->init();
+	ledG.configAF(2);
+	pwmG.init();
 	TIM_CtrlPWMOutputs(TIM2, ENABLE);
-	greenLedTimer->setPeriod(2048);
-	pwmG->setDutyCycle(2040);
+	greenLedTimer.setPeriod(2048);
+	pwmG.setDutyCycle(2040);
 }
 
 void Brushless::init3PhaseOutput(void) {
@@ -318,13 +340,9 @@ void Brushless::init3PhaseOutput(void) {
 		printf("WARNING: Initialize called more than once");
 		return;
 	}
-	printf("\n\rInit 3 Phase Output");
+	printf("\n\r\t- Initalizing 3 Phase Output");
 
 
-	if (!pwmTimer) {
-		pwmTimer = new Timer(TIM1);
-		// fatal; should never get here
-	}
 	//	TimerChannel* a = phaseTimer.initChannel(1);
 	//	a.initComplement();
 	//	TimerChannel* b = phaseTimer.initChannel(2);
@@ -332,70 +350,68 @@ void Brushless::init3PhaseOutput(void) {
 	//	TimerChannel* a = phaseTimer.initChannel(3);
 	//	b.initComplement();
 
-	low1 = new Gpio(GPIOA, 7); // TIM1_CH1N
-	high1 = new Gpio(GPIOA, 8);  // TIM1_CH1
-	pwm1 = new Pwm(high1, pwmTimer, TIM_Channel_1);
+	low1 = Gpio(GPIOA, 7); // TIM1_CH1N
+	high1 = Gpio(GPIOA, 8);  // TIM1_CH1
+	pwm1 = Pwm(&high1, &pwmTimer, TIM_Channel_1);
 
-	low2 = new Gpio(GPIOB, 0); // TIM1_CH2N
-	high2 =  new Gpio(GPIOA, 9);  // TIM1_CH2
-	pwm2 =  new Pwm(high2, pwmTimer, TIM_Channel_2);
+	low2 = Gpio(GPIOB, 0); // TIM1_CH2N
+	high2 =  Gpio(GPIOA, 9);  // TIM1_CH2
+	pwm2 =  Pwm(&high2, &pwmTimer, TIM_Channel_2);
 
-	low3 = new Gpio(GPIOB, 1); // TIM1_CH3N
-	high3 = new Gpio(GPIOA, 10); // TIM1_CH3
-	pwm3 = new Pwm(high3, pwmTimer, TIM_Channel_3);
+	low3 = Gpio(GPIOB, 1); // TIM1_CH3N
+	high3 = Gpio(GPIOA, 10); // TIM1_CH3
+	pwm3 = Pwm(&high3, &pwmTimer, TIM_Channel_3);
 
-	low1->initAFPP();
-	pwm1->initComplimentary();
-	low2->initAFPP();
-	pwm2->initComplimentary();
-	low3->initAFPP();
-	pwm3->initComplimentary();
+	low1.initAFPP();
+	pwm1.initComplimentary();
+	low2.initAFPP();
+	pwm2.initComplimentary();
+	low3.initAFPP();
+	pwm3.initComplimentary();
 
 	TIM1->BDTR |= 0x8800;
 
 	noOutput();
 
-	low1->configAF(2);
-	low2->configAF(2);
-	low3->configAF(2);
+	low1.configAF(2);
+	low2.configAF(2);
+	low3.configAF(2);
 
-	high1->configAF(2);
-	high2->configAF(2);
-	high3->configAF(2);
+	high1.configAF(2);
+	high2.configAF(2);
+	high3.configAF(2);
 
 	TIM_CtrlPWMOutputs(TIM1, ENABLE);
 	initialized = true;
 }
 
 void Brushless::noOutput(void) {
-	if (!pwmTimer) {
-		return;
-	}
-	TIM_ITConfig(pwmTimer->peripheral(), TIM_IT_CC1, DISABLE);
-	TIM_ITConfig(pwmTimer->peripheral(), TIM_IT_CC2, DISABLE);
-	TIM_ITConfig(pwmTimer->peripheral(), TIM_IT_CC3, DISABLE);
-	TIM_ITConfig(pwmTimer->peripheral(), TIM_IT_CC4, DISABLE);
+	TIM_ITConfig(pwmTimer.peripheral(), TIM_IT_CC1, DISABLE);
+	TIM_ITConfig(pwmTimer.peripheral(), TIM_IT_CC2, DISABLE);
+	TIM_ITConfig(pwmTimer.peripheral(), TIM_IT_CC3, DISABLE);
+	TIM_ITConfig(pwmTimer.peripheral(), TIM_IT_CC4, DISABLE);
 }
 
 void Brushless::allLow(void)
 {
-	//TIM_Cmd(commutationTimer->peripheral(), DISABLE);
-	TIM_SelectOCxM(pwmTimer->peripheral(), TIM_Channel_1, TIM_ForcedAction_InActive);
-	TIM_SelectOCxM(pwmTimer->peripheral(), TIM_Channel_2, TIM_ForcedAction_InActive);
-	TIM_SelectOCxM(pwmTimer->peripheral(), TIM_Channel_3, TIM_ForcedAction_InActive);
-	pwmTimer->peripheral()->CCER = COM_MASK1N | COM_MASK2N | COM_MASK3N;
+	//TIM_Cmd(commutationTimer.peripheral(), DISABLE);
+	TIM_SelectOCxM(pwmTimer.peripheral(), TIM_Channel_1, TIM_ForcedAction_InActive);
+	TIM_SelectOCxM(pwmTimer.peripheral(), TIM_Channel_2, TIM_ForcedAction_InActive);
+	TIM_SelectOCxM(pwmTimer.peripheral(), TIM_Channel_3, TIM_ForcedAction_InActive);
+	pwmTimer.peripheral()->CCER = COM_MASK1N | COM_MASK2N | COM_MASK3N;
 	armed = false;
 	running = false;
 }
 
 void Brushless::setVolume(uint16_t volume) {
-	pwm2->setDutyCycle(300 + volume);
-	pwm3->setDutyCycle(300 + volume);
+	uint16_t v = map(volume, 0, UINT16_MAX, _volume_min, _volume_max);
+	pwm2.setDutyCycle(v);
+	pwm3.setDutyCycle(v);
 }
 
 void Brushless::audioStatePreload(void)
 {
-	pwmTimer->outputChannelInitPwmComplimentary(TIM_Channel_4, 62);
+	pwmTimer.outputChannelInitPwmComplimentary(TIM_Channel_4, 62);
 
 	NVIC_InitTypeDef NVIC_InitStructure;
 	#ifdef STM32F10X_MD
@@ -420,7 +436,7 @@ void Brushless::audioStatePreload(void)
 	// 24kHz = 1/24000 s = 41.667 microseconds = period
 	// prescalar = 1 = 8MHz = 125 nanoseconds
 	//	phaseTimer.setPrescaler(50); // to slow the waveform down 50x
-	pwmTimer->setFrequency(1800); // ARR adjustment in frequency terms
+	pwmTimer.setFrequency(1800); // ARR adjustment in frequency terms
 
 	/// During Audio:
 	/// CCR1 = 30
@@ -428,9 +444,9 @@ void Brushless::audioStatePreload(void)
 	/// CCR3 = 500
 	/// CCR1 = 35 // should be less but takes a long time to switch for some reason (this takes 51.5 microseconds currently)
 
-	pwm1->setDutyCycle(200);
-	pwm2->setDutyCycle(300);
-	pwm3->setDutyCycle(300);
+	pwm1.setDutyCycle(200);
+	pwm2.setDutyCycle(300);
+	pwm3.setDutyCycle(300);
 	TIM_SetCompare4(TIM1, 100); // short pulse next time
 
 	TIM_ITConfig(TIM1, TIM_IT_CC2, ENABLE);
@@ -454,27 +470,27 @@ void Brushless::commutationStatePreload(void)
 
 	allLow();
 	setDutyCycle(0);
-//	pwmTimer->peripheral()->EGR |= 1;
-//	while (pwmTimer->peripheral()->EGR & 1); // neccessary/useful/safe?
+//	pwmTimer.peripheral().EGR |= 1;
+//	while (pwmTimer.peripheral().EGR & 1); // neccessary/useful/safe?
 
 
-	pwmTimer->setFrequency(pwmFrequency); // ARR adjustment in frequency terms
+	pwmTimer.setFrequency(pwmFrequency); // ARR adjustment in frequency terms
 	pwmPeriod = 1000000.0f / pwmFrequency; // microseconds
 	TIM1->BDTR = 0x8800 | 0b0001010;
 
 	printf("\n\rSet pwm frequency to: %d Hz", pwmFrequency);
 	// TODO derive actual resolution with dead time consideraitons
-	printf("\n\rThis results in a period of %d microseconds and %d ARR value", (uint16_t)(pwmPeriod), pwmTimer->peripheral()->ARR);
-	printf("\n\rDTG is %d", pwmTimer->peripheral()->BDTR & 0x7F);
-	setDutyCycle(adcInput->_average);
+	printf("\n\rThis results in a period of %d microseconds and %d ARR value", (uint16_t)(pwmPeriod), pwmTimer.peripheral()->ARR);
+	printf("\n\rDTG is %d", pwmTimer.peripheral()->BDTR & 0x7F);
+	setDutyCycle(0);
 }
 
 void Brushless::setDutyCycle(uint16_t duty) {
 
-	uint16_t dutyCycle = map(duty, 0, 1<<12, 0, pwmTimer->peripheral()->ARR);
-	pwm1->setDutyCycle(dutyCycle);
-	pwm2->setDutyCycle(dutyCycle);
-	pwm3->setDutyCycle(dutyCycle);
+	uint16_t dutyCycle = map(duty, 0, 1<<12, 0, pwmTimer.peripheral()->ARR);
+	pwm1.setDutyCycle(dutyCycle);
+	pwm2.setDutyCycle(dutyCycle);
+	pwm3.setDutyCycle(dutyCycle);
 }
 
 void Brushless::commutate(void) {
@@ -583,13 +599,17 @@ void Brushless::commutate(void) {
 
 // Check state
 void Brushless::playStartupTune(void) {
-	uint16_t volume = 1300;
-	printf("Playing startup tune |");
-	for (uint8_t j = 0; j < 50; j++) {
-		for (uint8_t i = 0; i < 3; i++) {
+	uint16_t volume = UINT16_MAX;
+	static const uint8_t numNotes = 20;
+	static const uint8_t scaleNotes = 3;
+
+	printf("\n\r\t - Playing startup tune |");
+
+	for (uint8_t j = 0; j < numNotes/scaleNotes; j++) {
+		for (uint8_t i = 0; i < scaleNotes; i++) {
 			playNote(1000 + i * 400, 100);
 			setVolume(volume);
-			if (volume >= 40) {
+			if (volume >= 10000) {
 				volume = volume - volume / 20.0f;
 			} else {
 				goto done;
@@ -612,33 +632,29 @@ void Brushless::update(void)
 	static const uint32_t rpmUpdatePeriod = 200;
 	tNow = MicroSeconds;
 
-	if (tNow > tLastInput + inputUpdatePeriod) {
-		tLastInput = tNow;
-		printf("{\"Input\":%d,\"Voltage\":%d,\"Current\":%d}", adcInput->_average, adcVoltage->_average, adcCurrent->_average);
-	}
-	if (tNow > tLastRpm + rpmUpdatePeriod) {
-		tLastRpm = tNow;
-		printf("{\"RPM\":%d}", mHz.get());
-	}
+//	if (tNow > tLastInput + inputUpdatePeriod) {
+//		tLastInput = tNow;
+//		printf("{\"Input\":%d,\"Voltage\":%d,\"Current\":%d}", adcInput._average, adcVoltage._average, adcCurrent._average);
+//	}
+//	if (tNow > tLastRpm + rpmUpdatePeriod) {
+//		tLastRpm = tNow;
+//		printf("{\"RPM\":%d}", mHz.get());
+//	}
 }
 
 void Brushless::analogInToFreq(void) {
-	uint16_t f = map(adcInput->_average, 0, 4095, 800, 6000);
-	pwmTimer->setFrequency(f);
+//	uint16_t f = map(adcInput._average, 0, 4095, 800, 6000);
+//	pwmTimer.setFrequency(f);
 }
 
 void Brushless::playNote(uint16_t frequency, uint16_t duration_ms)
 {
-
-	if (!pwmTimer) {
-		return;
-	}
 	static uint8_t playState;
 	static const char status[] = { '|', '/', '-', '\\' };
-	usart1->bkspc();
+	usart1.bkspc();
 	//	printf("%c", status[playState++%4]);
-		usart1->write(status[playState++%4]);
-	pwmTimer->playNote(frequency, duration_ms);
+		usart1.write(status[playState++%4]);
+	pwmTimer.playNote(frequency, duration_ms);
 }
 
 inline void Brushless::HallHandler(uint16_t captureTime) {
@@ -651,12 +667,9 @@ inline void Brushless::HallHandler(uint16_t captureTime) {
 
 	mHz.apply(captureTime, dt);
 
-	if (!pwmG) {
-		return;
-	}
 	static bool state = false;
 	state = !state;
-	pwmG->setDutyCycle(state * 49 + 2000);
+	pwmG.setDutyCycle(state * 49 + 2000);
 
 }
 volatile bool flip = true;
@@ -670,11 +683,11 @@ extern "C" {
 	/// Update:
 	void TIM3_IRQHandler(void)
 	{
-		b->commutate();
+		b.commutate();
 		if (TIM_GetITStatus(TIM3, TIM_IT_CC2)) {
 			TIM3->CNT = 0;
 
-			b->HallHandler(TIM3->CCR2);
+			b.HallHandler(TIM3->CCR2);
 
 			TIM_ClearFlag(TIM3, TIM_FLAG_CC2);
 		} else if (TIM_GetITStatus(TIM3, TIM_IT_Update)) {
@@ -708,7 +721,7 @@ extern "C" {
 
 	void TIM6_DAC_IRQHandler(void)
 	{
-//		b->commutate();
+//		b.commutate();
 //		TIM_ClearFlag(TIM6, TIM_FLAG_Update);
 	}
 }
