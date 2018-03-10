@@ -60,9 +60,11 @@ void Uart::USART1_Init(void)
 {
     /* Enable USART1 global interrupt */
 	NVIC_InitTypeDef NVIC_InitStructure;
+//	NVIC_StructInit(&NVIC_InitStructure); // don't exisist
 
 	/* Enable the USARTx Interrupt */
 	NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQn;
+
 #ifdef STM32F051x8
 	NVIC_InitStructure.NVIC_IRQChannelPriority = 0;
 #else
@@ -114,7 +116,7 @@ void Uart::USART1_Init(void)
     USART_Init(USART1, &usart_initStruct);
 
     /* Enable RXNE interrupt */
-//    USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);
+    USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);
 
     /* Enable USART1 */
     USART_Cmd(USART1, ENABLE);
