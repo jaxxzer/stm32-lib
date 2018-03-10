@@ -95,10 +95,14 @@ public:
 	volatile bool armed;
 	volatile bool running;
 
-	static const uint16_t _volume_max = 700;
+	static const uint16_t _volume_max = 600;
 	static const uint16_t _volume_min = 500;
 	void setVolume(uint16_t volume); //0~max;
 
+	void startup();
+
+	static const uint16_t _rotor_poles = 12;
+	uint16_t _rpm;
 
 	void HallHandler(uint16_t capture_time);
 	void setDutyCycle(uint16_t duty);
@@ -120,17 +124,17 @@ public:
 
 
  void analogInToFreq(void);
-	LowPassFilter<int32_t> mHz;
+	LowPassFilter<int32_t> period;
 //	Gpio hall2;
 //	Gpio hall3;
 
 	AdcChannel* adcPhaseC;
 //	AdcChannel* adcPhaseNeutral;
 	AdcChannel* adcInput;
-//	AdcChannel* adcVoltage;
+	AdcChannel* adcVoltage;
 //	AdcChannel* adcPhaseA;
 //	AdcChannel* adcPhaseB;
-//	AdcChannel* adcCurrent;
+	AdcChannel* adcCurrent;
 	void adcInit(void);
 	void hallInit(void);
 	void update(void);
@@ -161,7 +165,7 @@ public:
 
 private:
     void advanceCommutation(bool reverse=false);
-    uint32_t _rpm;
+//    uint32_t _rpm;
     uint32_t _rpmTarget;
     volatile uint8_t state; // 3 bits
 
@@ -171,12 +175,7 @@ private:
     void commutationStatePreload(void);
 };
 
-uint16_t Brushless::adcCaptureBuffer[100000];
-
-
 Brushless b = Brushless();
-
-
 
 Brushless::Brushless()
 	: initialized(false)
@@ -188,7 +187,6 @@ Brushless::Brushless()
     , usart1(USART1)
    // , ledG(GPIOB, 3)
 	, pwmG(&ledG, &greenLedTimer, TIM_Channel_2)
-
 	,low1(GPIOA, 7) // TIM1_CH1N
 	,high1(GPIOA, 8)  // TIM1_CH1
 	,pwm1(&high1, &pwmTimer, TIM_Channel_1)
@@ -200,7 +198,7 @@ Brushless::Brushless()
 	,pwm3(&high3, &pwmTimer, TIM_Channel_3)
 	, hallCount(0)
 {
-	mHz.set_cutoff_frequency(1.0f);
+	period.set_cutoff_frequency(5.0f);
 	pwmFrequency = 16000;
 
 }
@@ -218,11 +216,13 @@ void Brushless::initialize(void)
 	init3PhaseOutput();
 	audioStatePreload();
 	playStartupTune();
-		noOutput();
 
+	// TODO TImer.disable, Timerchanel.disable, and refactore these mehtods to just "disarmed"
+	noOutput();
 	allLow();
 
 	commutationStatePreload();
+
 //	setupCommutationTimer();
 	while (1) {
 		update();
@@ -252,6 +252,12 @@ void Brushless::setupCommutationTimer(void) {
 	NVIC_Init(&NVIC_InitStructure);
 	TIM_ITConfig(TIM6, TIM_IT_Update, ENABLE);
 }
+
+//void Brushless::startupMotor(void)
+//{
+//	bool statup_condition = adcInput->average > 0;
+//}
+
 void Brushless::adcInit(void)
 {
 	////~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~////
@@ -632,14 +638,25 @@ void Brushless::update(void)
 	static const uint32_t rpmUpdatePeriod = 200;
 	tNow = MicroSeconds;
 
-//	if (tNow > tLastInput + inputUpdatePeriod) {
-//		tLastInput = tNow;
-//		printf("{\"Input\":%d,\"Voltage\":%d,\"Current\":%d}", adcInput._average, adcVoltage._average, adcCurrent._average);
-//	}
-//	if (tNow > tLastRpm + rpmUpdatePeriod) {
-//		tLastRpm = tNow;
-//		printf("{\"RPM\":%d}", mHz.get());
-//	}
+	if (tNow > tLastInput + inputUpdatePeriod) {
+		tLastInput = tNow;
+		printf("{\"Input\":%d,\"Voltage\":%d,\"Current\":%d}", adcInput->_average, adcVoltage->_average, adcCurrent->_average);
+	}
+	if (tNow > tLastRpm + rpmUpdatePeriod) {
+		tLastRpm = tNow;
+		uint16_t p = period.get(); // in TIM counts
+
+		/// p = TIM3 counts
+		/// TIM3 counts = TIM3 clock 48MHz / TIM3 prescaler 1000 = 48000Hz
+	    /// TIM3 counts / 48000 = t time in seconds between magnets passing by
+		/// _rotor_poles * t = tr time in seconds for one rotation
+		/// frequency = 1/t
+		/// ----------
+		//		static const float rotation_period = _rotor_poles * p / 48000 ;
+				 float rotation_frequency = 48000000.0f / (_rotor_poles * p); // x1000!
+
+		printf("{\"Period\":%d,\"Hz\":%d}", p, (uint32_t)(rotation_frequency));
+	}
 }
 
 void Brushless::analogInToFreq(void) {
@@ -660,12 +677,13 @@ void Brushless::playNote(uint16_t frequency, uint16_t duration_ms)
 inline void Brushless::HallHandler(uint16_t captureTime) {
 	static uint32_t last = 0;
 	const uint32_t t = MicroSeconds;
-	const float dt = (t - last) / 1000000.0f;
+	const float dt = (t - last) / 1000000.0f; // seconds
+	static uint16_t f = 1/dt;
 	last = t;
 
 	++hallCount;
 
-	mHz.apply(captureTime, dt);
+	period.apply(captureTime, dt);
 
 	static bool state = false;
 	state = !state;
@@ -686,9 +704,7 @@ extern "C" {
 		b.commutate();
 		if (TIM_GetITStatus(TIM3, TIM_IT_CC2)) {
 			TIM3->CNT = 0;
-
 			b.HallHandler(TIM3->CCR2);
-
 			TIM_ClearFlag(TIM3, TIM_FLAG_CC2);
 		} else if (TIM_GetITStatus(TIM3, TIM_IT_Update)) {
 			TIM_ClearFlag(TIM3, TIM_FLAG_Update);
