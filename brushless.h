@@ -105,12 +105,12 @@ public:
     Gpio gpio_low2  { GPIOB, 0  };
     Gpio gpio_low3  { GPIOB, 1  };
 
-    TimerChannel t1c1 { TIM1, 1 };
-    TimerChannel t1c2 { TIM1, 2 };
-    TimerChannel t1c3 { TIM1, 3 };
-    TimerChannel t1c4 { TIM1, 4 };
+    TimerChannelOutput t1c1 { TIM1, 1 };
+    TimerChannelOutput t1c2 { TIM1, 2 };
+    TimerChannelOutput t1c3 { TIM1, 3 };
+    TimerChannelOutput t1c4 { TIM1, 4 };
 
-	TimerChannel tc_LedG { TIM3, 2 };
+	TimerChannelOutput tc_LedG { TIM3, 2 };
 
 
 	Timer tim_Pwm  { TIM1 };
@@ -303,7 +303,7 @@ void Brushless::hallInit(void) {
 		TIM_ICInitStructure.TIM_ICPrescaler = TIM_ICPSC_DIV1;
 		TIM_ICInitStructure.TIM_ICFilter = 0x04;
 
-		TIM_ICInit(TIM3, &TIM_ICInitStructure);
+		TIM_ICInit(TIM3, &TIM_ICInitStructure); // note: enables channel as well
 
 		TIM_TimeBaseInitTypeDef timerInitStructure;
 		timerInitStructure.TIM_Prescaler = 1000; // Everything is in microseconds
@@ -677,14 +677,17 @@ extern "C" {
 	/// Update:
 	void TIM3_IRQHandler(void)
 	{
+
 //		b.commutate();
-//		if (TIM_GetITStatus(TIM3, TIM_IT_CC2)) {
+		if (TIM_GetITStatus(TIM3, TIM_IT_CC2)) {
+			printf("hello");
+
 //			TIM3->CNT = 0;
 //			b.HallHandler(TIM3->CCR2);
-//			TIM_ClearFlag(TIM3, TIM_FLAG_CC2);
-//		} else if (TIM_GetITStatus(TIM3, TIM_IT_Update)) {
-//			TIM_ClearFlag(TIM3, TIM_FLAG_Update);
-//		}
+			TIM_ClearFlag(TIM3, TIM_FLAG_CC2);
+		} else if (TIM_GetITStatus(TIM3, TIM_IT_Update)) {
+			TIM_ClearFlag(TIM3, TIM_FLAG_Update);
+		}
 	}
 
 	/// ~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!
@@ -713,6 +716,7 @@ extern "C" {
 
 	void TIM6_DAC_IRQHandler(void)
 	{
+		printf("hello");
 //		b.commutate();
 //		TIM_ClearFlag(TIM6, TIM_FLAG_Update);
 	}

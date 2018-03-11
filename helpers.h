@@ -8,6 +8,15 @@
 #ifndef HELPERS_H_
 #define HELPERS_H_
 
+	void nvic_config(const uint8_t irq, const uint8_t priority, const FunctionalState enabled)
+	{
+		NVIC_InitTypeDef NVIC_InitStructure;
+		NVIC_InitStructure.NVIC_IRQChannel = irq;
+		NVIC_InitStructure.NVIC_IRQChannelPriority = priority;
+		NVIC_InitStructure.NVIC_IRQChannelCmd = enabled;
+		NVIC_Init(&NVIC_InitStructure);
+	}
+
 void print_clocks()
 {
 

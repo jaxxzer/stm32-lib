@@ -11,12 +11,82 @@
 */
 #pragma once
 
+
 class TimerChannel
 {
 public:
 	TimerChannel(TIM_TypeDef* timx, uint8_t channel)
 		: _peripheral(timx)
         ,_channel(channel)
+	{};
+	TIM_TypeDef* _peripheral;
+	uint8_t _channel;
+
+};
+
+class TimerChannelInput : public TimerChannel
+{
+public:
+	TimerChannelInput(TIM_TypeDef* timx, uint8_t channel)
+		: TimerChannel(timx, channel)
+	{
+		TIM_ICStructInit(&_config);
+	};
+
+	void setEnabled(FunctionalState enabled);
+	void setICPolarity(uint16_t polarity);
+	void setICSelection(uint16_t selection);
+	void setICPrescaler(uint16_t prescaler);
+	void setICFilter(uint16_t filter);
+
+	void _init(void);
+
+	FunctionalState _enabled; // TODO: extend TIM_ICInitTypeDef to support this too
+	TIM_ICInitTypeDef _config;
+};
+
+void TimerChannelInput::setICSelection(uint16_t selection)
+{
+	_config.TIM_ICSelection = selection;
+	_init();
+}
+
+void TimerChannelInput::setICPolarity(uint16_t polarity)
+{
+	_config.TIM_ICPolarity = polarity;
+	_init();
+}
+
+void TimerChannelInput::setICPrescaler(uint16_t prescaler)
+{
+	_config.TIM_ICPrescaler = prescaler;
+	_init();
+}
+
+void TimerChannelInput::setICFilter(uint16_t filter)
+{
+	_config.TIM_ICFilter = filter;
+	_init();
+}
+
+void TimerChannelInput::setEnabled(FunctionalState enabled)
+{
+	_enabled = enabled;
+	TIM_CCxCmd(_peripheral, _channel, _enabled);
+}
+
+void TimerChannelInput::_init(void)
+{
+	_enabled = ENABLE;
+	_config.TIM_Channel = _channel;
+	TIM_ICInit(_peripheral, &_config); // Note: enables CCR too
+}
+
+class TimerChannelOutput : public TimerChannel
+{
+public:
+	TimerChannelOutput(TIM_TypeDef* timx, uint8_t channel)
+		: TimerChannel(timx, channel)
 	{
 		TIM_OCStructInit(&_config);
 	};
@@ -42,24 +112,22 @@ public:
 
 	void _init(void);
 
-	TIM_TypeDef* _peripheral;
-	uint8_t _channel;
-
 	TIM_OCInitTypeDef _config;
 };
 
-void TimerChannel::setMode(uint16_t mode)
+void TimerChannelOutput::setMode(uint16_t mode)
 {
+	_config.TIM_OCMode = mode;
 	TIM_SelectOCxM(_peripheral, _channel, mode);
 }
 
-void TimerChannel::setDutyCycle(float duty)
+void TimerChannelOutput::setDutyCycle(float duty)
 {
 	uint16_t compare = map(duty, 0, 1.0f, 0, _peripheral->ARR);
 	setCompare(compare);
 }
 
-void TimerChannel::setCompare(uint16_t compare)
+void TimerChannelOutput::setCompare(uint16_t compare)
 {
 	_config.TIM_Pulse = compare;
     switch (_channel) {
@@ -79,19 +147,19 @@ void TimerChannel::setCompare(uint16_t compare)
     	break;
     }
 }
-void TimerChannel::setEnabled(FunctionalState enabled)
+void TimerChannelOutput::setEnabled(FunctionalState enabled)
 {
 	_config.TIM_OutputState = enabled ? TIM_OutputState_Enable : TIM_OutputState_Disable;
 	_init();
 }
 
-void TimerChannel::setEnabledN(FunctionalState enabled)
+void TimerChannelOutput::setEnabledN(FunctionalState enabled)
 {
     _config.TIM_OutputNState = enabled ? TIM_OutputNState_Disable : TIM_OutputNState_Disable;
     _init();
 }
 
-void TimerChannel::preloadConfig(FunctionalState enabled)
+void TimerChannelOutput::preloadConfig(FunctionalState enabled)
 {
 	uint16_t config = enabled ? TIM_OCPreload_Enable : TIM_OCPreload_Disable;
 
@@ -113,7 +181,7 @@ void TimerChannel::preloadConfig(FunctionalState enabled)
     }
 }
 
-void TimerChannel::_init(void)
+void TimerChannelOutput::_init(void)
 {
     switch (_channel) {
     case TIM_Channel_1:
@@ -157,7 +225,7 @@ public:
 
 	void setPrescaler(uint16_t prescaler);
 
-    void enableInterrupt(uint16_t interrupt, uint8_t priority);
+    void interruptConfig(const uint8_t interrupt, const FunctionalState enabled);
     void playNote(uint16_t frequency, uint16_t duration_ms);
 
     void ITConfig(uint16_t its, FunctionalState enabled);
@@ -179,6 +247,11 @@ void Timer::ITConfig(uint16_t its, FunctionalState enabled)
 // - Configure the peripheral
 // Fails if: SystemCoreClock is not divisible by input frequency
 
+void Timer::interruptConfig(const uint8_t interrupt, const FunctionalState enabled)
+{
+	TIM_ITConfig(_peripheral, interrupt, enabled);
+
+}
 // TODO inline
 void Timer::setMOE(FunctionalState enabled)
 {
@@ -271,44 +344,6 @@ void Timer::setPeriod(uint32_t microseconds)
 //	TIM_SetAutoreload(_peripheral, _period);
 }
 
-// Timer peripheral
-// Timer interrupt sources
-void Timer::enableInterrupt(uint16_t interrupt, uint8_t priority)
-{
-//	NVIC_InitTypeDef NVIC_InitStructure;
-//	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = priority;
-//	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
-//	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-//
-//	switch (interrupt) {
-//	case TIM_IT_Update:
-//    	NVIC_InitStructure.NVIC_IRQChannel = TIM1_UP_IRQn;
-//		break;
-//    case TIM_IT_CC1:
-//    	break;
-//    case TIM_IT_CC2:
-//    	break;
-//    case TIM_IT_CC3:
-//    	break;
-//    case TIM_IT_CC4:
-//    	break;
-//    case TIM_IT_COM:
-//    	break;
-//    case TIM_IT_Trigger:
-//    	break;
-//    case TIM_IT_Break:
-//    	break;
-//    default:
-//
-//    	break;
-//
-//    }
-//
-//	NVIC_Init(&NVIC_InitStructure);
-//
-//	TIM_ITConfig(TIM1, TIM_IT_Update, ENABLE);
-
-}
 
 // frequency
 void InitializeFrequencyTimer(uint16_t period = 1000)// AKA TIMx_ARR = 500000 microseconds = 2Hz
