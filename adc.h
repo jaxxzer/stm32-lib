@@ -83,7 +83,7 @@ private:
 
 bool disableChannel(uint8_t channel)
 {
-
+ return false;
 }
 AdcChannel* Adc::addChannel(uint8_t channel)
 {

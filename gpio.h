@@ -58,9 +58,9 @@ public:
 
 private:
 	void _clockEnable(void);
-	GPIO_TypeDef* _port;
-	uint16_t _pin;
-	uint16_t _pinSource;
+	GPIO_TypeDef* _port; //TODO const
+	uint16_t _pin;//TODO const
+	uint16_t _pinSource;//TODO const
 	GPIO_InitTypeDef _configuration;
 
 };

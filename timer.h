@@ -29,14 +29,14 @@ public:
 	void setCompare(uint16_t ccr);
 
 	void preloadConfig(FunctionalState enabled);
-	void setEnabled(bool enabled);
-	void setEnabledN(bool enabled);
+	void setEnabled(FunctionalState enabled);
+	void setEnabledN(FunctionalState enabled);
 
-	void setPolarity(bool high);
-	void setPolarityN(bool high);
+	void setPolarity(FunctionalState high);
+	void setPolarityN(FunctionalState high);
 
-	void setIdleState(bool high);
-	void setIdleStateN(bool high);
+	void setIdleState(FunctionalState high);
+	void setIdleStateN(FunctionalState high);
 
 	void _init(void);
 
@@ -72,13 +72,13 @@ void TimerChannel::setCompare(uint16_t compare)
     	break;
     }
 }
-void TimerChannel::setEnabled(bool enabled)
+void TimerChannel::setEnabled(FunctionalState enabled)
 {
 	_config.TIM_OutputState = enabled ? TIM_OutputState_Enable : TIM_OutputState_Disable;
 	_init();
 }
 
-void TimerChannel::setEnabledN(bool enabled)
+void TimerChannel::setEnabledN(FunctionalState enabled)
 {
     _config.TIM_OutputNState = enabled ? TIM_OutputNState_Disable : TIM_OutputNState_Disable;
     _init();
@@ -137,10 +137,13 @@ public:
 
     void init(void);
 
+    void setMOE(FunctionalState enabled);
+
     void setClockEnabled(FunctionalState enabled);
     void setEnabled(FunctionalState enabled);
     void preloadConfig(FunctionalState enabled);
-    void setARR();
+    void setAutoreload(uint32_t arr);
+    uint32_t getAutoreload(void);
     void setFrequency(uint16_t Hz);
 	void setPeriod(uint32_t microseconds);
     uint16_t getPeriod(void);
@@ -150,6 +153,8 @@ public:
     void enableInterrupt(uint16_t interrupt, uint8_t priority);
     void playNote(uint16_t frequency, uint16_t duration_ms);
 
+    void ITConfig(uint16_t its, FunctionalState enabled);
+
     TIM_TypeDef* peripheral(void) { return _peripheral; };
 
 private:
@@ -157,14 +162,28 @@ private:
     TIM_TimeBaseInitTypeDef _config;
 };
 
-
+// TODO inline
+void Timer::ITConfig(uint16_t its, FunctionalState enabled)
+{
+	TIM_ITConfig(_peripheral, its, enabled);
+}
 // Input: period (ticks), tick frequency (Hz)
 // - Enable the peripheral clock
 // - Configure the peripheral
 // Fails if: SystemCoreClock is not divisible by input frequency
 
+// TODO inline
+void Timer::setMOE(FunctionalState enabled)
+{
+	TIM_CtrlPWMOutputs(_peripheral, enabled);
+}
 
-uint16_t Timer::getPeriod(void)
+void Timer::setAutoreload(uint32_t arr)
+{
+	_config.TIM_Period;
+	TIM_SetAutoreload(_peripheral, arr);
+}
+uint32_t Timer::getAutoreload(void)
 {
 	return _config.TIM_Period;
 }
