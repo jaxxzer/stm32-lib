@@ -25,16 +25,16 @@ void print_clocks()
 
 		printf("\n\r\t***Current Clock Configuration***");
 
-		printf("\n\r\t- SYSCLK: %lu", RCC_ClocksStruct.SYSCLK_Frequency);
-		printf("\n\r\t- HCLK: %lu", RCC_ClocksStruct.HCLK_Frequency);
-		printf("\n\r\t- PCLK: %lu", RCC_ClocksStruct.PCLK_Frequency);
-		printf("\n\r\t- ADCCLK: %lu", RCC_ClocksStruct.ADCCLK_Frequency);
-		printf("\n\r\t- CECCLK: %lu", RCC_ClocksStruct.CECCLK_Frequency);
-		printf("\n\r\t- I2C1CLK: %lu", RCC_ClocksStruct.I2C1CLK_Frequency);
-		printf("\n\r\t- USART1CLK: %lu", RCC_ClocksStruct.USART1CLK_Frequency);
-		printf("\n\r\t- USART2CLK: %lu", RCC_ClocksStruct.USART2CLK_Frequency);
-		printf("\n\r\t- USART3CLK: %lu", RCC_ClocksStruct.USART3CLK_Frequency);
-		printf("\n\r\t- USBCLK: %lu", RCC_ClocksStruct.USBCLK_Frequency);
+		printf("\n\r\t- SYSCLK: %u", RCC_ClocksStruct.SYSCLK_Frequency);
+		printf("\n\r\t- HCLK: %u", RCC_ClocksStruct.HCLK_Frequency);
+		printf("\n\r\t- PCLK: %u", RCC_ClocksStruct.PCLK_Frequency);
+		printf("\n\r\t- ADCCLK: %u", RCC_ClocksStruct.ADCCLK_Frequency);
+		printf("\n\r\t- CECCLK: %u", RCC_ClocksStruct.CECCLK_Frequency);
+		printf("\n\r\t- I2C1CLK: %u", RCC_ClocksStruct.I2C1CLK_Frequency);
+		printf("\n\r\t- USART1CLK: %u", RCC_ClocksStruct.USART1CLK_Frequency);
+		printf("\n\r\t- USART2CLK: %u", RCC_ClocksStruct.USART2CLK_Frequency);
+		printf("\n\r\t- USART3CLK: %u", RCC_ClocksStruct.USART3CLK_Frequency);
+		printf("\n\r\t- USBCLK: %u", RCC_ClocksStruct.USBCLK_Frequency);
 }
 
 // map float from input range to output range
