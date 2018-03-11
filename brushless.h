@@ -120,7 +120,7 @@ public:
     TimerChannel t1c4 { TIM1, 4 };
 
 //	Pwm pwmR;
-	TimerChannel tc_LedG;
+	TimerChannel tc_LedG { TIM3};
 //	Pwm pwmB;
 
 
