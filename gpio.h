@@ -112,7 +112,7 @@ void Gpio::_clockEnable(void)
 
 void Gpio::init(void)
 {
-	_configuration.GPIO_Pin = (1 << _pin);
+	_configuration.GPIO_Pin = (_pin);
 	_configuration.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_Init(_port, &_configuration);
 #ifdef STM32F051x8
@@ -156,7 +156,6 @@ void Gpio::initAFPP(void)
 #ifdef STM32F051x8
 	_configuration.GPIO_Mode = GPIO_Mode_AF;
 	_configuration.GPIO_OType = GPIO_OType_PP;
-    GPIO_PinAFConfig(GPIOA, _pin, GPIO_AF_2); //TODO: add af parameter to function
 #else
 	_configuration.GPIO_Mode = GPIO_Mode_AF_PP;
 #endif

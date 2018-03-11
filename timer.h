@@ -21,6 +21,8 @@ public:
 		TIM_OCStructInit(&_config);
 	};
 
+	void setMode(uint16_t mode);
+
 	void enableInterrupt(void);
 	void disableInterrupt(void);
 
@@ -45,6 +47,11 @@ public:
 
 	TIM_OCInitTypeDef _config;
 };
+
+void TimerChannel::setMode(uint16_t mode)
+{
+	TIM_SelectOCxM(_peripheral, _channel, mode);
+}
 
 void TimerChannel::setDutyCycle(float duty)
 {

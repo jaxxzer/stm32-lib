@@ -42,6 +42,9 @@ class Led;
 ///   - Commutation
 ///   - Audio Switching
 ///     - Hall update/ADC Update
+
+//Brushless b = Brushless();
+
 #define COM_MASK1      (TIM_CCx_Enable << TIM_Channel_1)
 #define COM_MASK2      (TIM_CCx_Enable << TIM_Channel_2)
 #define COM_MASK3      (TIM_CCx_Enable << TIM_Channel_3)
@@ -176,7 +179,6 @@ private:
     void commutationStatePreload(void);
 };
 
-Brushless b = Brushless();
 
 Brushless::Brushless()
 	: initialized(false)
@@ -675,14 +677,14 @@ extern "C" {
 	/// Update:
 	void TIM3_IRQHandler(void)
 	{
-		b.commutate();
-		if (TIM_GetITStatus(TIM3, TIM_IT_CC2)) {
-			TIM3->CNT = 0;
-			b.HallHandler(TIM3->CCR2);
-			TIM_ClearFlag(TIM3, TIM_FLAG_CC2);
-		} else if (TIM_GetITStatus(TIM3, TIM_IT_Update)) {
-			TIM_ClearFlag(TIM3, TIM_FLAG_Update);
-		}
+//		b.commutate();
+//		if (TIM_GetITStatus(TIM3, TIM_IT_CC2)) {
+//			TIM3->CNT = 0;
+//			b.HallHandler(TIM3->CCR2);
+//			TIM_ClearFlag(TIM3, TIM_FLAG_CC2);
+//		} else if (TIM_GetITStatus(TIM3, TIM_IT_Update)) {
+//			TIM_ClearFlag(TIM3, TIM_FLAG_Update);
+//		}
 	}
 
 	/// ~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!
