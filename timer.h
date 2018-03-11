@@ -13,66 +13,180 @@
 
 class TimerChannel
 {
+public:
+	TimerChannel(TIM_TypeDef* timx, uint8_t channel)
+		: _peripheral(timx)
+        ,_channel(channel)
+	{
+		TIM_OCStructInit(&_config);
+	};
 
+	void enableInterrupt(void);
+	void disableInterrupt(void);
+
+	void setDeadtime(uint16_t deadTime);
+	void setDutyCycle(float duty);
+	void setCompare(uint16_t ccr);
+
+	void preloadConfig(FunctionalState enabled);
+	void setEnabled(bool enabled);
+	void setEnabledN(bool enabled);
+
+	void setPolarity(bool high);
+	void setPolarityN(bool high);
+
+	void setIdleState(bool high);
+	void setIdleStateN(bool high);
+
+	void _init(void);
+
+	TIM_TypeDef* _peripheral;
+	uint8_t _channel;
+
+	TIM_OCInitTypeDef _config;
 };
+
+void TimerChannel::setDutyCycle(float duty)
+{
+	uint16_t compare = map(duty, 0, 1.0f, 0, _peripheral->ARR);
+	setCompare(compare);
+}
+
+void TimerChannel::setCompare(uint16_t compare)
+{
+	_config.TIM_Pulse = compare;
+    switch (_channel) {
+    case TIM_Channel_1:
+        TIM_SetCompare1(_peripheral, compare);
+    	break;
+    case TIM_Channel_2:
+        TIM_SetCompare2(_peripheral, compare);
+    	break;
+    case TIM_Channel_3:
+        TIM_SetCompare3(_peripheral, compare);
+    	break;
+    case TIM_Channel_4:
+        TIM_SetCompare4(_peripheral, compare);
+    	break;
+    default:
+    	break;
+    }
+}
+void TimerChannel::setEnabled(bool enabled)
+{
+	_config.TIM_OutputState = enabled ? TIM_OutputState_Enable : TIM_OutputState_Disable;
+	_init();
+}
+
+void TimerChannel::setEnabledN(bool enabled)
+{
+    _config.TIM_OutputNState = enabled ? TIM_OutputNState_Disable : TIM_OutputNState_Disable;
+    _init();
+}
+
+void TimerChannel::preloadConfig(FunctionalState enabled)
+{
+	uint16_t config = enabled ? TIM_OCPreload_Enable : TIM_OCPreload_Disable;
+
+    switch (_channel) {
+    case TIM_Channel_1:
+        TIM_OC1PreloadConfig(_peripheral, config);
+    	break;
+    case TIM_Channel_2:
+        TIM_OC2PreloadConfig(_peripheral, config);
+    	break;
+    case TIM_Channel_3:
+        TIM_OC3PreloadConfig(_peripheral, config);
+    	break;
+    case TIM_Channel_4:
+        TIM_OC4PreloadConfig(_peripheral, config);
+    	break;
+    default:
+    	break;
+    }
+}
+
+void TimerChannel::_init(void)
+{
+    switch (_channel) {
+    case TIM_Channel_1:
+        TIM_OC1Init(_peripheral, &_config);
+    	break;
+    case TIM_Channel_2:
+        TIM_OC2Init(_peripheral, &_config);
+    	break;
+    case TIM_Channel_3:
+        TIM_OC3Init(_peripheral, &_config);
+    	break;
+    case TIM_Channel_4:
+        TIM_OC4Init(_peripheral, &_config);
+    	break;
+    default:
+    	break;
+    }
+}
 
 class Timer
 {
 public:
     Timer(TIM_TypeDef* timx)
         : _peripheral(timx)
-        , _tickFrequency(1000000) // 1MHz
-    {};
+    {
+    	TIM_TimeBaseStructInit(&_config);
+    };
 
-    void init(uint16_t period, uint32_t tickFrequency);
-    void outputChannelInitPwm(uint8_t channel, uint16_t dutyCycle);
-    void outputChannelInitPwmComplimentary(uint8_t channel, uint16_t dutyCycle);
-    void setDutyCycle(uint8_t channel, uint16_t dutyCycle);
-    void enableInterrupt(uint16_t interrupt, uint8_t priority);
-    void setPrescaler(uint16_t prescaler);
-    void setFrequency(uint16_t f);
-    void setPeriod(uint16_t period);
+    void init(void);
+
+    void setClockEnabled(FunctionalState enabled);
+    void setEnabled(FunctionalState enabled);
+    void preloadConfig(FunctionalState enabled);
+    void setARR();
+    void setFrequency(uint16_t Hz);
+	void setPeriod(uint32_t microseconds);
     uint16_t getPeriod(void);
+
+	void setPrescaler(uint16_t prescaler);
+
+    void enableInterrupt(uint16_t interrupt, uint8_t priority);
     void playNote(uint16_t frequency, uint16_t duration_ms);
 
     TIM_TypeDef* peripheral(void) { return _peripheral; };
 
 private:
     TIM_TypeDef* _peripheral;
-    uint16_t _period; // aka ARR, number of counts before overflow
-    uint32_t _tickFrequency; // used for prescaler
-
+    TIM_TimeBaseInitTypeDef _config;
 };
+
 
 // Input: period (ticks), tick frequency (Hz)
 // - Enable the peripheral clock
 // - Configure the peripheral
 // Fails if: SystemCoreClock is not divisible by input frequency
 
+
 uint16_t Timer::getPeriod(void)
 {
-	return _period;
+	return _config.TIM_Period;
 }
-void Timer::init(uint16_t period, uint32_t tickFrequency)
+
+void Timer::setClockEnabled(FunctionalState enabled)
 {
-	_period = period;
-	_tickFrequency = tickFrequency;
     switch((uint32_t)_peripheral)
     {
     case TIM1_BASE:
-    	RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM1, ENABLE);
+    	RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM1, enabled);
         break;
     case TIM2_BASE:
-    	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
+    	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, enabled);
         break;
     case TIM3_BASE:
-        RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);
+        RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, enabled);
         break;
     case TIM6_BASE:
-        RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM6, ENABLE);
+        RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM6, enabled);
         break;
     case TIM14_BASE:
-        RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM14, ENABLE);
+        RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM14, enabled);
         break;
 //    case TIM15_BASE:
 //        RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM15, ENABLE);
@@ -86,15 +200,16 @@ void Timer::init(uint16_t period, uint32_t tickFrequency)
     default:
         break;
     }
+}
 
-    TIM_TimeBaseInitTypeDef timerInitStructure;
-    timerInitStructure.TIM_Prescaler = 0; // Everything is in microseconds
-    timerInitStructure.TIM_CounterMode = TIM_CounterMode_Up;
-    timerInitStructure.TIM_Period = _period; // AKA ARR, period in ticks
-    timerInitStructure.TIM_ClockDivision = TIM_CKD_DIV1;
-    timerInitStructure.TIM_RepetitionCounter = 0;
-    TIM_TimeBaseInit(_peripheral, &timerInitStructure);
-    TIM_Cmd(_peripheral, ENABLE);
+void Timer::setEnabled(FunctionalState enabled)
+{
+	TIM_Cmd(_peripheral, enabled);
+}
+
+void Timer::init(void)
+{
+    TIM_TimeBaseInit(_peripheral, &_config);
 }
 
 void Timer::playNote(uint16_t frequency, uint16_t duration_ms)
@@ -103,75 +218,9 @@ void Timer::playNote(uint16_t frequency, uint16_t duration_ms)
 	DelayMil(duration_ms);
 }
 
-void Timer::outputChannelInitPwm(uint8_t channel, uint16_t dutyCycle)
-{
-    TIM_OCInitTypeDef outputChannelInit;
-    outputChannelInit.TIM_OCMode = TIM_OCMode_PWM2;
-    outputChannelInit.TIM_Pulse = dutyCycle; // AKA CCR1 ~ 100us pulse
-    outputChannelInit.TIM_OutputState = TIM_OutputState_Enable;
-    outputChannelInit.TIM_OCPolarity = TIM_OCPolarity_High;
-
-    switch (channel) {
-    case TIM_Channel_1:
-        TIM_OC1Init(_peripheral, &outputChannelInit);
-        TIM_OC1PreloadConfig(_peripheral, TIM_OCPreload_Enable);
-    	break;
-    case TIM_Channel_2:
-        TIM_OC2Init(_peripheral, &outputChannelInit);
-        TIM_OC2PreloadConfig(_peripheral, TIM_OCPreload_Enable);
-    	break;
-    case TIM_Channel_3:
-        TIM_OC3Init(_peripheral, &outputChannelInit);
-        TIM_OC3PreloadConfig(_peripheral, TIM_OCPreload_Enable);
-    	break;
-    case TIM_Channel_4:
-        TIM_OC4Init(_peripheral, &outputChannelInit);
-        TIM_OC4PreloadConfig(_peripheral, TIM_OCPreload_Enable);
-    	break;
-    default:
-    	break;
-    }
-}
-
-void Timer::outputChannelInitPwmComplimentary(uint8_t channel, uint16_t dutyCycle)
-{
-    TIM_OCInitTypeDef outputChannelInit;
-    outputChannelInit.TIM_OCMode = TIM_OCMode_PWM1;
-    outputChannelInit.TIM_Pulse = dutyCycle; // AKA CCR1 ~ 100us pulse
-    outputChannelInit.TIM_OutputState = TIM_OutputState_Enable;
-    outputChannelInit.TIM_OCPolarity = TIM_OCPolarity_High;
-    outputChannelInit.TIM_OutputNState = TIM_OutputNState_Enable;
-    outputChannelInit.TIM_OCNPolarity = TIM_OCNPolarity_High;
-    outputChannelInit.TIM_OCIdleState = TIM_OCIdleState_Reset;
-    outputChannelInit.TIM_OCNIdleState = TIM_OCNIdleState_Reset; // State when Main output enable (MOE) = 0
-
-
-    switch (channel) {
-    case TIM_Channel_1:
-        TIM_OC1Init(_peripheral, &outputChannelInit);
-        TIM_OC1PreloadConfig(_peripheral, TIM_OCPreload_Enable);
-    	break;
-    case TIM_Channel_2:
-        TIM_OC2Init(_peripheral, &outputChannelInit);
-        TIM_OC2PreloadConfig(_peripheral, TIM_OCPreload_Enable);
-    	break;
-    case TIM_Channel_3:
-        TIM_OC3Init(_peripheral, &outputChannelInit);
-        TIM_OC3PreloadConfig(_peripheral, TIM_OCPreload_Enable);
-    	break;
-    case TIM_Channel_4:
-        TIM_OC4Init(_peripheral, &outputChannelInit);
-        TIM_OC4PreloadConfig(_peripheral, TIM_OCPreload_Enable);
-    	break;
-    default:
-    	break;
-    }
-
-
-}
-
 void Timer::setPrescaler(uint16_t prescaler)
 {
+	_config.TIM_Prescaler = prescaler;
 	TIM_PrescalerConfig(_peripheral, prescaler, TIM_PSCReloadMode_Immediate);
 }
 
@@ -180,33 +229,20 @@ void Timer::setFrequency(uint16_t f) // Hz
 //	float period = 1.0f/f;
 //	float tickPeriod = 1.0f/_tickFrequency;
 //	uint16_t ticks = period/tickPeriod;
-	uint16_t ticks = _tickFrequency / f;
-	setPeriod(ticks);
+	RCC_ClocksTypeDef RCC_ClocksStruct;
+	RCC_GetClocksFreq(&RCC_ClocksStruct);
+	print_clocks();
+//	uint16_t ticks = HSI / f;
+
+//	setPeriod(ticks);
 }
+
+
 
 // period in ticks
-void Timer::setPeriod(uint16_t period)
+void Timer::setPeriod(uint32_t microseconds)
 {
-	_period = period;
-	TIM_SetAutoreload(_peripheral, _period);
-}
-
-void Timer::setDutyCycle(uint8_t channel, uint16_t dutyCycle)
-{
-	switch (channel) {
-	case TIM_Channel_1:
-		TIM_SetCompare1(_peripheral, dutyCycle);
-		break;
-	case TIM_Channel_2:
-		TIM_SetCompare2(_peripheral, dutyCycle);
-		break;
-	case TIM_Channel_3:
-		TIM_SetCompare3(_peripheral, dutyCycle);
-		break;
-	case TIM_Channel_4:
-		TIM_SetCompare4(_peripheral, dutyCycle);
-		break;
-	}
+//	TIM_SetAutoreload(_peripheral, _period);
 }
 
 // Timer peripheral

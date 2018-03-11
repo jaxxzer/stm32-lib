@@ -106,20 +106,21 @@ public:
 
 	void HallHandler(uint16_t capture_time);
 	void setDutyCycle(uint16_t duty);
-	Gpio ledG{GPIOB, 3};
-    Gpio high1;
-    Gpio high2;
-    Gpio high3;
-    Gpio low1;
-    Gpio low2;
-    Gpio low3;
+	Gpio gpio_ledG { GPIOB, 3 };
+    Gpio gpio_high1 { GPIOA, 8 };
+    Gpio gpio_high2 { GPIOA, 9 };
+    Gpio gpio_high3 { GPIOA, 10 };
+    Gpio gpio_low1 { GPIOA, 7 };
+    Gpio gpio_low2 { GPIOB, 0 };
+    Gpio gpio_low3 { GPIOB, 1 };
 
-    Pwm pwm1;
-    Pwm pwm2;
-	Pwm pwm3;
+    TimerChannel pwm { TIM1, 1 };
+    TimerChannel t1c2 { TIM1, 2 };
+    TimerChannel t1c3 { TIM1, 3 };
+    TimerChannel t1c4 { TIM1, 4 };
 
 //	Pwm pwmR;
-	Pwm pwmG;
+	TimerChannel tc_LedG;
 //	Pwm pwmB;
 
 
@@ -186,16 +187,6 @@ Brushless::Brushless()
 	, greenLedTimer(TIM2)
     , usart1(USART1)
    // , ledG(GPIOB, 3)
-	, pwmG(&ledG, &greenLedTimer, TIM_Channel_2)
-	,low1(GPIOA, 7) // TIM1_CH1N
-	,high1(GPIOA, 8)  // TIM1_CH1
-	,pwm1(&high1, &pwmTimer, TIM_Channel_1)
-	,low2(GPIOB, 0) // TIM1_CH2N
-	,high2(GPIOA, 9) // TIM1_CH2
-	,pwm2(&high2, &pwmTimer, TIM_Channel_2)
-	,low3(GPIOB, 1) // TIM1_CH3N
-	,high3(GPIOA, 10) // TIM1_CH3
-	,pwm3(&high3, &pwmTimer, TIM_Channel_3)
 	, hallCount(0)
 {
 	period.set_cutoff_frequency(5.0f);
@@ -238,8 +229,9 @@ void Brushless::usartInit(void) {
 }
 
 void Brushless::setupCommutationTimer(void) {
-	commutationTimer.init(65000, 3000000);
-		commutationTimer.setPrescaler(15);
+	commutationTimer.setClockEnabled(ENABLED);
+	commutationTimer.setPrescaler(15);
+	commutationTimer.init();
 
 	commutationTimer.setFrequency(750);
 	NVIC_InitTypeDef NVIC_InitStructure;

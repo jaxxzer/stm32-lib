@@ -8,10 +8,29 @@
 #ifndef HELPERS_H_
 #define HELPERS_H_
 
+void print_clocks()
+{
+
+	RCC_ClocksTypeDef RCC_ClocksStruct;
+	RCC_GetClocksFreq(&RCC_ClocksStruct);
+
+		printf("\n\r\t***Current Clock Configuration***");
+
+		printf("\n\r\t- SYSCLK: %d", RCC_ClocksStruct.SYSCLK_Frequency);
+		printf("\n\r\t- HCLK: %d", RCC_ClocksStruct.HCLK_Frequency);
+		printf("\n\r\t- PCLK: %d", RCC_ClocksStruct.PCLK_Frequency);
+		printf("\n\r\t- ADCCLK: %d", RCC_ClocksStruct.ADCCLK_Frequency);
+		printf("\n\r\t- CECCLK: %d", RCC_ClocksStruct.CECCLK_Frequency);
+		printf("\n\r\t- I2C1CLK: %d", RCC_ClocksStruct.I2C1CLK_Frequency);
+		printf("\n\r\t- USART1CLK: %d", RCC_ClocksStruct.USART1CLK_Frequency);
+		printf("\n\r\t- USART2CLK: %d", RCC_ClocksStruct.USART2CLK_Frequency);
+		printf("\n\r\t- USART3CLK: %d", RCC_ClocksStruct.USART3CLK_Frequency);
+		printf("\n\r\t- USBCLK: %d", RCC_ClocksStruct.USBCLK_Frequency);
+}
 
 // map float from input range to output range
-float map(float in, float in_min, float in_max, float out_min, float out_max) {
-
+float map(float in, float in_min, float in_max, float out_min, float out_max)
+{
 	if (in < in_min) {
 		return out_min;
 	}
