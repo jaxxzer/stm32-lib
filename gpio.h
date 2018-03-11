@@ -47,7 +47,7 @@ public:
 	void initOutputPP(void);
 	void initSwoRemapped(void);
 	void initAnalogIn(void);
-	void init(void);
+	void _init(void);
 	bool deinit(void);
 	void set(bool set = true);
 	void reset(void);
@@ -56,14 +56,51 @@ public:
 	bool readInput(void);
 	void configAF(uint8_t af);
 
+	void init(GPIOMode_TypeDef mode = GPIO_Mode_IN
+			, GPIOPuPd_TypeDef pupd = GPIO_PuPd_NOPULL
+			, GPIOOType_TypeDef otype = GPIO_OType_PP
+			, GPIOSpeed_TypeDef speed = GPIO_Speed_Level_2);
+
 private:
 	void _clockEnable(void);
 	GPIO_TypeDef* _port; //TODO const
 	uint16_t _pin;//TODO const
 	uint16_t _pinSource;//TODO const
-	GPIO_InitTypeDef _configuration;
+
+//
+
+//	typedef struct
+//	{
+//	  uint32_t GPIO_Pin;              /*!< Specifies the GPIO pins to be configured.
+//	                                       This parameter can be any value of @ref GPIO_pins_define */
+//
+//	  GPIOMode_TypeDef GPIO_Mode;     /*!< Specifies the operating mode for the selected pins.
+//	                                       This parameter can be a value of @ref GPIOMode_TypeDef   */
+//
+//	  GPIOSpeed_TypeDef GPIO_Speed;   /*!< Specifies the speed for the selected pins.
+//	                                       This parameter can be a value of @ref GPIOSpeed_TypeDef  */
+//
+//	  GPIOOType_TypeDef GPIO_OType;   /*!< Specifies the operating output type for the selected pins.
+//	                                       This parameter can be a value of @ref GPIOOType_TypeDef  */
+//
+//	  GPIOPuPd_TypeDef GPIO_PuPd;     /*!< Specifies the operating Pull-up/Pull down for the selected pins.
+//	                                       This parameter can be a value of @ref GPIOPuPd_TypeDef   */
+//	}GPIO_InitTypeDef;
+	GPIO_InitTypeDef _config;
 
 };
+
+void Gpio::init(GPIOMode_TypeDef mode
+			, GPIOPuPd_TypeDef pupd
+			, GPIOOType_TypeDef otype
+			, GPIOSpeed_TypeDef speed)
+{
+	_config.GPIO_Mode = mode;
+	_config.GPIO_PuPd = pupd;
+	_config.GPIO_OType = otype;
+	_config.GPIO_Speed = speed;
+	_init();
+}
 
 Gpio::Gpio(GPIO_TypeDef* port, uint16_t pin)
 	: _port(port)
@@ -71,7 +108,7 @@ Gpio::Gpio(GPIO_TypeDef* port, uint16_t pin)
     , _pinSource(pin)
 {
 	_clockEnable();
-	GPIO_StructInit(&_configuration);
+	GPIO_StructInit(&_config);
 }
 
 void Gpio::_clockEnable(void)
@@ -110,19 +147,18 @@ void Gpio::_clockEnable(void)
 	}
 }
 
-void Gpio::init(void)
+void Gpio::_init(void)
 {
-	_configuration.GPIO_Pin = (_pin);
-	_configuration.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_Init(_port, &_configuration);
+	_config.GPIO_Pin = (_pin);
+	GPIO_Init(_port, &_config);
 #ifdef STM32F051x8
 
 #endif
 }
 
 void Gpio::gpioInit(GPIO_InitTypeDef* gpioInitStruct) {
-	_configuration = *gpioInitStruct;
-	init();
+	_config = *gpioInitStruct;
+	_init(); // TODO warn if pin mismatch
 }
 
 void Gpio::configAF(uint8_t af) {
@@ -132,54 +168,54 @@ void Gpio::configAF(uint8_t af) {
 void Gpio::initInPullUp(void)
 {
 #ifdef STM32F051x8
-	_configuration.GPIO_Mode = GPIO_Mode_IN;
-	_configuration.GPIO_PuPd = GPIO_PuPd_UP;
+	_config.GPIO_Mode = GPIO_Mode_IN;
+	_config.GPIO_PuPd = GPIO_PuPd_UP;
 	#else
-	_configuration.GPIO_Mode = GPIO_Mode_IPU;
+	_config.GPIO_Mode = GPIO_Mode_IPU;
 #endif
-	init();
+	_init();
 }
 
 void Gpio::initInPullDown(void)
 {
 #ifdef STM32F051x8
-	_configuration.GPIO_Mode = GPIO_Mode_IN;
-	_configuration.GPIO_PuPd = GPIO_PuPd_DOWN;
+	_config.GPIO_Mode = GPIO_Mode_IN;
+	_config.GPIO_PuPd = GPIO_PuPd_DOWN;
 	#else
-	_configuration.GPIO_Mode = GPIO_Mode_IPD;
+	_config.GPIO_Mode = GPIO_Mode_IPD;
 #endif
-	init();
+	_init();
 }
 
 void Gpio::initAFPP(void)
 {
 #ifdef STM32F051x8
-	_configuration.GPIO_Mode = GPIO_Mode_AF;
-	_configuration.GPIO_OType = GPIO_OType_PP;
+	_config.GPIO_Mode = GPIO_Mode_AF;
+	_config.GPIO_OType = GPIO_OType_PP;
 #else
-	_configuration.GPIO_Mode = GPIO_Mode_AF_PP;
+	_config.GPIO_Mode = GPIO_Mode_AF_PP;
 #endif
-	init();
+	_init();
 }
 
 void Gpio::initInFloating(void)
 {
 #ifdef STM32F051x8
-	_configuration.GPIO_Mode = GPIO_Mode_IN;
+	_config.GPIO_Mode = GPIO_Mode_IN;
 #else
-	_configuration.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+	_config.GPIO_Mode = GPIO_Mode_IN_FLOATING;
 #endif
-	init();
+	_init();
 }
 void Gpio::initOutputPP(void)
 {
 #ifdef STM32F051x8
-	_configuration.GPIO_Mode = GPIO_Mode_OUT;
-	_configuration.GPIO_OType = GPIO_OType_PP;
+	_config.GPIO_Mode = GPIO_Mode_OUT;
+	_config.GPIO_OType = GPIO_OType_PP;
 #else
 	_configuration.GPIO_Mode = GPIO_Mode_Out_PP;
 #endif
-	init();
+	_init();
 }
 
 void Gpio::initSwoRemapped(void)
@@ -194,12 +230,12 @@ void Gpio::initSwoRemapped(void)
 void Gpio::initAnalogIn(void)
 {
 #ifdef STM32F10X_MD
-	_configuration.GPIO_Mode = GPIO_Mode_AIN;
+	_config.GPIO_Mode = GPIO_Mode_AIN;
 #else
-	_configuration.GPIO_Mode = GPIO_Mode_AN;
+	_config.GPIO_Mode = GPIO_Mode_AN;
 #endif
 
-	init();
+	_init();
 }
 
 

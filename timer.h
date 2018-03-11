@@ -306,6 +306,7 @@ public:
     Timer(TIM_TypeDef* timx)
         : _peripheral(timx)
     {
+    	setClockEnabled(ENABLE);
     	TIM_TimeBaseStructInit(&_config);
     };
 
