@@ -459,12 +459,6 @@ void Timer::_init(void)
     TIM_TimeBaseInit(_peripheral, &_config);
 }
 
-void Timer::playNote(uint16_t frequency, uint16_t duration_ms)
-{
-	setFrequency(frequency);
-	DelayMil(duration_ms);
-}
-
 void Timer::setPrescaler(uint16_t prescaler)
 {
 	_config.TIM_Prescaler = prescaler;
@@ -475,13 +469,14 @@ void Timer::setFrequency(uint16_t f) // Hz
 {
 //	float period = 1.0f/f;
 //	float tickPeriod = 1.0f/_tickFrequency;
-//	uint16_t ticks = period/tickPeriod;
+//	uint16_t ticks = period/tickPeriod; = tickFrequency/f;
 	RCC_ClocksTypeDef RCC_ClocksStruct;
 	RCC_GetClocksFreq(&RCC_ClocksStruct);
-	print_clocks();
-//	uint16_t ticks = HSI / f;
 
-//	setPeriod(ticks);
+	float tickPeriod = RCC_ClocksStruct.PCLK_Frequency;
+	uint16_t ticks = RCC_ClocksStruct.PCLK_Frequency / f;
+
+	setAutoreload(ticks);
 }
 
 
