@@ -208,19 +208,11 @@ void Brushless::initialize(void)
 	// TODO TImer.disable, Timerchanel.disable, and refactore these mehtods to just "disarmed"
 	noOutput();
 	allLow();
-	while (1) {
-		tco_LedG.setCompare(200 * gpio_Hall.readInput());
-		tco_LedB.setCompare(200 * !gpio_Hall.readInput());
-	}
-
-
 	commutationStatePreload();
 
-//	setupCommutationTimer();
+	//	setupCommutationTimer();
 	while (1) {
 		update();
-//		commutate();
-//		analogInToFreq();
 	}
 
 }
@@ -380,23 +372,7 @@ void Brushless::setVolume(uint16_t volume) {
 
 void Brushless::audioStatePreload(void)
 {
-	#ifdef STM32F10X_MD
-	NVIC_InitTypeDef NVIC_InitStructure;
-
-		NVIC_InitStructure.NVIC_IRQChannel = TIM1_CC_IRQn;
-		NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
-		NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
-		NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-		NVIC_Init(&NVIC_InitStructure);
-
-		//		NVIC_InitStructure.NVIC_IRQChannel = TIM1_UP_IRQn;
-		//		NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
-		//		NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
-		//		NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-	//		NVIC_Init(&NVIC_InitStructure);
-	#else
-		nvic_config(TIM1_CC_IRQn, 0, ENABLE);
-	#endif
+	nvic_config(TIM1_CC_IRQn, 0, ENABLE);
 
 	// 24kHz = 1/24000 s = 41.667 microseconds = period
 	// prescalar = 1 = 8MHz = 125 nanoseconds
@@ -452,8 +428,8 @@ void Brushless::setDutyCycle(uint16_t duty) {
 	//TODO use TimerChannel dutycycle
 	uint16_t dutyCycle = map(duty, 0, 1<<12, 0, tim_Pwm.peripheral()->ARR);
 	tco_pwm1.setCompare(dutyCycle);
-	tco_pwm1.setCompare(dutyCycle);
-	tco_pwm1.setCompare(dutyCycle);
+	tco_pwm2.setCompare(dutyCycle);
+	tco_pwm3.setCompare(dutyCycle);
 }
 
 void Brushless::commutate(void) {
@@ -563,7 +539,7 @@ void Brushless::commutate(void) {
 // Check state
 void Brushless::playStartupTune(void) {
 	uint16_t volume = UINT16_MAX;
-	static const uint8_t numNotes = 20;
+	static const uint8_t numNotes = 45;
 	static const uint8_t scaleNotes = 3;
 
 	printf("\n\r\t - Playing startup tune |");
@@ -572,7 +548,7 @@ void Brushless::playStartupTune(void) {
 		for (uint8_t i = 0; i < scaleNotes; i++) {
 			playNote(1000 + i * 400, 100);
 			setVolume(volume);
-			if (volume >= 10000) {
+			if (volume >= 200) {
 				volume = volume - volume / 20.0f;
 			} else {
 				goto done;
@@ -642,10 +618,8 @@ inline void Brushless::HallHandler(uint16_t captureTime) {
 
 	period.apply(captureTime, dt);
 
-	static bool state = false;
-	state = !state;
-	tco_LedG.setCompare(state * 49 + 2000);
-
+	tco_LedG.setCompare(200 * gpio_Hall.readInput());
+	tco_LedB.setCompare(200 * !gpio_Hall.readInput());
 }
 volatile bool flip = true;
 
@@ -658,13 +632,11 @@ extern "C" {
 	/// Update:
 	void TIM3_IRQHandler(void)
 	{
-
-//		b.commutate();
 		if (TIM_GetITStatus(TIM3, TIM_IT_CC2)) {
+			b.commutate();
+			TIM3->CNT = 0;
+			b.HallHandler(TIM3->CCR2);
 			printf("hello");
-
-//			TIM3->CNT = 0;
-//			b.HallHandler(TIM3->CCR2);
 			TIM_ClearFlag(TIM3, TIM_FLAG_CC2);
 		} else if (TIM_GetITStatus(TIM3, TIM_IT_Update)) {
 			TIM_ClearFlag(TIM3, TIM_FLAG_Update);
