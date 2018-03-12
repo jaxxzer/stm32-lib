@@ -80,8 +80,9 @@ public:
 	// Members
 
 	// Constants
-	static const uint16_t _volume_max = 1300;
+	static const uint16_t _volume_max = 750;
 	static const uint16_t _volume_min = 500;
+	static const uint16_t _led_brightness_max = 50;
 	static const uint16_t _rotor_poles = 12;
 
     // Flags
@@ -179,7 +180,6 @@ private:
 };
 
 Brushless b = Brushless();
-
 
 Brushless::Brushless()
 	: initialized(false)
@@ -294,7 +294,7 @@ void Brushless::ledInit(void)
 
 	tim_LedG.init(0, 2048); // prescaler, arr
 	tim_LedG.setEnabled(ENABLE);
-	tco_LedG.init(TIM_OCMode_PWM1, 100, TIM_OutputState_Enable); // Only works after enabling
+	tco_LedG.init(TIM_OCMode_PWM1, _led_brightness_max, TIM_OutputState_Enable); // Only works after enabling
 
 	printf("\n\r\t- Initializing LED indicator 2");
 	//////// Set up blue led
@@ -303,7 +303,7 @@ void Brushless::ledInit(void)
 
 	tim_LedB_Hall.init(0, 2048); // note we are utilizing a single timer for simultaneous input and output on seperate channels
 	tim_LedB_Hall.setEnabled(ENABLE);
-	tco_LedB.init(TIM_OCMode_PWM1, 100, TIM_OutputState_Enable); // Only works after enabling
+	tco_LedB.init(TIM_OCMode_PWM1, _led_brightness_max, TIM_OutputState_Enable); // Only works after enabling
 }
 
 void Brushless::init3PhaseOutput(void) {
@@ -320,9 +320,11 @@ void Brushless::init3PhaseOutput(void) {
 	tim_Pwm.init(0, 2048); // prescaler, arr
 	tim_Pwm.setEnabled(ENABLE);
 
-	tco_pwm1.init(TIM_OCMode_PWM1, 100, TIM_OutputState_Enable, TIM_OutputNState_Enable);
-	tco_pwm2.init(TIM_OCMode_PWM1, 100, TIM_OutputState_Enable, TIM_OutputNState_Enable);
-	tco_pwm3.init(TIM_OCMode_PWM1, 100, TIM_OutputState_Enable, TIM_OutputNState_Enable);
+	tco_pwm1.init(TIM_OCMode_PWM1, 0, TIM_OutputState_Enable, TIM_OutputNState_Enable);
+	tco_pwm2.init(TIM_OCMode_PWM1, 0, TIM_OutputState_Enable, TIM_OutputNState_Enable);
+	tco_pwm3.init(TIM_OCMode_PWM1, 0, TIM_OutputState_Enable, TIM_OutputNState_Enable);
+
+	// TODO init 4?
 
 	tco_pwm1.preloadConfig(ENABLE);
 	tco_pwm2.preloadConfig(ENABLE);
@@ -348,7 +350,6 @@ void Brushless::init3PhaseOutput(void) {
 	allLow();
 
 	tim_Pwm.setMOE(ENABLE);
-	tim_Pwm.setCCPreloadControl(ENABLE);
 
 	initialized = true;
 }
@@ -407,16 +408,15 @@ void Brushless::audioStatePreload(void)
 	TIM1->BDTR |= 0x8800;
 	TIM_CtrlPWMOutputs(TIM1, ENABLE);
 	TIM_SelectOCxM(TIM1, TIM_Channel_1, TIM_OCMode_PWM1);
+	tim_Pwm.setCCPreloadControl(DISABLE);
 }
 
 void Brushless::commutationStatePreload(void)
 {
-
 	allLow();
 	setDutyCycle(0);
 //	pwmTimer.peripheral().EGR |= 1;
 //	while (pwmTimer.peripheral().EGR & 1); // neccessary/useful/safe?
-
 
 	tim_Pwm.setFrequency(pwmFrequency); // ARR adjustment in frequency terms
 	pwmPeriod = 1000000.0f / pwmFrequency; // microseconds
@@ -427,6 +427,7 @@ void Brushless::commutationStatePreload(void)
 	printf("\n\rThis results in a period of %d microseconds and %lu ARR value", (uint16_t)(pwmPeriod), tim_Pwm.peripheral()->ARR);
 	printf("\n\rDTG is %d", tim_Pwm.peripheral()->BDTR & 0x7F);
 	setDutyCycle(0);
+	tim_Pwm.setCCPreloadControl(ENABLE);
 }
 
 void Brushless::setDutyCycle(uint16_t duty) {
@@ -435,6 +436,7 @@ void Brushless::setDutyCycle(uint16_t duty) {
 	tco_pwm1.setCompare(dutyCycle);
 	tco_pwm2.setCompare(dutyCycle);
 	tco_pwm3.setCompare(dutyCycle);
+
 }
 
 void Brushless::commutate(void) {
@@ -622,8 +624,8 @@ inline void Brushless::HallHandler(uint16_t captureTime) {
 
 	period.apply(captureTime, dt);
 
-	tco_LedG.setCompare(200 * gpio_Hall.readInput());
-	tco_LedB.setCompare(200 * !gpio_Hall.readInput());
+	tco_LedG.setCompare(_led_brightness_max * gpio_Hall.readInput());
+	tco_LedB.setCompare(_led_brightness_max * !gpio_Hall.readInput());
 }
 volatile bool flip = true;
 
