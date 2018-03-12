@@ -332,6 +332,7 @@ public:
 	void setPeriod(uint32_t microseconds);
     uint16_t getPeriod(void);
 
+    void clearFlag(uint16_t flag) { TIM_ClearFlag(_peripheral, flag); };
 	void setPrescaler(uint16_t prescaler);
 
     void interruptConfig(const uint8_t interrupt, const FunctionalState enabled);

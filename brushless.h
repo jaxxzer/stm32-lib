@@ -64,11 +64,6 @@ class Led;
 
 Adc adcA(ADC1);
 
-//#define UINT16_MAX 1<<16
-//#define INT16_MAX 1<<15
-
-//static const uint8_t magPoles = 12;
-uint8_t volume = 10;
 class Brushless
 {
 public:
@@ -80,10 +75,11 @@ public:
 	// Members
 
 	// Constants
-	static const uint16_t _volume_max = 750;
+	static const uint16_t _volume_max = 600;
 	static const uint16_t _volume_min = 500;
 	static const uint16_t _led_brightness_max = 50;
 	static const uint16_t _rotor_poles = 12;
+	static const uint16_t _hall_prescaler = 500;
 
     // Flags
     volatile bool initialized;
@@ -187,7 +183,7 @@ Brushless::Brushless()
 	, armed(false)
 	, hallCount(0)
 {
-	period.set_cutoff_frequency(5.0f);
+	period.set_cutoff_frequency(1.0f);
 	pwmFrequency = 16000;
 
 }
@@ -223,8 +219,6 @@ void Brushless::usartInit(void) {
 }
 
 void Brushless::setupCommutationTimer(void) {
-
-
 	tim_Com.setClockEnabled(ENABLE);
 	tim_Com.setPrescaler(15);
 	tim_Com.init();
@@ -273,12 +267,13 @@ void Brushless::hallInit(void) {
 	gpio_Hall.init(GPIO_Mode_AF, GPIO_PuPd_UP);
 	gpio_Hall.configAF(1);
 
-	tim_LedB_Hall.init(100, 2048);
+	tim_LedB_Hall.init(_hall_prescaler, 2048);
 	tim_LedB_Hall.setEnabled(ENABLE); // redundant
 
 	tci_Hall.init(TIM_ICPolarity_BothEdge, 0x04); // always enabled?
 
 	nvic_config(TIM3_IRQn, 1, ENABLE);
+	tim_LedB_Hall.clearFlag(TIM_FLAG_CC2);
 	tim_LedB_Hall.interruptConfig(TIM_IT_CC2, ENABLE);
 }
 
@@ -301,7 +296,7 @@ void Brushless::ledInit(void)
 	gpio_LedB.init(GPIO_Mode_AF);
 	gpio_LedB.configAF(1);
 
-	tim_LedB_Hall.init(0, 2048); // note we are utilizing a single timer for simultaneous input and output on seperate channels
+	tim_LedB_Hall.init(_hall_prescaler, 2048); // note we are utilizing a single timer for simultaneous input and output on seperate channels
 	tim_LedB_Hall.setEnabled(ENABLE);
 	tco_LedB.init(TIM_OCMode_PWM1, _led_brightness_max, TIM_OutputState_Enable); // Only works after enabling
 }
@@ -496,10 +491,14 @@ void Brushless::commutate(void) {
 	//-----------------------------------------------------------
 	TIM_GenerateEvent(TIM1, TIM_EventSource_COM);
 
+//	while (TIM1->EGR & TIM_EventSource_COM); // No difference
+//	while (TIM_GetFlagStatus(TIM1, TIM_FLAG_COM)) ;
+
 	state = (state + 1) % 2; // 3 bits, represent phases
 	switch (state) {
 	case 0:
 		TIM_SelectOCxM(TIM1, TIM_Channel_1, TIM_OCMode_PWM1);
+//		setDutyCycle(adcInput->_average); // no difference
 		TIM_SelectOCxM(TIM1, TIM_Channel_2, TIM_ForcedAction_Active);
 		TIM_SelectOCxM(TIM1, TIM_Channel_3, TIM_ForcedAction_InActive);
 
@@ -508,6 +507,7 @@ void Brushless::commutate(void) {
 	case 1:
 		TIM_SelectOCxM(TIM1, TIM_Channel_1, TIM_ForcedAction_Active);
 		TIM_SelectOCxM(TIM1, TIM_Channel_2, TIM_OCMode_PWM1);
+//		setDutyCycle(adcInput->_average); // no difference
 		TIM_SelectOCxM(TIM1, TIM_Channel_3, TIM_ForcedAction_InActive);
 
 		TIM1->CCER = COM_MASK1N | COM_MASK2 | COM_MASK2N | COM_MASK3;
@@ -585,14 +585,23 @@ void Brushless::update(void)
 		tLastRpm = tNow;
 		uint16_t p = period.get(); // in TIM counts
 
-		/// p = TIM3 counts
-		/// TIM3 counts = TIM3 clock 48MHz / TIM3 prescaler 1000 = 48000Hz
-	    /// TIM3 counts / 48000 = t time in seconds between magnets passing by
-		/// _rotor_poles * t = tr time in seconds for one rotation
-		/// frequency = 1/t
-		/// ----------
-		//		static const float rotation_period = _rotor_poles * p / 48000 ;
-				 float rotation_frequency = 48000000.0f / (_rotor_poles * p); // x1000!
+		// p = TIM3 counts
+		// TIM3_ClockFreq = APBCLK / TIM3_PSC
+		// TIM3_ClockPeriod = 1/ TIM3_ClockFreq; = TIM3PSC/APBCLK
+		// count_duration = clockperiod * p
+//		float count_duration =  _hall_prescaler  * p / 48000000.0f;
+//		/// TIM3 counts = TIM3 clock 48MHz / TIM3 prescaler
+//	    /// TIM3 counts / 48000 = t time in seconds between magnets passing by
+//		/// _rotor_poles * t = tr time in seconds for one rotation
+//		/// frequency = 1/t
+//		/// ----------
+//		//		static const float rotation_period = _rotor_poles * p / 48000 ;
+//
+//		float rotation_duration = count_duration * _rotor_poles;
+//
+//		float rotation_frequency = 1000.0f / (rotation_duration); // x1000!
+
+		float rotation_frequency = 48000000000.0f / (_rotor_poles * _hall_prescaler * p); //x1000!
 
 		printf("{\"Period\":%d,\"Hz\":%d}", p, (uint32_t)(rotation_frequency));
 	}
@@ -642,7 +651,6 @@ extern "C" {
 			b.commutate();
 			TIM3->CNT = 0;
 			b.HallHandler(TIM3->CCR2);
-			printf("hello");
 			TIM_ClearFlag(TIM3, TIM_FLAG_CC2);
 		} else if (TIM_GetITStatus(TIM3, TIM_IT_Update)) {
 			TIM_ClearFlag(TIM3, TIM_FLAG_Update);
