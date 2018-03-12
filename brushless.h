@@ -294,7 +294,6 @@ void Brushless::ledInit(void)
 
 	tim_LedG.init(0, 2048); // prescaler, arr
 	tim_LedG.setEnabled(ENABLE);
-
 	tco_LedG.init(TIM_OCMode_PWM1, 100, TIM_OutputState_Enable); // Only works after enabling
 
 	printf("\n\r\t- Initializing LED indicator 2");
@@ -325,6 +324,10 @@ void Brushless::init3PhaseOutput(void) {
 	tco_pwm2.init(TIM_OCMode_PWM1, 100, TIM_OutputState_Enable, TIM_OutputNState_Enable);
 	tco_pwm3.init(TIM_OCMode_PWM1, 100, TIM_OutputState_Enable, TIM_OutputNState_Enable);
 
+	tco_pwm1.preloadConfig(ENABLE);
+	tco_pwm2.preloadConfig(ENABLE);
+	tco_pwm3.preloadConfig(ENABLE);
+
     gpio_High1.init(GPIO_Mode_AF);
     gpio_High2.init(GPIO_Mode_AF);
     gpio_High3.init(GPIO_Mode_AF);
@@ -345,11 +348,13 @@ void Brushless::init3PhaseOutput(void) {
 	allLow();
 
 	tim_Pwm.setMOE(ENABLE);
+	tim_Pwm.setCCPreloadControl(ENABLE);
 
 	initialized = true;
 }
 
 void Brushless::noOutput(void) {
+	tim_Com.ITConfig(TIM_IT_Update, DISABLE);
 	tim_Pwm.ITConfig(TIM_IT_CC1 | TIM_IT_CC2 | TIM_IT_CC3 | TIM_IT_CC4 , DISABLE);
 }
 
@@ -487,7 +492,6 @@ void Brushless::commutate(void) {
 	//-----------------------------------------------------------
 	//|OC3M      |  100  |  110  |  110  |  100  |  101  |  101  |
 	//-----------------------------------------------------------
-
 	TIM_GenerateEvent(TIM1, TIM_EventSource_COM);
 
 	state = (state + 1) % 2; // 3 bits, represent phases

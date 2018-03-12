@@ -325,6 +325,7 @@ public:
     void setClockEnabled(FunctionalState enabled);
     void setEnabled(FunctionalState enabled);
     void preloadConfig(FunctionalState enabled);
+    void setCCPreloadControl(FunctionalState enabled);
     void setAutoreload(uint32_t arr);
     uint32_t getAutoreload(void);
     void setFrequency(uint16_t Hz);
@@ -371,6 +372,10 @@ private:
     TIM_TimeBaseInitTypeDef _config;
 };
 
+void Timer::setCCPreloadControl(FunctionalState enabled) //  AKA CCPC
+{
+	TIM_CCPreloadControl(_peripheral, enabled);
+}
 // TODO inline
 void Timer::ITConfig(uint16_t its, FunctionalState enabled)
 {
