@@ -81,6 +81,11 @@ private:
 
 };
 
+//void Adc::dumpToBuf(uint16_t* buf, uint16_t len)
+//{
+//
+//}
+
 bool disableChannel(uint8_t channel)
 {
  return false;
@@ -128,7 +133,7 @@ AdcChannel* Adc::addChannel(uint8_t channel)
 //const uint8_t MAX_CHANNELS = 8;
 //const uint8_t MAX_SAMPLES = 40;
 uint8_t Adc::_numChannels = 0;
-uint16_t Adc::_numSamples = 10;
+uint16_t Adc::_numSamples = 500;
 //__IO uint32_t ADC_DualConvertedValueTab[MAX_CHANNELS * MAX_SAMPLES];
 
 void Adc::_enableClock(void)

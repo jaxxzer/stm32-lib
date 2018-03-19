@@ -69,6 +69,7 @@ class Brushless
 public:
     Brushless(void);
 
+    static uint16_t adcBuf[16000];
 	void HallHandler(uint16_t capture_time);
 	void setDutyCycle(uint16_t duty);
 
@@ -201,7 +202,7 @@ void Brushless::initialize(void)
 	audioStatePreload();
 	playStartupTune();
 
-	// TODO TImer.disable, Timerchanel.disable, and refactore these mehtods to just "disarmed"
+	// TODO TImer.disable, Timerchanel.disable, and refactor these methods to just "disarmed"
 	noOutput();
 	allLow();
 	commutationStatePreload();
