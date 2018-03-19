@@ -15,8 +15,8 @@ public:
 	Uart(USART_TypeDef* usartx);
 	void init(void);
 	void USART1_Init(void);
-	void write(char* p, uint8_t len);
-	void write(uint8_t p);
+	void write(char* p, uint16_t len);
+	void write(char p);
 	void cls(void);
 	void bkspc(void);
 
@@ -34,10 +34,17 @@ void Uart::init(void)
 	USART1_Init();
 }
 
-void Uart::write(uint8_t ch) {
+void Uart::write(char ch) {
 	// Code to write character 'ch' on the UART
 	USART_SendData(USART1,ch);
 	while (USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET);
+}
+
+void Uart::write(char* ch, uint16_t len)
+{
+	for (uint16_t i = 0; i < len; i++) {
+		write(*ch++);
+	}
 }
 
 void Uart::cls(void) {

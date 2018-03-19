@@ -1,7 +1,10 @@
 #pragma once
-
+#include "pingmessage.h"
+#include "pingmessage_es.h"
+#include "pingmessage_gen.h"
 #include "gpio.h"
 #include "LowPassFilter.h"
+#include "uart.h"
 class Led;
 
 /// BLHeli_32 Wraith
@@ -546,7 +549,7 @@ void Brushless::commutate(void) {
 // Check state
 void Brushless::playStartupTune(void) {
 	uint16_t volume = UINT16_MAX;
-	static const uint8_t numNotes = 45;
+	static const uint8_t numNotes = 5;
 	static const uint8_t scaleNotes = 3;
 
 	printf("\n\r\t - Playing startup tune |");
@@ -574,13 +577,13 @@ void Brushless::update(void)
 	static uint32_t tNow = 0;
 	static uint32_t tLastInput = 0;
 	static uint32_t tLastRpm = 0;
-	static const uint32_t inputUpdatePeriod = 500;
-	static const uint32_t rpmUpdatePeriod = 200;
+	static const uint32_t inputUpdatePeriod = 500000;
+	static const uint32_t rpmUpdatePeriod = 200000;
 	tNow = MicroSeconds;
 
 	if (tNow > tLastInput + inputUpdatePeriod) {
 		tLastInput = tNow;
-		printf("{\"Input\":%d,\"Voltage\":%d,\"Current\":%d}", adcInput->_average, adcVoltage->_average, adcCurrent->_average);
+		//printf("{\"Input\":%d,\"Voltage\":%d,\"Current\":%d}", adcInput->_average, adcVoltage->_average, adcCurrent->_average);
 	}
 	if (tNow > tLastRpm + rpmUpdatePeriod) {
 		tLastRpm = tNow;
@@ -604,7 +607,24 @@ void Brushless::update(void)
 
 		float rotation_frequency = 48000000000.0f / (_rotor_poles * _hall_prescaler * p); //x1000!
 
-		printf("{\"Period\":%d,\"Hz\":%d}", p, (uint32_t)(rotation_frequency));
+		//printf("{\"Period\":%d,\"Hz\":%d}", p, (uint32_t)(rotation_frequency));
+		static uint8_t v = 1;
+		ping_msg_gen_version msg;
+		msg.set_device_type(5);
+		msg.set_fw_version_major(5);
+		msg.set_fw_version_minor(v++);
+		msg.updateChecksum();
+
+		usart1.write((char*)msg.msgData.data(), (uint16_t)(msg.msgData.size()));
+
+		ping_msg_es_profile profile;
+		profile.set_num_points(200);
+		for (uint8_t i = 0; i < 200; i++) {
+			profile.set_data_at(i, i);
+		}
+		profile.updateChecksum();
+
+		usart1.write((char*)profile.msgData.data(), (uint16_t)(profile.msgData.size()));
 	}
 }
 
