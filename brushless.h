@@ -578,7 +578,7 @@ void Brushless::update(void)
 	static uint32_t tLastInput = 0;
 	static uint32_t tLastRpm = 0;
 	static const uint32_t inputUpdatePeriod = 500000;
-	static const uint32_t rpmUpdatePeriod = 200000;
+	static const uint32_t rpmUpdatePeriod = 20000;
 	tNow = MicroSeconds;
 
 	if (tNow > tLastInput + inputUpdatePeriod) {
@@ -619,8 +619,14 @@ void Brushless::update(void)
 
 		ping_msg_es_profile profile;
 		profile.set_num_points(200);
+		static uint8_t peak = 0;
+		peak++ % 200;
 		for (uint8_t i = 0; i < 200; i++) {
-			profile.set_data_at(i, i);
+			if (peak == i) {
+				profile.set_data_at(i, 255);
+			} else {
+				profile.set_data_at(i, i);
+			}
 		}
 		profile.updateChecksum();
 
