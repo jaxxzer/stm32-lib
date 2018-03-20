@@ -110,8 +110,8 @@ void Uart::USART1_Init(void)
     USART_StructInit(&usart_initStruct);
 
 //        usart_initStruct.USART_BaudRate = 921600; // fast as I could get the f103 + cp2102 (supposedly 1Mbit)
-        usart_initStruct.USART_BaudRate = 460800; // fast as I could get the f103 + cp2102 (supposedly 1Mbit)
-//        usart_initStruct.USART_BaudRate = 115200;
+//        usart_initStruct.USART_BaudRate = 460800; // fast as I could get the f103 + cp2102 (supposedly 1Mbit)
+        usart_initStruct.USART_BaudRate = 115200;
     //    usart_initStruct.USART_BaudRate = 230400;
 //    usart_initStruct.USART_BaudRate = 576000;
     usart_initStruct.USART_WordLength = USART_WordLength_8b;
@@ -131,27 +131,5 @@ void Uart::USART1_Init(void)
      * No parity, Do both Rx and Tx, No HW flow control
      */
 }
-
-#ifdef __cplusplus
- extern "C" {
-#endif
-	/**********************************************************
-	 * USART1 interrupt request handler
-	 *********************************************************/
-	void USART1_IRQHandler(void)
-	{
-		/* RXNE handler */
-		if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)
-		{
-			char rxdata = USART_ReceiveData(USART1);
-			USART_SendData(USART1, rxdata);
-		}
-
-		/* ------------------------------------------------------------ */
-		/* Other USART1 interrupts handler can go here ...             */
-	}
-#ifdef __cplusplus
- }
-#endif
 #endif /* UART_H_ */
 

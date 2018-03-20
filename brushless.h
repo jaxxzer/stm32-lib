@@ -1,4 +1,5 @@
 #pragma once
+#include "parser_ping.h"
 #include "pingmessage.h"
 #include "pingmessage_es.h"
 #include "pingmessage_gen.h"
@@ -66,6 +67,8 @@ class Led;
 #define COM_MASK_STEP5 COM_MASK1  | COM_MASK1N | COM_MASK2  | COM_MASK3N
 
 Adc adcA(ADC1);
+
+PingParser p;
 
 class Brushless
 {
@@ -578,7 +581,7 @@ void Brushless::update(void)
 	static uint32_t tLastInput = 0;
 	static uint32_t tLastRpm = 0;
 	static const uint32_t inputUpdatePeriod = 500000;
-	static const uint32_t rpmUpdatePeriod = 20000;
+	static const uint32_t rpmUpdatePeriod = 200000;
 	tNow = MicroSeconds;
 
 	if (tNow > tLastInput + inputUpdatePeriod) {
@@ -615,7 +618,7 @@ void Brushless::update(void)
 		msg.set_fw_version_minor(v++);
 		msg.updateChecksum();
 
-		usart1.write((char*)msg.msgData.data(), (uint16_t)(msg.msgData.size()));
+		//usart1.write((char*)msg.msgData.data(), (uint16_t)(msg.msgData.size()));
 
 		ping_msg_es_profile profile;
 		profile.set_num_points(200);
@@ -630,7 +633,18 @@ void Brushless::update(void)
 		}
 		profile.updateChecksum();
 
-		usart1.write((char*)profile.msgData.data(), (uint16_t)(profile.msgData.size()));
+		//usart1.write((char*)profile.msgData.data(), (uint16_t)(profile.msgData.size()));
+
+		ping_msg_es_distance distance;
+
+		distance.set_distance(34567);
+		distance.set_confidence(69);
+		distance.set_ping_number(8888);
+
+		distance.updateChecksum();
+		//usart1.write((char*)distance.msgData.data(), (uint16_t)(distance.msgData.size()));
+
+
 	}
 }
 
@@ -713,6 +727,53 @@ extern "C" {
 		printf("hello");
 //		b.commutate();
 //		TIM_ClearFlag(TIM6, TIM_FLAG_Update);
+	}
+
+	/**********************************************************
+	 * USART1 interrupt request handler
+	 *********************************************************/
+	void USART1_IRQHandler(void)
+	{
+		/* RXNE handler */
+		if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)
+		{
+			static bool toggle = true;
+			char rxdata = USART_ReceiveData(USART1); // reading the data clears the flag
+
+			if (p.parseByte(rxdata) == PingParser::NEW_MESSAGE) {
+				toggle = !toggle;
+				b.tco_LedG.setCompare(b._led_brightness_max * toggle);
+				uint16_t t = p.rxMsg.message_id();
+				switch(p.rxMsg.message_id()) {
+				case (PingMessage::gen_cmd_request): {
+					ping_msg_gen_cmd_request echo(p.rxMsg);
+					uint16_t cs = echo.checksum();
+
+//					echo.set_request_id(55);
+//					echo.updateChecksum();
+					b.usart1.write((char*)echo.msgData.data(), (uint16_t)(echo.msgData.size()));
+
+				}
+
+						break;
+				default:
+					break;
+
+				}
+			}
+		}
+
+		if(USART_GetFlagStatus(USART1, USART_IT_ORE) != RESET) {
+			static bool toggle = true;
+			toggle = !toggle;
+			b.tco_LedB.setCompare(b._led_brightness_max * toggle);
+
+			USART_ClearITPendingBit(USART1, USART_IT_ORE);
+
+
+		}
+		/* ------------------------------------------------------------ */
+		/* Other USART1 interrupts handler can go here ...             */
 	}
 }
 
