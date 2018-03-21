@@ -3,6 +3,8 @@
 #include "pingmessage.h"
 #include "pingmessage_es.h"
 #include "pingmessage_gen.h"
+#include "pingmessage_api.h"
+#include "pingmessage_telem.h"
 #include "gpio.h"
 #include "LowPassFilter.h"
 #include "uart.h"
@@ -580,8 +582,8 @@ void Brushless::update(void)
 	static uint32_t tNow = 0;
 	static uint32_t tLastInput = 0;
 	static uint32_t tLastRpm = 0;
-	static const uint32_t inputUpdatePeriod = 500000;
-	static const uint32_t rpmUpdatePeriod = 200000;
+	static const uint32_t inputUpdatePeriod = 5000000;
+	static const uint32_t rpmUpdatePeriod = 2000000;
 	tNow = MicroSeconds;
 
 	if (tNow > tLastInput + inputUpdatePeriod) {
@@ -590,7 +592,7 @@ void Brushless::update(void)
 	}
 	if (tNow > tLastRpm + rpmUpdatePeriod) {
 		tLastRpm = tNow;
-		uint16_t p = period.get(); // in TIM counts
+		uint16_t c = period.get(); // in TIM counts
 
 		// p = TIM3 counts
 		// TIM3_ClockFreq = APBCLK / TIM3_PSC
@@ -608,7 +610,7 @@ void Brushless::update(void)
 //
 //		float rotation_frequency = 1000.0f / (rotation_duration); // x1000!
 
-		float rotation_frequency = 48000000000.0f / (_rotor_poles * _hall_prescaler * p); //x1000!
+		float rotation_frequency = 48000000000.0f / (_rotor_poles * _hall_prescaler * c); //x1000!
 
 		//printf("{\"Period\":%d,\"Hz\":%d}", p, (uint32_t)(rotation_frequency));
 		static uint8_t v = 1;
@@ -639,10 +641,17 @@ void Brushless::update(void)
 
 		distance.set_distance(34567);
 		distance.set_confidence(69);
-		distance.set_ping_number(8888);
+		distance.set_ping_number(p.errors);
 
 		distance.updateChecksum();
-		//usart1.write((char*)distance.msgData.data(), (uint16_t)(distance.msgData.size()));
+		usart1.write((char*)distance.msgData.data(), (uint16_t)(distance.msgData.size()));
+
+		ping_msg_telem_battery batt;
+
+		batt.set_current(66.6678f);
+		batt.set_voltage(20.43462f);
+		batt.updateChecksum();
+		usart1.write((char*)batt.msgData.data(), (uint16_t)(batt.msgData.size()));
 
 
 	}
@@ -741,24 +750,26 @@ extern "C" {
 			char rxdata = USART_ReceiveData(USART1); // reading the data clears the flag
 
 			if (p.parseByte(rxdata) == PingParser::NEW_MESSAGE) {
+				b.usart1.write((char*)p.rxMsg.msgData.data(), (uint16_t)(p.rxMsg.msgData.size()));
+
+
 				toggle = !toggle;
-				b.tco_LedG.setCompare(b._led_brightness_max * toggle);
+				b.tco_LedG.setCompare(5 * toggle);
 				uint16_t t = p.rxMsg.message_id();
 				switch(p.rxMsg.message_id()) {
 				case (PingMessage::gen_cmd_request): {
 					ping_msg_gen_cmd_request echo(p.rxMsg);
-					uint16_t cs = echo.checksum();
+				}
+					break;
+				case (0x10): {
+					ping_msg_api_set_led_color color(p.rxMsg);
+					b.tco_LedB.setCompare(color.blue());
 
-//					echo.set_request_id(55);
-//					echo.updateChecksum();
-					b.usart1.write((char*)echo.msgData.data(), (uint16_t)(echo.msgData.size()));
 
 				}
-
-						break;
+					break;
 				default:
 					break;
-
 				}
 			}
 		}
@@ -766,7 +777,7 @@ extern "C" {
 		if(USART_GetFlagStatus(USART1, USART_IT_ORE) != RESET) {
 			static bool toggle = true;
 			toggle = !toggle;
-			b.tco_LedB.setCompare(b._led_brightness_max * toggle);
+//			b.tco_LedB.setCompare(b._led_brightness_max * toggle);
 
 			USART_ClearITPendingBit(USART1, USART_IT_ORE);
 
