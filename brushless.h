@@ -222,9 +222,11 @@ void Brushless::initialize(void)
 	playStartupTune();
 
 	// TODO TImer.disable, Timerchanel.disable, and refactor these methods to just "disarmed"
-	noOutput();
-	allLow();
-	commutationStatePreload();
+	//noOutput();
+	//allLow();
+	//commutationStatePreload();
+	setVolume(30000);
+	tim_Pwm.setFrequency(8000);
 
 		//setupCommutationTimer();
 	while (1) {
@@ -586,9 +588,9 @@ void Brushless::playStartupTune(void) {
 
 void Brushless::update(void)
 {
-	adcA.waitConversion();
+	//adcA.waitConversion();
 
-	setDutyCycle(adcInput->_average);
+	//setDutyCycle(adcInput->_average);
 
 	static uint32_t tNow = 0;
 	static uint32_t tLastInput = 0;
@@ -804,6 +806,7 @@ extern "C" {
 					ping_msg_api_set_audio_frequency in(p.rxMsg);
 
 					b.audio_frequency = in.f();
+					b.tim_Pwm.setFrequency(b.audio_frequency);
 
 					//TODO
 //					ping_msg_telem_audio m;
@@ -816,6 +819,7 @@ extern "C" {
 					ping_msg_api_set_audio_volume in(p.rxMsg);
 
 					b.audio_volume = in.v();
+					b.setVolume(b.audio_volume * 256);
 
 					//TODO
 //					ping_msg_telem_audio m;
