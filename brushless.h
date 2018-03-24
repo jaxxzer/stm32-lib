@@ -764,8 +764,7 @@ extern "C" {
 				case (0x10): {
 					ping_msg_api_set_led_color color(p.rxMsg);
 					b.tco_LedB.setCompare(color.blue());
-
-
+					b.tco_LedG.setCompare(color.green());
 				}
 					break;
 				default:
