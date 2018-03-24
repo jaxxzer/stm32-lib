@@ -174,6 +174,12 @@ public:
 	uint16_t current(void);
 
 
+	void set_blue(uint16_t blue) { b = blue; };
+	void set_red(uint16_t red) { r = red; };
+	void set_green(uint16_t green) { g = green; };
+
+	uint16_t r, g, b;
+
 private:
     void advanceCommutation(bool reverse=false);
     uint32_t _rpmTarget;
@@ -583,7 +589,7 @@ void Brushless::update(void)
 	static uint32_t tLastInput = 0;
 	static uint32_t tLastRpm = 0;
 	static const uint32_t inputUpdatePeriod = 5000000;
-	static const uint32_t rpmUpdatePeriod = 20000;
+	static const uint32_t rpmUpdatePeriod = 2000000;
 	tNow = MicroSeconds;
 
 	if (tNow > tLastInput + inputUpdatePeriod) {
@@ -763,8 +769,19 @@ extern "C" {
 					break;
 				case (0x10): {
 					ping_msg_api_set_led_color color(p.rxMsg);
+
+					b.b = color.blue();
+					b.r = color.red();
+					b.g = color.green();
 					b.tco_LedB.setCompare(color.blue());
 					b.tco_LedG.setCompare(color.green());
+
+					ping_msg_telem_led_color m;
+					m.set_red(b.b); // intentionally wrong for now
+					m.set_green(b.g);
+					m.set_blue(b.b);
+					m.updateChecksum();
+					b.usart1.write((char*)m.msgData.data(), (uint16_t)(m.msgData.size()));
 				}
 					break;
 				default:
