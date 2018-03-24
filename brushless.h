@@ -84,7 +84,7 @@ public:
 	// Members
 
 	// Constants
-	static const uint16_t _volume_max = 600;
+	static const uint16_t _volume_max = 1300;
 	static const uint16_t _volume_min = 500;
 	static const uint16_t _led_brightness_max = 50;
 	static const uint16_t _rotor_poles = 12;
@@ -215,18 +215,18 @@ void Brushless::initialize(void)
 	printf("\n\rInitializing Wraith32");
 	printf("\n\r\t- SystemCoreClock: %lu", SystemCoreClock);
 	ledInit();
-	//adcInit();
-	//hallInit();
-	//init3PhaseOutput();
-	//audioStatePreload();
-	//playStartupTune();
+	adcInit();
+	hallInit();
+	init3PhaseOutput();
+	audioStatePreload();
+	playStartupTune();
 
 	// TODO TImer.disable, Timerchanel.disable, and refactor these methods to just "disarmed"
-	//noOutput();
-	//allLow();
-	//commutationStatePreload();
+	noOutput();
+	allLow();
+	commutationStatePreload();
 
-	//	setupCommutationTimer();
+		//setupCommutationTimer();
 	while (1) {
 		update();
 	}
@@ -565,8 +565,8 @@ void Brushless::commutate(void) {
 // Check state
 void Brushless::playStartupTune(void) {
 	uint16_t volume = UINT16_MAX;
-	static const uint8_t numNotes = 5;
-	static const uint8_t scaleNotes = 3;
+	static const uint8_t numNotes = 45;
+	static const uint8_t scaleNotes = 5;
 
 	printf("\n\r\t - Playing startup tune |");
 
@@ -586,9 +586,9 @@ void Brushless::playStartupTune(void) {
 
 void Brushless::update(void)
 {
-	//adcA.waitConversion();
+	adcA.waitConversion();
 
-	//setDutyCycle(adcInput->_average);
+	setDutyCycle(adcInput->_average);
 
 	static uint32_t tNow = 0;
 	static uint32_t tLastInput = 0;
@@ -744,8 +744,7 @@ extern "C" {
 
 	void TIM6_DAC_IRQHandler(void)
 	{
-		printf("hello");
-//		b.commutate();
+		//b.commutate();
 //		TIM_ClearFlag(TIM6, TIM_FLAG_Update);
 	}
 
