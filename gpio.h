@@ -5,8 +5,7 @@
  *      Author: jack
  */
 
-#ifndef GPIO_H_
-#define GPIO_H_
+#pragma once
 
 //#include <string.h>
 
@@ -32,6 +31,8 @@
  * Initialize the GPIO
  */
 
+
+  #include "stm32f0xx_conf.h"
 
 
 
@@ -114,7 +115,7 @@ Gpio::Gpio(GPIO_TypeDef* port, uint16_t pin)
 void Gpio::_clockEnable(void)
 {
 	switch ((uint32_t)_port) {
-#ifdef STM32F051x8
+#if defined (STM32F051x8) || defined (STM32F030)
 	case GPIOA_BASE:
 		RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA, ENABLE);
 	    break;
@@ -151,7 +152,7 @@ void Gpio::_init(void)
 {
 	_config.GPIO_Pin = (_pin);
 	GPIO_Init(_port, &_config);
-#ifdef STM32F051x8
+#if defined (STM32F051x8) || defined (STM32F030)
 
 #endif
 }
@@ -167,7 +168,7 @@ void Gpio::configAF(uint8_t af) {
 
 void Gpio::initInPullUp(void)
 {
-#ifdef STM32F051x8
+#if defined (STM32F051x8) || defined (STM32F030)
 	_config.GPIO_Mode = GPIO_Mode_IN;
 	_config.GPIO_PuPd = GPIO_PuPd_UP;
 	#else
@@ -178,7 +179,7 @@ void Gpio::initInPullUp(void)
 
 void Gpio::initInPullDown(void)
 {
-#ifdef STM32F051x8
+#if defined (STM32F051x8) || defined (STM32F030)
 	_config.GPIO_Mode = GPIO_Mode_IN;
 	_config.GPIO_PuPd = GPIO_PuPd_DOWN;
 	#else
@@ -189,7 +190,7 @@ void Gpio::initInPullDown(void)
 
 void Gpio::initAFPP(void)
 {
-#ifdef STM32F051x8
+#if defined (STM32F051x8) || defined (STM32F030)
 	_config.GPIO_Mode = GPIO_Mode_AF;
 	_config.GPIO_OType = GPIO_OType_PP;
 #else
@@ -200,7 +201,7 @@ void Gpio::initAFPP(void)
 
 void Gpio::initInFloating(void)
 {
-#ifdef STM32F051x8
+#if defined (STM32F051x8) || defined (STM32F030)
 	_config.GPIO_Mode = GPIO_Mode_IN;
 #else
 	_config.GPIO_Mode = GPIO_Mode_IN_FLOATING;
@@ -209,7 +210,7 @@ void Gpio::initInFloating(void)
 }
 void Gpio::initOutputPP(void)
 {
-#ifdef STM32F051x8
+#if defined (STM32F051x8) || defined (STM32F030)
 	_config.GPIO_Mode = GPIO_Mode_OUT;
 	_config.GPIO_OType = GPIO_OType_PP;
 #else
@@ -273,5 +274,3 @@ void Gpio::toggle(void)
 	BitAction new_state = (BitAction)!readOutput();
 	GPIO_WriteBit(_port, _pin, new_state);
 }
-
-#endif /* GPIO_H_ */

@@ -1,5 +1,9 @@
 #pragma once
 
+  #include "stm32f0xx_conf.h"
+
+#include <stdio.h>
+
 // What do we need for an ADC?
 /*
  * - A Gpio
@@ -7,7 +11,7 @@
  * - An ADC channel
  */
 #include "gpio.h"
-#ifdef STM32F051x8
+#if defined (STM32F051x8) || defined (STM32F030)
 #include "stm32f0xx_adc.h"
 #endif
 
@@ -25,7 +29,7 @@ public:
 	AdcChannel(Gpio* gpiox, uint8_t channel, uint8_t numSamples)
 		: _gpio(gpiox)
 		, _channel(channel)
-		, next(NULL)
+		, next(nullptr)
         , enabled(true)
 {}
 	Gpio* _gpio;
@@ -50,13 +54,14 @@ class Adc
 {
 public:
 	Adc(ADC_TypeDef* adcx)
-		: dmaBuf(NULL)
+		: dmaBuf(nullptr)
 		, _adc(adcx)
-		, _head(NULL)
+		, _head(nullptr)
 	{
 		_enableClock();
 	};
 
+	void init(void);
 	void initIndependent(void);
 	void initRegSimul(void);
 	AdcChannel* addChannel(uint8_t channel);
@@ -81,6 +86,15 @@ private:
 
 };
 
+void Adc::init(void)
+{
+	calibrate();
+	enable();
+	DmaConfig();
+	startConversion();
+	waitConversion();
+}
+
 //void Adc::dumpToBuf(uint16_t* buf, uint16_t len)
 //{
 //
@@ -101,7 +115,7 @@ AdcChannel* Adc::addChannel(uint8_t channel)
 		pinx = 0 + (channel - ADC_Channel_0);
 		break;
 	default:
-		return NULL;
+		return nullptr;
 	}
 
 	// TODO we should insert here instead of counting on them being added in order
@@ -133,12 +147,12 @@ AdcChannel* Adc::addChannel(uint8_t channel)
 //const uint8_t MAX_CHANNELS = 8;
 //const uint8_t MAX_SAMPLES = 40;
 uint8_t Adc::_numChannels = 0;
-uint16_t Adc::_numSamples = 100;
+uint16_t Adc::_numSamples = 1;
 //__IO uint32_t ADC_DualConvertedValueTab[MAX_CHANNELS * MAX_SAMPLES];
 
 void Adc::_enableClock(void)
 {
-#ifdef STM32F051x8
+#if defined (STM32F051x8) || defined (STM32F030)
 	ADC_ClockModeConfig(ADC1, ADC_ClockMode_AsynClk);
 #else
 	RCC_ADCCLKConfig(RCC_PCLK2_Div8);

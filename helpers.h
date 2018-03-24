@@ -5,8 +5,9 @@
  *      Author: jack
  */
 
-#ifndef HELPERS_H_
-#define HELPERS_H_
+#pragma once
+  #include "stm32f0xx_conf.h"
+
 
 	void nvic_config(const uint8_t irq, const uint8_t priority, const FunctionalState enabled)
 	{
@@ -154,7 +155,6 @@ enum {
  }
 #endif
 
-#endif /* HELPERS_H_ */
 
 
 // TODO figure out wtf this shit is for

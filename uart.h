@@ -5,8 +5,9 @@
  *      Author: jack
  */
 
-#ifndef UART_H_
-#define UART_H_
+#pragma once
+  #include "stm32f0xx_conf.h"
+
 
 
 class Uart
@@ -72,7 +73,7 @@ void Uart::USART1_Init(void)
 	/* Enable the USARTx Interrupt */
 	NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQn;
 
-#ifdef STM32F051x8
+#if defined (STM32F051x8) || defined (STM32F030)
 	NVIC_InitStructure.NVIC_IRQChannelPriority = 0;
 #else
 	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
@@ -86,13 +87,13 @@ void Uart::USART1_Init(void)
 //    GPIO_PinAFConfig(GPIOA, GPIO_PinSource10, GPIO_AF_1);
 
     // PC6=Tx PC7=Rx
-#ifdef STM32F051x8
-	Gpio pB6 = Gpio(GPIOB, 6);
-	Gpio pB7 = Gpio(GPIOB, 7);
+#if defined (STM32F051x8) || defined (STM32F030)
+	Gpio pB6 = Gpio(GPIOA,9);
+	Gpio pB7 = Gpio(GPIOA, 10);
     pB6.initAFPP();
     pB7.initAFPP();
-    GPIO_PinAFConfig(GPIOB, GPIO_PinSource6, GPIO_AF_0);
-    GPIO_PinAFConfig(GPIOB, GPIO_PinSource7, GPIO_AF_0);
+    GPIO_PinAFConfig(GPIOA, GPIO_PinSource9, GPIO_AF_1);
+    GPIO_PinAFConfig(GPIOA, GPIO_PinSource10, GPIO_AF_1);
 
 
 #else
@@ -109,8 +110,9 @@ void Uart::USART1_Init(void)
     USART_InitTypeDef usart_initStruct;
     USART_StructInit(&usart_initStruct);
 
-//        usart_initStruct.USART_BaudRate = 921600; // fast as I could get the f103 + cp2102 (supposedly 1Mbit)
         usart_initStruct.USART_BaudRate = 115200; // fast as I could get the f103 + cp2102 (supposedly 1Mbit)
+    //usart_initStruct.USART_BaudRate = 460800; // fast as I could get the f103 + cp2102 (supposedly 1Mbit)
+    //usart_initStruct.USART_BaudRate = 460800; // fast as I could get the f103 + cp2102 (supposedly 1Mbit)
 //        usart_initStruct.USART_BaudRate = 57600;
     //    usart_initStruct.USART_BaudRate = 230400;
 //    usart_initStruct.USART_BaudRate = 576000;
@@ -131,5 +133,4 @@ void Uart::USART1_Init(void)
      * No parity, Do both Rx and Tx, No HW flow control
      */
 }
-#endif /* UART_H_ */
 
