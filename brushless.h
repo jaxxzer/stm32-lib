@@ -583,7 +583,7 @@ void Brushless::update(void)
 	static uint32_t tLastInput = 0;
 	static uint32_t tLastRpm = 0;
 	static const uint32_t inputUpdatePeriod = 5000000;
-	static const uint32_t rpmUpdatePeriod = 2000000;
+	static const uint32_t rpmUpdatePeriod = 20000;
 	tNow = MicroSeconds;
 
 	if (tNow > tLastInput + inputUpdatePeriod) {
