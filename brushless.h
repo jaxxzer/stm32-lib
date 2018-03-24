@@ -151,6 +151,11 @@ public:
     void ledInit(void);
 
 	//////// API /////////
+    uint16_t audio_frequency;
+    uint8_t audio_volume;
+    uint32_t rpm_target;
+    uint32_t rpm_current;
+
 	void analogInToFreq(void);
 	void update(void);
 	void setRGB(uint8_t g);
@@ -210,16 +215,16 @@ void Brushless::initialize(void)
 	printf("\n\rInitializing Wraith32");
 	printf("\n\r\t- SystemCoreClock: %lu", SystemCoreClock);
 	ledInit();
-	adcInit();
-	hallInit();
-	init3PhaseOutput();
-	audioStatePreload();
-	playStartupTune();
+	//adcInit();
+	//hallInit();
+	//init3PhaseOutput();
+	//audioStatePreload();
+	//playStartupTune();
 
 	// TODO TImer.disable, Timerchanel.disable, and refactor these methods to just "disarmed"
-	noOutput();
-	allLow();
-	commutationStatePreload();
+	//noOutput();
+	//allLow();
+	//commutationStatePreload();
 
 	//	setupCommutationTimer();
 	while (1) {
@@ -581,9 +586,9 @@ void Brushless::playStartupTune(void) {
 
 void Brushless::update(void)
 {
-	adcA.waitConversion();
+	//adcA.waitConversion();
 
-	setDutyCycle(adcInput->average);
+	//setDutyCycle(adcInput->_average);
 
 	static uint32_t tNow = 0;
 	static uint32_t tLastInput = 0;
@@ -756,7 +761,7 @@ extern "C" {
 			char rxdata = USART_ReceiveData(USART1); // reading the data clears the flag
 
 			if (p.parseByte(rxdata) == PingParser::NEW_MESSAGE) {
-				b.usart1.write((char*)p.rxMsg.msgData.data(), (uint16_t)(p.rxMsg.msgData.size()));
+				// b.usart1.write((char*)p.rxMsg.msgData.data(), (uint16_t)(p.rxMsg.msgData.size())); // loopback
 
 
 				toggle = !toggle;
@@ -767,7 +772,7 @@ extern "C" {
 					ping_msg_gen_cmd_request echo(p.rxMsg);
 				}
 					break;
-				case (0x10): {
+				case (PingMessage::api_set_led_color): {
 					ping_msg_api_set_led_color color(p.rxMsg);
 
 					b.b = color.blue();
@@ -777,11 +782,47 @@ extern "C" {
 					b.tco_LedG.setCompare(color.green());
 
 					ping_msg_telem_led_color m;
-					m.set_red(b.b); // intentionally wrong for now
+					m.set_red(b.r);
 					m.set_green(b.g);
 					m.set_blue(b.b);
 					m.updateChecksum();
 					b.usart1.write((char*)m.msgData.data(), (uint16_t)(m.msgData.size()));
+				}
+					break;
+				case (PingMessage::api_rpm_target): {
+					ping_msg_api_set_rpm_target in(p.rxMsg);
+
+					b.rpm_target = in.rpm();
+
+					ping_msg_telem_rpm m;
+					m.set_target(b.r);
+					m.set_current(b.g);
+					m.updateChecksum();
+					b.usart1.write((char*)m.msgData.data(), (uint16_t)(m.msgData.size()));
+				}
+					break;
+				case (PingMessage::api_audio_frequency): {
+					ping_msg_api_set_audio_frequency in(p.rxMsg);
+
+					b.audio_frequency = in.f();
+
+					//TODO
+//					ping_msg_telem_audio m;
+//					m.set_red(b.r); // intentionally wrong for now
+//					m.updateChecksum();
+//					b.usart1.write((char*)m.msgData.data(), (uint16_t)(m.msgData.size()));
+				}
+					break;
+				case (PingMessage::api_audio_volume): {
+					ping_msg_api_set_audio_volume in(p.rxMsg);
+
+					b.audio_volume = in.v();
+
+					//TODO
+//					ping_msg_telem_audio m;
+//					m.set_red(b.r); // intentionally wrong for now
+//					m.updateChecksum();
+//					b.usart1.write((char*)m.msgData.data(), (uint16_t)(m.msgData.size()));
 				}
 					break;
 				default:
