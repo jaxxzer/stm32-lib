@@ -88,12 +88,12 @@ void Uart::USART1_Init(void)
 
     // PC6=Tx PC7=Rx
 #if defined (STM32F051x8) || defined (STM32F030)
-	Gpio pB6 = Gpio(GPIOA,9);
-	Gpio pB7 = Gpio(GPIOA, 10);
-    pB6.initAFPP();
-    pB7.initAFPP();
-    GPIO_PinAFConfig(GPIOA, GPIO_PinSource9, GPIO_AF_1);
-    GPIO_PinAFConfig(GPIOA, GPIO_PinSource10, GPIO_AF_1);
+//	Gpio pB6 = Gpio(GPIOA,9);
+//	Gpio pB7 = Gpio(GPIOA, 10);
+//    pB6.initAFPP();
+//    pB7.initAFPP();
+//    GPIO_PinAFConfig(GPIOA, GPIO_PinSource9, GPIO_AF_1);
+//    GPIO_PinAFConfig(GPIOA, GPIO_PinSource10, GPIO_AF_1);
 
 
 #else
