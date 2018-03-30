@@ -147,7 +147,7 @@ AdcChannel* Adc::addChannel(uint8_t channel)
 //const uint8_t MAX_CHANNELS = 8;
 //const uint8_t MAX_SAMPLES = 40;
 uint8_t Adc::_numChannels = 0;
-uint16_t Adc::_numSamples = 1;
+uint16_t Adc::_numSamples = 100;
 //__IO uint32_t ADC_DualConvertedValueTab[MAX_CHANNELS * MAX_SAMPLES];
 
 void Adc::_enableClock(void)
@@ -253,7 +253,7 @@ void Adc::initRegSimul(void)
 			ADC_RegularChannelConfig(ADC1, tmp->_channel, rank++, ADC_SampleTime_239Cycles5);
 #else
 			// F0 doesnt let you program the "rank"
-			ADC_ChannelConfig(ADC1, tmp->_channel, ADC_SampleTime_1_5Cycles);
+			ADC_ChannelConfig(ADC1, tmp->_channel, ADC_SampleTime_239_5Cycles);
 #endif
 			tmp = tmp->next;
 		}
