@@ -33,7 +33,7 @@ void DelaySec(uint32_t S){
  extern "C" {
 #endif
  void SysTick_Handler(void){
- 	MicroSeconds+=100; //Increment millisecond variable
+	 	MicroSeconds += 1000; //Increment millisecond variable
  }
 #ifdef __cplusplus
  }
