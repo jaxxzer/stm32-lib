@@ -1,16 +1,15 @@
-/*
- * scheduling.h
- *
- *  Created on: Feb 7, 2018
- *      Author: jack
- */
-
-#ifndef SCHEDULING_H_
-#define SCHEDULING_H_
-
-
+#pragma once
 
 volatile uint32_t MicroSeconds = 0;
+static uint32_t systick_prescaler = 1000; // millisecond interrupt
+
+void configureClocks(uint32_t prescaler)
+{
+	systick_prescaler = prescaler;
+	SystemInit();
+	SystemCoreClockUpdate();
+	SysTick_Config(SystemCoreClock/systick_prescaler); // 1ms system interrupt
+}
 
 void DelayMicros(uint32_t us) {
 	volatile uint32_t tStart = MicroSeconds;
@@ -23,7 +22,6 @@ void DelayMil(uint32_t MilS){
 	DelayMicros(MilS*1000);
 }
 
-
 //Delay function for second delay
 void DelaySec(uint32_t S){
 	DelayMicros(S*1000000);
@@ -33,31 +31,8 @@ void DelaySec(uint32_t S){
  extern "C" {
 #endif
  void SysTick_Handler(void){
-	 	MicroSeconds += 1000; //Increment millisecond variable
+	 	MicroSeconds += 1000000/systick_prescaler; //Increment millisecond variable
  }
 #ifdef __cplusplus
  }
 #endif
-
-//
-// class FrequencyTimer
-// {
-// public:
-//	 FrequencyTimer(void);
-//	 void update(void) {
-//		 uint32_t time = MicroSeconds;
-//		 lastDt = dt;
-//		 dt = time - lastUpdate;
-//		 lastUpdate = time;
-//	 };
-//	 uint32_t lastUpdate;
-//	 uint32_t lastDt;
-//	 uint32_t dt;
-//	 uint32_t frequencyFiltered;
-//	 uint32_t frequency
-//	 uint32_t frequency(void) {
-//		 frequency = 1.0 / (0.8);
-//	 }
-// };
-
-#endif /* SCHEDULING_H_ */
