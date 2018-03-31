@@ -13,27 +13,89 @@
 class Uart
 {
 public:
-	Uart(USART_TypeDef* usartx);
-	void init(void);
-	void USART1_Init(void);
+	Uart(USART_TypeDef* usartx) : _peripheral(usartx) {
+		setClockEnabled(ENABLE);
+		USART_StructInit(&_config);
+	}
+
 	void write(char* p, uint16_t len);
 	void write(char p);
 	void cls(void);
 	void bkspc(void);
 	char read();
+	void ITConfig(uint32_t it, FunctionalState enabled);
 
+	void init(uint32_t baudrate,
+				uint32_t stopbits = USART_StopBits_1,
+				uint32_t wordlength = USART_WordLength_8b,
+				uint32_t parity = USART_Parity_No,
+				uint32_t mode = USART_Mode_Rx | USART_Mode_Tx,
+				uint32_t flowcontrol = USART_HardwareFlowControl_None)
+	{
+		_config.USART_BaudRate = baudrate;
+		_config.USART_StopBits = stopbits;
+		_config.USART_WordLength = wordlength;
+		_config.USART_Parity;
+		_config.USART_Mode;
+		_config.USART_HardwareFlowControl = flowcontrol;
+		init();
+	}
+	void set_baudrate(uint32_t baudrate)
+	{
+		_config.USART_BaudRate = baudrate;
+	}
+	void start_auto_baud();
+	void init() {
+		USART_Init(_peripheral, &_config);
+	}
 
+	void setEnabled(FunctionalState enabled) {
+		USART_Cmd(_peripheral, enabled);
+	}
+
+	void setClockEnabled(FunctionalState enabled);
 
 private:
-	USART_TypeDef* _usart;
+	USART_TypeDef* _peripheral;
+
+//	typedef struct
+//	{
+//	  uint32_t USART_BaudRate;            /*!< This member configures the USART communication baud rate.
+//	                                           The baud rate is computed using the following formula:
+//	                                            - IntegerDivider = ((PCLKx) / (16 * (USART_InitStruct->USART_BaudRate)))
+//	                                            - FractionalDivider = ((IntegerDivider - ((uint32_t) IntegerDivider)) * 16) + 0.5 */
+//
+//	  uint32_t USART_WordLength;          /*!< Specifies the number of data bits transmitted or received in a frame.
+//	                                           This parameter can be a value of @ref USART_Word_Length */
+//
+//	  uint32_t USART_StopBits;            /*!< Specifies the number of stop bits transmitted.
+//	                                           This parameter can be a value of @ref USART_Stop_Bits */
+//
+//	  uint32_t USART_Parity;              /*!< Specifies the parity mode.
+//	                                           This parameter can be a value of @ref USART_Parity
+//	                                           @note When parity is enabled, the computed parity is inserted
+//	                                                 at the MSB position of the transmitted data (9th bit when
+//	                                                 the word length is set to 9 data bits; 8th bit when the
+//	                                                 word length is set to 8 data bits). */
+//
+//	  uint32_t USART_Mode;                /*!< Specifies wether the Receive or Transmit mode is enabled or disabled.
+//	                                           This parameter can be a value of @ref USART_Mode */
+//
+//	  uint32_t USART_HardwareFlowControl; /*!< Specifies wether the hardware flow control mode is enabled
+//	                                           or disabled.
+//	                                           This parameter can be a value of @ref USART_Hardware_Flow_Control*/
+//	}
+
+
+
 
 
 	USART_InitTypeDef _config;
 
 	static const uint8_t buf_size = 128;
 
-	private uint16_t rxbuf[buf_size];
-	private uint16_t txbuf[buf_size];
+	 uint16_t rxbuf[buf_size];
+	 uint16_t txbuf[buf_size];
 
 	// circular buffer pointers
 	uint16_t* txStart;
@@ -42,13 +104,21 @@ private:
 	uint16_t* rxEnd;
 };
 
-Uart::Uart(USART_TypeDef* usartx)
-	: _usart(usartx)
-{}
-
-void Uart::init(void)
+void Uart::setClockEnabled(FunctionalState enabled)
 {
-	USART1_Init();
+	switch((uint32_t)_peripheral) {
+	case USART1_BASE:
+	    RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, enabled);
+		break;
+	default:
+		break;
+
+	}
+}
+
+void Uart::ITConfig(uint32_t it, FunctionalState enabled)
+{
+	USART_ITConfig(_peripheral, it, enabled);
 }
 
 void Uart::write(char ch) {
@@ -75,78 +145,4 @@ void Uart::bkspc(void) {
 	write(0x08);       // ESC command
 }
 
-
-/*****************************************************
- * Initialize USART1: enable interrupt on reception
- * of a character
- *****************************************************/
-void Uart::USART1_Init(void)
-{
-    /* Enable USART1 global interrupt */
-	NVIC_InitTypeDef NVIC_InitStructure;
-//	NVIC_StructInit(&NVIC_InitStructure); // don't exisist
-
-	/* Enable the USARTx Interrupt */
-	NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQn;
-
-#if defined (STM32F051x8) || defined (STM32F030)
-	NVIC_InitStructure.NVIC_IRQChannelPriority = 0;
-#else
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
-#endif
-	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-	NVIC_Init(&NVIC_InitStructure);
-
-//    // Configure Tx/Rx pins as USART1 alternate function
-//    GPIO_PinAFConfig(GPIOA, GPIO_PinSource9, GPIO_AF_1);
-//    GPIO_PinAFConfig(GPIOA, GPIO_PinSource10, GPIO_AF_1);
-
-    // PC6=Tx PC7=Rx
-#if defined (STM32F051x8) || defined (STM32F030)
-//	Gpio pB6 = Gpio(GPIOA,9);
-//	Gpio pB7 = Gpio(GPIOA, 10);
-//    pB6.initAFPP();
-//    pB7.initAFPP();
-//    GPIO_PinAFConfig(GPIOA, GPIO_PinSource9, GPIO_AF_1);
-//    GPIO_PinAFConfig(GPIOA, GPIO_PinSource10, GPIO_AF_1);
-
-
-#else
-    Gpio pA9 = Gpio(GPIOA, 9); // Tx
-    pA9.initAFPP();
-    Gpio pA10 = Gpio(GPIOA, 10); // Rx
-    pA10.initInFloating();
-#endif
-
-    /* Enable clock for USART1 and GPIOA */
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE);
-
-    /* USART configuration structure for USART1 */
-    USART_InitTypeDef usart_initStruct;
-    USART_StructInit(&usart_initStruct);
-
-        usart_initStruct.USART_BaudRate = 115200; // fast as I could get the f103 + cp2102 (supposedly 1Mbit)
-    //usart_initStruct.USART_BaudRate = 460800; // fast as I could get the f103 + cp2102 (supposedly 1Mbit)
-    //usart_initStruct.USART_BaudRate = 460800; // fast as I could get the f103 + cp2102 (supposedly 1Mbit)
-//        usart_initStruct.USART_BaudRate = 57600;
-    //    usart_initStruct.USART_BaudRate = 230400;
-//    usart_initStruct.USART_BaudRate = 576000;
-    usart_initStruct.USART_WordLength = USART_WordLength_8b;
-    usart_initStruct.USART_StopBits = USART_StopBits_1;
-    usart_initStruct.USART_Parity = USART_Parity_No;
-    usart_initStruct.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
-    usart_initStruct.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
-    /* Configure USART1 */
-    USART_Init(USART1, &usart_initStruct);
-
-    /* Enable RXNE interrupt */
-    USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);
-
-    /* Enable USART1 */
-    USART_Cmd(USART1, ENABLE);
-    /* Baud rate 9600, 8-bit data, One stop bit
-     * No parity, Do both Rx and Tx, No HW flow control
-     */
-}
 
