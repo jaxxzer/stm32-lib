@@ -44,7 +44,10 @@ public:
 	{
 		_config.USART_BaudRate = baudrate;
 	}
-	void start_auto_baud();
+	void startAutoBaud() {
+		USART_AutoBaudRateConfig(_peripheral, USART_AutoBaudRate_StartBit);
+		USART_AutoBaudRateCmd(_peripheral, ENABLE);
+	}
 	void init() {
 		USART_Init(_peripheral, &_config);
 	}
