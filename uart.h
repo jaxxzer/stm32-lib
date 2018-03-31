@@ -20,10 +20,26 @@ public:
 	void write(char p);
 	void cls(void);
 	void bkspc(void);
+	char read();
+
+
 
 private:
 	USART_TypeDef* _usart;
 
+
+	USART_InitTypeDef _config;
+
+	static const uint8_t buf_size = 128;
+
+	private uint16_t rxbuf[buf_size];
+	private uint16_t txbuf[buf_size];
+
+	// circular buffer pointers
+	uint16_t* txStart;
+	uint16_t* txEnd;
+	uint16_t* rxStart;
+	uint16_t* rxEnd;
 };
 
 Uart::Uart(USART_TypeDef* usartx)
