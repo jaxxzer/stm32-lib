@@ -83,15 +83,6 @@ void Adc::init(void)
 	waitConversion();
 }
 
-//void Adc::dumpToBuf(uint16_t* buf, uint16_t len)
-//{
-//
-//}
-
-bool disableChannel(uint8_t channel)
-{
- return false;
-}
 AdcChannel* Adc::addChannel(uint8_t channel)
 {
 	GPIO_TypeDef* gpiox;
@@ -109,7 +100,9 @@ AdcChannel* Adc::addChannel(uint8_t channel)
 	// TODO we should insert here instead of counting on them being added in order
 
 	Gpio* gpio = new Gpio(gpiox, pinx);
-	//gpio->initAnalogIn();
+
+	gpio->init(GPIO_Mode_AN);
+
 	AdcChannel* chanx = new AdcChannel(channel, _numSamples);
 	if (!_head) {
 		_head = chanx;
