@@ -6,9 +6,9 @@
  */
 
 #pragma once
-  #include "stm32f0xx_conf.h"
 
-
+#include <stdio.h>
+#include "stm32f0xx_conf.h"
 
 class Uart
 {
