@@ -26,28 +26,16 @@ class Adc;
 class AdcChannel
 {
 public:
-	AdcChannel(Gpio* gpiox, uint8_t channel, uint8_t numSamples)
-		: _gpio(gpiox)
-		, _channel(channel)
+	AdcChannel(uint8_t channel, uint8_t numSamples)
+		: _channel(channel)
 		, next(nullptr)
         , enabled(true)
 {}
-	Gpio* _gpio;
 	uint8_t _channel;
 	AdcChannel* next;
 	uint32_t _accumulator;
 	uint16_t _average;
 	bool enabled;
-
-
-	void waitValue(uint16_t value, uint16_t margin, uint8_t filter = 0) {
-		// filter unused
-//		while(_average > value + margin && _average < value - margin) {
-//			_adc->startConversion();
-//			_adc->waitConversion();
-//		}
-	}
-
 };
 
 class Adc
@@ -121,8 +109,8 @@ AdcChannel* Adc::addChannel(uint8_t channel)
 	// TODO we should insert here instead of counting on them being added in order
 
 	Gpio* gpio = new Gpio(gpiox, pinx);
-	gpio->initAnalogIn();
-	AdcChannel* chanx = new AdcChannel(gpio, channel, _numSamples);
+	//gpio->initAnalogIn();
+	AdcChannel* chanx = new AdcChannel(channel, _numSamples);
 	if (!_head) {
 		_head = chanx;
 	} else {
