@@ -58,7 +58,6 @@ public:
 	void waitConversion(void);
 	void DmaConfig(void);
 	void enable();
-	void waitReady();
 	void calibrate();
 
 	static uint8_t _numChannels;
@@ -90,18 +89,17 @@ AdcChannel* Adc::addChannel(uint8_t channel)
 	switch (channel)
 	{
 	case ADC_Channel_0...ADC_Channel_7:
-		gpiox = GPIOA;
-		pinx = 0 + (channel - ADC_Channel_0);
-		break;
+	gpiox = GPIOA;
+	pinx = 0 + (channel - ADC_Channel_0);
+	break;
 	default:
 		return nullptr;
 	}
 
 	// TODO we should insert here instead of counting on them being added in order
 
-	Gpio* gpio = new Gpio(gpiox, pinx);
-
-	gpio->init(GPIO_Mode_AN);
+	Gpio gpio(gpiox, pinx);
+	gpio.init(GPIO_Mode_AN);
 
 	AdcChannel* chanx = new AdcChannel(channel, _numSamples);
 	if (!_head) {
@@ -113,13 +111,13 @@ AdcChannel* Adc::addChannel(uint8_t channel)
 	}
 	_numChannels++;
 
-	 DMA_Cmd(DMA1_Channel1, DISABLE);
-	 if (dmaBuf)
-	 {
-		 delete[] dmaBuf;
-	 }
+	DMA_Cmd(DMA1_Channel1, DISABLE);
+	if (dmaBuf)
+	{
+		delete[] dmaBuf;
+	}
 
-	 dmaBuf = new uint16_t[_numSamples * _numChannels];
+	dmaBuf = new uint16_t[_numSamples * _numChannels];
 
 	initRegSimul();
 	return chanx;
@@ -151,79 +149,17 @@ void Adc::_enableClock(void)
 		break;
 	}
 }
-// Enable GPIO peripheral clock
-// Initialize GPIO
-// Enable ADC interrupt
-// Enable ADC peripheral clock
-// Initialize ADC peripheral
-// Enable ADC peripheral
-// Calibrate ADC
-void Adc::initIndependent(void) {
-//	// enable gpio clock
-//	_gpio->initAnalogIn();
-//
-//	NVIC_InitTypeDef NVIC_InitStructure;
-//	NVIC_InitStructure.NVIC_IRQChannel = ADC1_2_IRQn;
-//	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
-//	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
-//	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-//	NVIC_Init(&NVIC_InitStructure);
-//
-//	_enableClock();
-//
-//	ADC_InitTypeDef ADC_InitStruct;
-//	ADC_InitStruct.ADC_ContinuousConvMode = DISABLE;
-//	ADC_InitStruct.ADC_DataAlign = ADC_DataAlign_Right;
-//	ADC_InitStruct.ADC_ExternalTrigConv = ADC_ExternalTrigConv_None;
-//	ADC_InitStruct.ADC_Mode = ADC_Mode_Independent;
-//	ADC_InitStruct.ADC_NbrOfChannel = 1;
-//	ADC_InitStruct.ADC_ScanConvMode = DISABLE;
-//
-//	ADC_Init(_adc, &ADC_InitStruct);
-//	/* Enable ADC1 */
-//	ADC_Cmd(_adc, ENABLE);
-//
-//	/* Enable ADC1 reset calibaration register */
-//	ADC_ResetCalibration(_adc);
-//	/* Check the end of ADC1 reset calibration register */
-//	while(ADC_GetResetCalibrationStatus(_adc));
-//	/* Start ADC1 calibaration */
-//	ADC_StartCalibration(_adc);
-//	/* Check the end of ADC1 calibration */
-//	while(ADC_GetCalibrationStatus(_adc));
-//	ADC_ITConfig(_adc, ADC_IT_EOC, ENABLE);
-//
-//	ADC_RegularChannelConfig(_adc, _channel, 1, ADC_SampleTime_71Cycles5); // storm
-}
-
-
 
 void Adc::initRegSimul(void)
 {
-	  //ADC_Cmd(ADC1, DISABLE);
-
-
-
 	ADC_InitTypeDef ADC_InitStructure;
 	ADC_StructInit(&ADC_InitStructure);
 
-
-#ifdef STM32F10X_MD
-	  /* ADC1 configuration ------------------------------------------------------*/
-	  ADC_InitStructure.ADC_Mode = ADC_Mode_RegSimult;
-	  ADC_InitStructure.ADC_ScanConvMode = ENABLE;
-	  ADC_InitStructure.ADC_ContinuousConvMode = ENABLE;
-	  ADC_InitStructure.ADC_ExternalTrigConv = ADC_ExternalTrigConv_None;
-	  ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;
-	  ADC_InitStructure.ADC_NbrOfChannel = _numChannels;
-
-#else
 	  ADC_InitStructure.ADC_Resolution = ADC_Resolution_12b;
 	  ADC_InitStructure.ADC_ContinuousConvMode = ENABLE;
 //	  ADC_InitStructure.ADC_ExternalTrigConvEdge = ADC_ExternalTrigConvEdge_Rising;
 	  ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;
 	  ADC_InitStructure.ADC_ScanDirection = ADC_ScanDirection_Upward;
-#endif
 	  ADC_Init(ADC1, &ADC_InitStructure);
 
 	  /* ADC1 regular channels configuration */
@@ -243,59 +179,28 @@ void Adc::initRegSimul(void)
 void Adc::enable(void)
 {
 	ADC_Cmd(ADC1, ENABLE);
-	waitReady();
-}
-
-void Adc::waitReady(void)
-{
-#ifdef STM32F10X_MD
-	DelayMil(1); //tStab??
-#else
-	while(!ADC_GetFlagStatus(ADC1, ADC_FLAG_ADRDY));
-#endif
-;
+	while(!ADC_GetFlagStatus(ADC1, ADC_FLAG_ADRDY)); // wait ready
 }
 
 void Adc::waitConversion(void)
 {
-	  /* Test on DMA1 channel1 transfer complete flag */
 	  while(!DMA_GetFlagStatus(DMA1_FLAG_TC1));
 	  DMA_ClearFlag(DMA1_FLAG_TC1);
-	  // This is how you poll continuously in DMA_Mode_Normal
-	  //DMA_Cmd(DMA1_Channel1, DISABLE);
-
 	  dmaDone();
-
-
-//	  while(!DMA_GetFlagStatus(DMA1_FLAG_TC1));
-//	  /* Clear DMA1 channel1 transfer complete flag */
 }
 
 void Adc::startConversion(void)
 {
-#ifdef STM32F10X_MD
-	  ADC_SoftwareStartConvCmd(ADC1, ENABLE);
-#else
 	  ADC_StartOfConversion(ADC1);
-#endif
 }
 
 void Adc::calibrate(void)
 {
-#ifdef STM32F10X_MD
-	  /* Check the end of ADC1 reset calibration register */
-	  while(ADC_GetResetCalibrationStatus(ADC1));
-	  /* Start ADC1 calibration */
-	  ADC_StartCalibration(ADC1);
-	  /* Check the end of ADC1 calibration */
-	  while(ADC_GetCalibrationStatus(ADC1));
-#else
 	if (!ADC_GetCalibrationFactor(ADC1)) {
 	  printf("ADC failed to calibrate");
-	};
+	}
 	ADC_DMARequestModeConfig(ADC1, ADC_DMAMode_Circular);
 	ADC_ClockModeConfig(ADC1, ADC_ClockMode_SynClkDiv2);
-#endif
 }
 
 void Adc::DmaConfig(void)
