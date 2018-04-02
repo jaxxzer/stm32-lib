@@ -262,9 +262,9 @@ void Brushless::adcInit(void)
 	//adcPhaseB = adcA.addChannel(ADC_Channel_5); // pA5, Phase B
 	adcCurrent = adcA.addChannel(ADC_Channel_6); // PA6, Current Measurement
 
-	adcA.calibrate();
+	adcA._calibrate();
 	adcA.enable();
-	adcA.DmaConfig();
+	adcA._dmaConfig();
 	adcA.startConversion();
 	adcA.waitConversion();
 }

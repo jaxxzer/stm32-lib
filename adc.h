@@ -5,7 +5,6 @@
 #include "gpio.h"
 #include "dma.h"
 
-
 #ifdef STM32F10X_MD
 #define ADC1_DR_Address    ((uint32_t)0x4001244C)
 #else
@@ -16,6 +15,8 @@ class Adc;
 
 class AdcChannel
 {
+	friend class Adc;
+
 public:
 	AdcChannel(uint8_t channel, uint8_t numSamples)
 		: _channel(channel)
@@ -23,75 +24,112 @@ public:
         , enabled(true)
 {}
 	uint8_t _channel;
-	AdcChannel* next;
 	uint32_t _accumulator;
 	uint16_t _average;
 	bool enabled;
+
+private:
+	AdcChannel* next;
 };
 
+// This class is used to initialize and configure an ADC peripheral
+// ADC channels are handling internally as a linked list. This facilitates
+// configuration and handling of regular and injected channel sequencing
+//
+// There is only one ADC output data register shared by the individual ADC
+// channels. In order to handle more than one ADC channel, a buffer must
+// be used in conjuction with DMA transfers. This class always uses DMA
+// even when only one channel is being scanned.
+//
+// Because this use case is so common, this class takes several liberties
+// to set it up, including:
+// - Finding and configuring the appropriate GPIO.
+// - Allocating memory for DMA transfers
+// - Configuring DMA1Channel1 for the transfers.
 class Adc
 {
 public:
 	Adc(ADC_TypeDef* adcx)
-		: dmaBuf(nullptr)
+		: _dmaBuf(nullptr)
 		, _peripheral(adcx)
 		, _head(nullptr)
 	{
 		_enableClock();
+		ADC_StructInit(&_config); // TODO Take this out to save flash
 	};
 
-	void initRegSimul(void);
-	void dmaDone(void);
+	// Number of samples to be averaged for each channel update
+	void setNumSamples(uint16_t samples)
+	{
+		_numSamples = samples;
+	}
+
+	// Update average of all channels
+	void update(void);
+
+	// Wait for the current ADC conversion sequence to complete
 	void waitConversion(void);
-	void DmaConfig(void);
 
-
-//	setNumSamples();
-
-	uint8_t _numChannels;
-	static const uint16_t _numSamples = 10;
-
-	volatile uint16_t* dmaBuf;
-
+	// Initialize peripheral with common/default config
+	// More commonly used arguments are listed first
+	// Default arguments are the same as performed by ADC_StructInit()
 	void init(	FunctionalState continuousConvMode,
 				uint32_t resolution = ADC_Resolution_12b,
 				uint32_t extTrigConvEdge = ADC_ExternalTrigConvEdge_None,
 				uint32_t extTrigConv = ADC_ExternalTrigConv_T1_TRGO,
 				uint32_t dataAlign = ADC_DataAlign_Right,
-				uint32_t scanDirection = ADC_ScanDirection_Upward) {
+				uint32_t scanDirection = ADC_ScanDirection_Upward)
+	{
 		_config.ADC_ContinuousConvMode = continuousConvMode;
 		_config.ADC_Resolution = resolution;
 		_config.ADC_ExternalTrigConvEdge = extTrigConvEdge;
 		_config.ADC_ExternalTrigConv = extTrigConv;
 		_config.ADC_DataAlign = dataAlign;
 		_config.ADC_ScanDirection = scanDirection;
-		init();
+
+		init(); // commit
 	}
 
-	void init(void) {
+	// Initialize peripheral with current config
+	void init(void)
+	{
 		ADC_Init(_peripheral, &_config);
 	}
 
-
-	void dmaConfig(FunctionalState enabled) {
-		ADC_DMACmd(_peripheral, enabled);
-	}
-
+	// Enable the ADC
 	void enable();
-	void calibrate();
+
+	// Configures the gpio, adc channel sequencing, and dma
 
 	AdcChannel* addChannel(uint32_t channel);
 	void startConversion(void);
 
 private:
-	void _enableClock(void);
-	ADC_TypeDef* _peripheral;
-	AdcChannel* _head;
+	ADC_TypeDef* _peripheral; // Eg. ADC1, ADC2...
+	AdcChannel* _head; // First channel in sequence
 	ADC_InitTypeDef _config;
+
+	// Enable the ADC peripheral clock
+	void _enableClock(void);
+
+	// Calibrate the ADC peripheral
+	// This is blocking
+	// This should be called before the peripheral is enabled
+	void _calibrate();
+
+	// Set up the dma buffer, adc requests, and dma channel
+	void _dmaConfig(void);
+
+	// Number of channels to sequence through
+	uint8_t _numChannels;
+
+ 	// Number of samples to be averaged for each channel update
+	uint16_t _numSamples = 10;
+
+	// Buffer to dump conversion results
+	volatile uint16_t* _dmaBuf;
 };
 
-
-// Configures the gpio, adc channel sequencing, and dma
 AdcChannel* Adc::addChannel(uint32_t channel)
 {
 	GPIO_TypeDef* gpiox;
@@ -131,8 +169,6 @@ AdcChannel* Adc::addChannel(uint32_t channel)
 		return chanx;
 }
 
-
-
 void Adc::_enableClock(void)
 {
 	ADC_ClockModeConfig(ADC1, ADC_ClockMode_SynClkDiv2);
@@ -148,9 +184,9 @@ void Adc::_enableClock(void)
 
 void Adc::enable(void)
 {
-	calibrate();
+	_calibrate();
 	ADC_Cmd(ADC1, ENABLE);
-	DmaConfig();
+	_dmaConfig();
 	while(!ADC_GetFlagStatus(ADC1, ADC_FLAG_ADRDY)); // wait ready
 }
 
@@ -158,7 +194,7 @@ void Adc::waitConversion(void)
 {
 	  while(!DMA_GetFlagStatus(DMA1_FLAG_TC1));
 	  DMA_ClearFlag(DMA1_FLAG_TC1);
-	  dmaDone();
+	  update();
 }
 
 void Adc::startConversion(void)
@@ -166,25 +202,25 @@ void Adc::startConversion(void)
 	  ADC_StartOfConversion(ADC1);
 }
 
-void Adc::calibrate(void)
+void Adc::_calibrate(void)
 {
 	ADC_GetCalibrationFactor(ADC1); // blocking on F0
 }
 
-void Adc::DmaConfig(void)
+void Adc::_dmaConfig(void)
 {
 	DMA_Cmd(DMA1_Channel1, DISABLE);
-	if (dmaBuf)
+	if (_dmaBuf)
 	{
-		delete[] dmaBuf;
+		delete[] _dmaBuf;
 	}
 
-	dmaBuf = new uint16_t[_numSamples * _numChannels];
+	_dmaBuf = new uint16_t[_numSamples * _numChannels];
 
 	Dma dma1c1 = Dma(DMA1_Channel1);
 
 	dma1c1.init(((uint32_t)ADC1_DR_Address), //ADC1->DR
-				(uint32_t)dmaBuf,
+				(uint32_t)_dmaBuf,
 				_numChannels * _numSamples,
 				DMA_PeripheralDataSize_HalfWord,
 				DMA_MemoryDataSize_HalfWord,
@@ -198,28 +234,29 @@ void Adc::DmaConfig(void)
 	ADC_DMACmd(ADC1, ENABLE);
 }
 
-void Adc::dmaDone(void)
+void Adc::update(void)
 {
 	AdcChannel* tmp = _head;
 
-	// buffer size = numChannels * numSamples
-	for (uint16_t i = 0; i < _numChannels * _numSamples; i++)
-	{
-		tmp->_accumulator += dmaBuf[i];
+	// Iterate across entire buffer
+	// Sum samples for each individual channel
+	for (uint16_t i = 0; i < _numChannels * _numSamples; i++) {
+		tmp->_accumulator += _dmaBuf[i];
 		if (tmp->next) {
 			tmp = tmp->next;
 		} else {
 			tmp = _head;
 		}
 	}
+
 	tmp = _head;
-	while (tmp)
-	{
+
+	// Iterate across channels in sequence
+	// Calculate average sample value for each individual channel
+	while (tmp) {
 		tmp->_average = tmp->_accumulator / _numSamples;
 		tmp->_accumulator = 0;
 		tmp = tmp->next;
 	}
-
-
 }
 
