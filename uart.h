@@ -29,8 +29,8 @@ public:
 		_config.USART_BaudRate = baudrate;
 		_config.USART_StopBits = stopbits;
 		_config.USART_WordLength = wordlength;
-		_config.USART_Parity;
-		_config.USART_Mode;
+		_config.USART_Parity = parity;
+		_config.USART_Mode = mode;
 		_config.USART_HardwareFlowControl = flowcontrol;
 		init();
 	}

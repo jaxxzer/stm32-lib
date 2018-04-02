@@ -7,6 +7,10 @@
 
 #include "LowPassFilter.h"
 
+#ifdef M_PI
+ #undef M_PI
+#endif
+
 #define M_PI      (3.141592653589793f)
 #define M_2PI     (M_PI * 2)
 ////////////////////////////////////////////////////////////////////////////////////////////

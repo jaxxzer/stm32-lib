@@ -13,14 +13,13 @@ class AdcChannel
 
 public:
 	AdcChannel(uint8_t channel, uint8_t numSamples)
-: _channel(channel)
-, next(nullptr)
-, enabled(true)
-{}
-	uint8_t _channel;
-	uint32_t _accumulator;
-	uint16_t _average;
-	bool enabled;
+		: channel(channel)
+		, next(nullptr)
+	{}
+
+	uint8_t channel;
+	uint32_t accumulator;
+	uint16_t average;
 
 private:
 	AdcChannel* next;
@@ -53,9 +52,9 @@ class Adc
 {
 public:
 	Adc(ADC_TypeDef* adcx)
-		: _dmaBuf(nullptr)
-		, _peripheral(adcx)
+		: _peripheral(adcx)
 		, _head(nullptr)
+		, _dmaBuf(nullptr)
 	{
 			_enableClock();
 			ADC_StructInit(&_config); // TODO Take this out to save flash
@@ -176,7 +175,7 @@ AdcChannel* Adc::addChannel(uint32_t channel)
 	// TODO configure only the added channel
 	// Configure all channels
 	while (tmp) {
-		ADC_ChannelConfig(ADC1, tmp->_channel, ADC_SampleTime_239_5Cycles);
+		ADC_ChannelConfig(ADC1, tmp->channel, ADC_SampleTime_239_5Cycles);
 		tmp = tmp->next;
 	}
 
@@ -255,7 +254,7 @@ void Adc::update(void)
 	// Iterate across entire buffer
 	// Sum samples for each individual channel
 	for (uint16_t i = 0; i < _numChannels * _numSamples; i++) {
-		tmp->_accumulator += _dmaBuf[i];
+		tmp->accumulator += _dmaBuf[i];
 		if (tmp->next) {
 			tmp = tmp->next;
 		} else {
@@ -268,8 +267,8 @@ void Adc::update(void)
 	// Iterate across channels in sequence
 	// Calculate average sample value for each individual channel
 	while (tmp) {
-		tmp->_average = tmp->_accumulator / _numSamples;
-		tmp->_accumulator = 0;
+		tmp->average = tmp->accumulator / _numSamples;
+		tmp->accumulator = 0;
 		tmp = tmp->next;
 	}
 }

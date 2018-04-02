@@ -3,18 +3,6 @@
 #include <math.h>
 #include <stdint.h>
 
-
-///* Return nonzero if VALUE is not a number.  */
-//__MATHDECL_1 (int,__isnan,, (_Mdouble_ __value)) __attribute__ ((__const__));
-//
-//#if defined __USE_MISC || (defined __USE_XOPEN && !defined __USE_XOPEN2K)
-//# if (!defined __cplusplus \
-//      || __cplusplus < 201103L /* isnan conflicts with C++11.  */ \
-//      || __MATH_DECLARING_DOUBLE == 0) /* isnanf or isnanl don't.  */
-///* Return nonzero if VALUE is not a number.  */
-//__MATHDECL_1 (int,isnan,, (_Mdouble_ __value)) __attribute__ ((__const__));
-//# endif
-//#endif
 /*
  * Constrain a value to be within the range: low and high
  */

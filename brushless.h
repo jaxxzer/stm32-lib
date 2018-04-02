@@ -577,7 +577,7 @@ void Brushless::update(void)
 {
 	adcA.waitConversion();
 
-	setDutyCycle(adcInput->_average);
+	setDutyCycle(adcInput->average);
 
 	static uint32_t tNow = 0;
 	static uint32_t tLastInput = 0;

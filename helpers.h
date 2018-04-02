@@ -1,7 +1,7 @@
 #pragma once
 
 #include "stm32f0xx_conf.h"
-
+#include <inttypes.h>
 #include "uart.h"
 
 extern Uart uart;
@@ -116,15 +116,12 @@ extern "C" {
 
 	// This is used by printf, which calls _write in syscalls.c
 	int16_t __io_putchar(uint8_t* ch, uint32_t file) {
-
-		USART_TypeDef usartx;
 		switch(file) {
-		case FD_STDOUT: // TODO find an easy way to map this without modifying library
+		case FD_STDOUT: // TODO find an easy way to map this (function pointer?) without modifying library
 			uart.write((char*)ch);
 			break;
 		case FD_STDERR:
 		case FD_USART1: // For example
-			// Code to write character 'ch' on the UART
 			USART_SendData(USART1, *ch);
 			while (USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET); // blocking!! can prevent code to run
 			break;
