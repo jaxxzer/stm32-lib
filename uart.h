@@ -61,17 +61,6 @@ private:
 	USART_TypeDef* _peripheral;
 
 	USART_InitTypeDef _config;
-
-	static const uint8_t buf_size = 128;
-
-	 uint16_t rxbuf[buf_size];
-	 uint16_t txbuf[buf_size];
-
-	// circular buffer pointers
-	uint16_t* txStart;
-	uint16_t* txEnd;
-	uint16_t* rxStart;
-	uint16_t* rxEnd;
 };
 
 void Uart::setClockEnabled(FunctionalState enabled)
@@ -82,7 +71,6 @@ void Uart::setClockEnabled(FunctionalState enabled)
 		break;
 	default:
 		break;
-
 	}
 }
 
