@@ -61,8 +61,6 @@ public:
 			ADC_StructInit(&_config); // TODO Take this out to save flash
 	}
 
-
-
 	// Initialize peripheral with common/default config
 	// More commonly used arguments are listed first
 	// Default arguments are the same as performed by ADC_StructInit()
@@ -235,7 +233,7 @@ void Adc::_dmaConfig(void)
 
 	Dma dma1c1 = Dma(DMA1_Channel1);
 
-	dma1c1.init((uint32_t)&(ADC1->DR), //ADC1->DR
+	dma1c1.init((uint32_t)&(ADC1->DR),
 			(uint32_t)_dmaBuf,
 			_numChannels * _numSamples,
 			DMA_PeripheralDataSize_HalfWord,
@@ -275,4 +273,3 @@ void Adc::update(void)
 		tmp = tmp->next;
 	}
 }
-
