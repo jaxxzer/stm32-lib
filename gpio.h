@@ -11,12 +11,12 @@ public:
 	// Initialization and configuration
 	void configAF(uint8_t af);
 
-	void init(GPIOMode_TypeDef mode = GPIO_Mode_IN
+	void init(GPIOMode_TypeDef mode
 			, GPIOPuPd_TypeDef pupd = GPIO_PuPd_NOPULL
 			, GPIOOType_TypeDef otype = GPIO_OType_PP
 			, GPIOSpeed_TypeDef speed = GPIO_Speed_Level_2);
 
-	void _init(void);
+	void init(void);
 
 	// Read
 	bool readOutput(void);
@@ -30,9 +30,10 @@ public:
 
 private:
 	void _clockEnable(void);
-	GPIO_TypeDef* _port; //TODO const
-	uint16_t _pin;//TODO const
-	uint16_t _pinSource;//TODO const
+
+	GPIO_TypeDef* _port;
+	uint16_t _pin;
+	uint16_t _pinSource;
 
 	GPIO_InitTypeDef _config;
 };
@@ -46,7 +47,7 @@ void Gpio::init(GPIOMode_TypeDef mode // GPIO_Mode_IN, GPIO_Mode_OUT, GPIO_Mode_
 	_config.GPIO_PuPd = pupd;
 	_config.GPIO_OType = otype;
 	_config.GPIO_Speed = speed;
-	_init();
+	init();
 }
 
 Gpio::Gpio(GPIO_TypeDef* port, uint16_t pin)
@@ -94,7 +95,7 @@ void Gpio::_clockEnable(void)
 	}
 }
 
-void Gpio::_init(void)
+void Gpio::init(void)
 {
 	_config.GPIO_Pin = (_pin);
 	GPIO_Init(_port, &_config);
@@ -102,7 +103,7 @@ void Gpio::_init(void)
 
 void Gpio::gpioInit(GPIO_InitTypeDef* gpioInitStruct) {
 	_config = *gpioInitStruct;
-	_init(); // TODO warn if pin mismatch
+	init(); // TODO warn if pin mismatch
 }
 
 // alternate function config

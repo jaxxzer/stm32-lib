@@ -669,7 +669,7 @@ void Brushless::playNote(uint16_t frequency, uint16_t duration_ms)
 	usart1.bkspc();
 	usart1.write(status[playState++%4]);
 	tim_Pwm.setFrequency(frequency);
-	DelayMil(duration_ms);
+	mDelay(duration_ms);
 }
 
 inline void Brushless::HallHandler(uint16_t captureTime) {

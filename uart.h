@@ -1,10 +1,3 @@
-/*
- * uart.h
- *
- *  Created on: Feb 11, 2018
- *      Author: jack
- */
-
 #pragma once
 
 #include <stdio.h>
@@ -40,14 +33,19 @@ public:
 		_config.USART_HardwareFlowControl = flowcontrol;
 		init();
 	}
+
 	void set_baudrate(uint32_t baudrate)
 	{
 		_config.USART_BaudRate = baudrate;
 	}
+
+	// Start auto baud rate detection
+	// Requires the next byte received to start with a 1
 	void startAutoBaud() {
 		USART_AutoBaudRateConfig(_peripheral, USART_AutoBaudRate_StartBit);
 		USART_AutoBaudRateCmd(_peripheral, ENABLE);
 	}
+
 	void init() {
 		USART_Init(_peripheral, &_config);
 	}
@@ -60,38 +58,6 @@ public:
 
 private:
 	USART_TypeDef* _peripheral;
-
-//	typedef struct
-//	{
-//	  uint32_t USART_BaudRate;            /*!< This member configures the USART communication baud rate.
-//	                                           The baud rate is computed using the following formula:
-//	                                            - IntegerDivider = ((PCLKx) / (16 * (USART_InitStruct->USART_BaudRate)))
-//	                                            - FractionalDivider = ((IntegerDivider - ((uint32_t) IntegerDivider)) * 16) + 0.5 */
-//
-//	  uint32_t USART_WordLength;          /*!< Specifies the number of data bits transmitted or received in a frame.
-//	                                           This parameter can be a value of @ref USART_Word_Length */
-//
-//	  uint32_t USART_StopBits;            /*!< Specifies the number of stop bits transmitted.
-//	                                           This parameter can be a value of @ref USART_Stop_Bits */
-//
-//	  uint32_t USART_Parity;              /*!< Specifies the parity mode.
-//	                                           This parameter can be a value of @ref USART_Parity
-//	                                           @note When parity is enabled, the computed parity is inserted
-//	                                                 at the MSB position of the transmitted data (9th bit when
-//	                                                 the word length is set to 9 data bits; 8th bit when the
-//	                                                 word length is set to 8 data bits). */
-//
-//	  uint32_t USART_Mode;                /*!< Specifies wether the Receive or Transmit mode is enabled or disabled.
-//	                                           This parameter can be a value of @ref USART_Mode */
-//
-//	  uint32_t USART_HardwareFlowControl; /*!< Specifies wether the hardware flow control mode is enabled
-//	                                           or disabled.
-//	                                           This parameter can be a value of @ref USART_Hardware_Flow_Control*/
-//	}
-
-
-
-
 
 	USART_InitTypeDef _config;
 
@@ -147,5 +113,3 @@ void Uart::cls(void) {
 void Uart::bkspc(void) {
 	write(0x08);       // ESC command
 }
-
-
