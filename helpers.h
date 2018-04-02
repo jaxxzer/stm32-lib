@@ -1,14 +1,13 @@
-/*
- * helpers.h
- *
- *  Created on: Feb 7, 2018
- *      Author: jack
- */
-
 #pragma once
+
 #include "stm32f0xx_conf.h"
 
+#include "uart.h"
 
+extern Uart uart;
+
+// This file has some random helper and system functions
+// printf goes to __io_putchar here
 void nvic_config(const uint8_t irq, const uint8_t priority, const FunctionalState enabled)
 {
 	NVIC_InitTypeDef NVIC_InitStructure;
@@ -69,6 +68,7 @@ void printBits(size_t const size, volatile void * const ptr)
 	}
 	puts("");
 }
+
 enum {
 	FD_NULL,
 	FD_STDOUT,
@@ -112,49 +112,47 @@ enum {
 	FD_ITM_CH31
 };
 
-
-#ifdef __cplusplus
 extern "C" {
-#endif
 
-// This is used by printf, which calls _write in syscalls.c
-int16_t __io_putchar(uint8_t* ch, uint32_t file) {
-	switch(file) {
-	case FD_STDOUT:
-	case FD_STDERR:
-	case FD_USART1:
-		// Code to write character 'ch' on the UART
-		USART_SendData(USART1,*ch);
+	// This is used by printf, which calls _write in syscalls.c
+	int16_t __io_putchar(uint8_t* ch, uint32_t file) {
 
-		while (USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET); // blocking!! can prevent code to run
+		USART_TypeDef usartx;
+		switch(file) {
+		case FD_STDOUT: // TODO find an easy way to map this without modifying library
+			uart.write((char*)ch);
+			break;
+		case FD_STDERR:
+		case FD_USART1: // For example
+			// Code to write character 'ch' on the UART
+			USART_SendData(USART1, *ch);
+			while (USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET); // blocking!! can prevent code to run
+			break;
+		case FD_ITM_CH0...FD_ITM_CH31: // For example
+	#ifdef STM32F10X_MD
+		ITM_SendCharPort(*ch, file - FD_ITM_CH0);
+	#endif
 		break;
-	case FD_ITM_CH0...FD_ITM_CH31:
-#ifdef STM32F10X_MD
-	ITM_SendCharPort(*ch, file - FD_ITM_CH0);
-#endif
-	break;
-	case FD_NULL:
-	default:
-		break;
+		case FD_NULL:
+		default:
+			break;
+		}
+
+		{}
+		return *ch;
 	}
 
-	{}
-	return *ch;
-}
+	int __io_getchar(void) {
+		// Code to read a character from the UART
+		return 0;
+	}
 
-int __io_getchar(void) {
-	// Code to read a character from the UART
-	return 0;
+	// This is used by fprintf when only one character is printed, or no formating is used
+	int fputc(int ch, FILE *f)
+	{
+		return __io_putchar((uint8_t*)&ch, f->_file);
+	}
 }
-
-// This is used by fprintf when only one character is printed, or no formating is used
-int fputc(int ch, FILE *f)
-{
-	return __io_putchar((uint8_t*)&ch, f->_file);
-}
-#ifdef __cplusplus
-}
-#endif
 
 
 

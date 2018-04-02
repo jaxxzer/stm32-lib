@@ -12,7 +12,7 @@ public:
 	}
 
 	void write(char* p, uint16_t len);
-	void write(char p);
+	void write(char* p);
 	void cls(void);
 	void bkspc(void);
 	char read();
@@ -90,26 +90,28 @@ void Uart::ITConfig(uint32_t it, FunctionalState enabled)
 	USART_ITConfig(_peripheral, it, enabled);
 }
 
-void Uart::write(char ch) {
+void Uart::write(char* ch) {
 	// Code to write character 'ch' on the UART
-	USART_SendData(USART1,ch);
+	USART_SendData(USART1, *ch);
 	while (USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET);
 }
 
 void Uart::write(char* ch, uint16_t len)
 {
 	for (uint16_t i = 0; i < len; i++) {
-		write(*ch++);
+		write(ch++);
 	}
 }
 
 void Uart::cls(void) {
-	write(27);       // ESC command
+	static const uint8_t esc = 27;
+	write((char*)(&esc));       // ESC command
 	printf("[2J");    // clear screen command
-	write(27);
+	write((char*)(&esc));
 	printf("[H"); // goto home
 }
 
 void Uart::bkspc(void) {
-	write(0x08);       // ESC command
+	static const uint8_t bkspc = 0x08;
+	write((char*)(&bkspc));       // ESC command
 }
