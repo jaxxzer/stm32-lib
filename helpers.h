@@ -156,7 +156,7 @@ extern "C" {
 
 
 
-// TODO figure out wtf this shit is for
+// TODO Implement if necessary
 #ifdef  USE_FULL_ASSERT
 /**
  * @brief  Reports the name of the source file and the source line number

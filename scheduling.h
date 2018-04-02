@@ -1,14 +1,14 @@
 #pragma once
 
 volatile uint32_t MicroSeconds = 0;
-static uint32_t systick_prescaler; // millisecond interrupt
+static uint32_t systick_frequency;
 
-void configureClocks(uint32_t prescaler)
+void configureClocks(uint32_t frequency)
 {
-	systick_prescaler = prescaler;
+	systick_frequency = frequency;
 	SystemInit();
 	SystemCoreClockUpdate();
-	SysTick_Config(SystemCoreClock/systick_prescaler); // 1ms system interrupt
+	SysTick_Config(SystemCoreClock/systick_frequency); // Configure system interrupt
 }
 
 // Delay function for microsecond delay
@@ -29,6 +29,6 @@ void Delay(uint32_t s){
 
 extern "C" {
 	void SysTick_Handler(void){
-		MicroSeconds += 1000000/systick_prescaler; //Increment millisecond variable
+		MicroSeconds += 1000000/systick_frequency; //Increment millisecond variable
 	}
 }
