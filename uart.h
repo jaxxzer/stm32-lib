@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include "stm32f0xx_conf.h"
+#include "scheduling.h"
 
 class Uart
 {
@@ -93,7 +94,8 @@ void Uart::ITConfig(uint32_t it, FunctionalState enabled)
 void Uart::write(char* ch) {
 	// Code to write character 'ch' on the UART
 	USART_SendData(USART1, *ch);
-	while (USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET);
+	uint32_t tstart = MicroSeconds;
+	while (USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET && (MicroSeconds < tstart + 50));
 }
 
 void Uart::write(char* ch, uint16_t len)
