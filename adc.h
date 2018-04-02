@@ -5,12 +5,6 @@
 #include "gpio.h"
 #include "dma.h"
 
-#ifdef STM32F10X_MD
-#define ADC1_DR_Address    ((uint32_t)0x4001244C)
-#else
-#define ADC1_DR_Address    0x40012440
-#endif
-
 class Adc;
 
 class AdcChannel
@@ -241,7 +235,7 @@ void Adc::_dmaConfig(void)
 
 	Dma dma1c1 = Dma(DMA1_Channel1);
 
-	dma1c1.init(((uint32_t)ADC1_DR_Address), //ADC1->DR
+	dma1c1.init((uint32_t)&(ADC1->DR), //ADC1->DR
 			(uint32_t)_dmaBuf,
 			_numChannels * _numSamples,
 			DMA_PeripheralDataSize_HalfWord,
