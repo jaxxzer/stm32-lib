@@ -56,7 +56,7 @@ public:
 		, _head(nullptr)
 		, _dmaBuf(nullptr)
 	{
-			_enableClock();
+		_enableClock();
 	}
 
 	//  15012	    156	    412	  15580	   3cdc	BlueBMS.elf
