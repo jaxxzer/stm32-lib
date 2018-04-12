@@ -44,7 +44,11 @@ private:
 
 void Flash::printContents()
 {
-	for (uint16_t* i = pageAddress; i < pageAddress + _pageSize * _pages; i += _blockSize )
+	printf("\n\r               ");
+	for (uint8_t i = 0; i < _blockSize; i++) {
+		printf("  %d  ", i);
+	}
+	for (uint16_t* i = pageAddress; i < pageAddress + (_pageSize/2) * _pages; i += _blockSize )
 	{
 		printBlock(i);
 	}
@@ -53,8 +57,12 @@ void Flash::printContents()
 void Flash::printBlock(uint16_t* block)
 {
 	printf("\n\rBlock %d", (uint32_t)block);
-	for (uint16_t* i = block; i < block + _blockSize * wordSize; i += wordSize) {
-		printf("%d   ", *i);
+	for (uint16_t* i = block; i < block + _blockSize; i++) {
+		if (*i == FLASH_ERASED) {
+			printf(" 0xFF ");
+		} else {
+			printf("  %d  ", *i);
+		}
 	}
 }
 
@@ -113,7 +121,7 @@ void Flash::readBlock(uint16_t* block, uint8_t len) {
 
 
 void Flash::writeBlock(uint16_t* block, uint8_t len) {
-
+	printContents();
 	if (available()/2 < len) {
 		erase();
 	}
