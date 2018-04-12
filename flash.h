@@ -67,7 +67,7 @@ void Flash::printBlock(uint16_t* block)
 }
 
 void Flash::init() {
-	firstErasedOffset = 0;
+	firstErasedOffset = _pageSize;
 
 	for (uint16_t i = 0; i < _pageSize/2; i++) {
 		uint16_t* addr = (pageAddress + i);
@@ -79,7 +79,6 @@ void Flash::init() {
 		}
 	}
 	printf("\n\rFirst Erased: %d \tSpace remaining: %d", (uint32_t)pageAddress + firstErasedOffset, available());
-	if (!firstErasedOffset) erase();
 }
 
 
