@@ -22,6 +22,7 @@ public:
 
 	uint16_t totalSize(void) { return _pageSize * _pages; }
 
+	void printContents();
 
 private:
 
@@ -29,15 +30,33 @@ private:
 	void _unlock();
 	void _waitOperation();
 
+	const uint8_t wordSize = 2;
+
 	uint16_t* pageAddress = (uint16_t*)0x08003C00; // Page 16
 	uint16_t firstErasedOffset;
-	const uint16_t _pageSize = 1024; // bytes, platform dependent 'low, medium, high density..'
+	const uint16_t _pageSize = 1024; // TODO words, also platform dependent 'low, medium, high density..'
 	const uint8_t _pages;
 	const uint16_t _blockSize;
 
+	void printBlock(uint16_t* block);
+
 };
 
+void Flash::printContents()
+{
+	for (uint16_t* i = pageAddress; i < pageAddress + _pageSize * _pages; i += _blockSize )
+	{
+		printBlock(i);
+	}
+}
 
+void Flash::printBlock(uint16_t* block)
+{
+	printf("\n\rBlock %d", (uint32_t)block);
+	for (uint16_t* i = block; i < block + _blockSize * wordSize; i += wordSize) {
+		printf("%d   ", *i);
+	}
+}
 
 void Flash::init() {
 	firstErasedOffset = 0;
