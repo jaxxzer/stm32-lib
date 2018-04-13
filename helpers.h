@@ -12,6 +12,10 @@ void print(const char* c) {
 	}
 }
 
+void println(void)
+{
+	print("\n\r");
+}
 void printHex(uint16_t i)
 {
 	char buf[4];

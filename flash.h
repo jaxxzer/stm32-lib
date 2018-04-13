@@ -49,14 +49,17 @@ private:
 	void printBlock(uint16_t* block);
 
 };
-
+uint8_t bNum;
 void Flash::printContents()
 {
-	print("\n\r               ");
+	println();
+	print("   ");
 	for (uint8_t i = 0; i < _blockSize; i++) {
 		print("  ");
 		my_printInt(i);
 	}
+	bNum = 0;
+
 	for (uint16_t* i = pageAddress; i < pageAddress + (_pageSize/2) * _pages; i += _blockSize )
 	{
 		printBlock(i);
@@ -65,10 +68,14 @@ void Flash::printContents()
 
 void Flash::printBlock(uint16_t* block)
 {
-	print("\n\r");
+	println();
+	my_printInt(bNum++);
+	print("   ");
 	for (uint16_t* i = block; i < block + _blockSize; i++) {
-		print("  ");
-		printHex(*i);
+		if (i < pageAddress + (_pageSize/2) * _pages) {
+			print("  ");
+			printHex(*i);
+		}
 	}
 }
 
