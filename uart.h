@@ -12,8 +12,8 @@ public:
 		USART_StructInit(&_config);
 	}
 
-	void write(char* p, uint16_t len);
-	void write(char* p);
+	void write(const char* p, uint16_t len);
+	void write(const char* p);
 
 	int read(void);
 	uint8_t rxWaiting(void);
@@ -107,7 +107,7 @@ uint8_t Uart::txSpaceAvailable(void)
 	return bufSize - txSpaceUsed() - 1;
 }
 
-void Uart::write(char* ch) {
+void Uart::write(const char* ch) {
 	while (!txSpaceAvailable()) {
 		txOverruns++; // block when buffer is full
 	}
@@ -118,7 +118,7 @@ void Uart::write(char* ch) {
 	_peripheral->CR1 |= USART_CR1_TXEIE;
 }
 
-void Uart::write(char* ch, uint16_t len)
+void Uart::write(const char* ch, uint16_t len)
 {
 	for (uint16_t i = 0; i < len; i++) {
 		write(ch++);

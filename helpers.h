@@ -6,6 +6,12 @@
 
 extern Uart uart;
 
+void print(const char* c) {
+	while (*c != 0) {
+		uart.write(c++);
+	}
+}
+
 void printHex(uint16_t i)
 {
 	char buf[4];
@@ -19,6 +25,9 @@ void printHex(uint16_t i)
 			break;
 		case 0xA ... 0xF:
 			buf[--p] = 'A' + digit - 10;
+			break;
+		default:
+			break;
 		}
 		i /= 16;
 	} while (i);

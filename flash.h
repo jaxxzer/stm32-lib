@@ -2,6 +2,12 @@
 
 #include <stdio.h>
 
+
+// On STM32F0 Datasheet:
+// 16-bit programming time: 53.5 microseconds
+// Page/Mass erase time: 30 milliseconds
+// Endurance: 1 kcycle! *based on characterization, not empirical results
+
 class Flash
 {
 public:
@@ -121,6 +127,7 @@ void Flash::readBlock(uint16_t* block, uint8_t len) {
 
 void Flash::writeBlock(uint16_t* block, uint8_t len) {
 	//printContents();
+    FLASH_Unlock();
 	if (available()/2 < len) {
 		erase();
 	}
@@ -137,6 +144,8 @@ void Flash::writeBlock(uint16_t* block, uint8_t len) {
 	}
 
 	firstErasedOffset += len * sizeof(uint16_t);
+    FLASH_Lock();
+
 	//printf("\n\rFirst Erased: %d \tSpace remaining: %d", (uint32_t)pageAddress + firstErasedOffset, available());
 
 	//printf("\n\rFirstErased: %d", (uint32_t)pageAddress + firstErasedOffset);
