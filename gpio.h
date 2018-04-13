@@ -35,7 +35,7 @@ private:
 	uint16_t _pin;
 	uint16_t _pinSource;
 
-	GPIO_InitTypeDef _config;
+	//GPIO_InitTypeDef _config;
 };
 
 void Gpio::init(GPIOMode_TypeDef mode // GPIO_Mode_IN, GPIO_Mode_OUT, GPIO_Mode_AF, GPIO_Mode_AN
@@ -43,11 +43,14 @@ void Gpio::init(GPIOMode_TypeDef mode // GPIO_Mode_IN, GPIO_Mode_OUT, GPIO_Mode_
 			, GPIOOType_TypeDef otype
 			, GPIOSpeed_TypeDef speed)
 {
+	GPIO_InitTypeDef _config;
 	_config.GPIO_Mode = mode;
 	_config.GPIO_PuPd = pupd;
 	_config.GPIO_OType = otype;
 	_config.GPIO_Speed = speed;
-	init();
+	_config.GPIO_Pin = (_pin);
+	GPIO_Init(_port, &_config);
+	//init();
 }
 
 Gpio::Gpio(GPIO_TypeDef* port, uint16_t pin)
@@ -56,7 +59,7 @@ Gpio::Gpio(GPIO_TypeDef* port, uint16_t pin)
     , _pinSource(pin)
 {
 	_clockEnable();
-	GPIO_StructInit(&_config);
+	//GPIO_StructInit(&_config);
 }
 
 void Gpio::_clockEnable(void)
@@ -95,16 +98,16 @@ void Gpio::_clockEnable(void)
 	}
 }
 
-void Gpio::init(void)
-{
-	_config.GPIO_Pin = (_pin);
-	GPIO_Init(_port, &_config);
-}
+//void Gpio::init(void)
+//{
+//	_config.GPIO_Pin = (_pin);
+//	GPIO_Init(_port, &_config);
+//}
 
-void Gpio::gpioInit(GPIO_InitTypeDef* gpioInitStruct) {
-	_config = *gpioInitStruct;
-	init(); // TODO warn if pin mismatch
-}
+//void Gpio::gpioInit(GPIO_InitTypeDef* gpioInitStruct) {
+//	_config = *gpioInitStruct;
+//	init(); // TODO warn if pin mismatch
+//}
 
 // alternate function config
 // See datasheet section 4 'Pinouts and pin descriptions'
@@ -115,7 +118,8 @@ void Gpio::configAF(uint8_t af) {
 void Gpio::set(bool set)
 {
 	if (set) {
-		GPIO_SetBits(_port, _pin);
+		//GPIO_SetBits(_port, _pin);
+		_port->BSRR = _pin;
 	} else {
 		reset();
 	}
@@ -123,22 +127,31 @@ void Gpio::set(bool set)
 
 void Gpio::reset(void)
 {
-	GPIO_ResetBits(_port, _pin);
+	//GPIO_ResetBits(_port, _pin);
+	_port->BRR = _pin;
 }
 
 bool Gpio::readOutput(void)
 {
-	return GPIO_ReadOutputDataBit(_port, _pin);
+	//return GPIO_ReadOutputDataBit(_port, _pin);
+	return _port->ODR & _pin;
 }
 
 bool Gpio::readInput(void)
 {
-	return GPIO_ReadInputDataBit(_port, _pin);
+	//return GPIO_ReadInputDataBit(_port, _pin);
+	return _port->IDR & _pin;
 }
 
 
 void Gpio::toggle(void)
 {
 	BitAction new_state = (BitAction)!readOutput();
-	GPIO_WriteBit(_port, _pin, new_state);
+	//GPIO_WriteBit(_port, _pin, new_state);
+
+	if (new_state != Bit_RESET) {
+		_port->BSRR = _pin;
+	} else {
+		_port->BRR = _pin ;
+	}
 }
