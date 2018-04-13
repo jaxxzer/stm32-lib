@@ -6,6 +6,54 @@
 
 extern Uart uart;
 
+void printHex(uint16_t i)
+{
+	char buf[4];
+	uint8_t p = 4;
+
+	do {
+		uint8_t digit = i%16;
+		switch (digit) {
+		case 0 ... 9:
+			buf[--p] = '0' + digit;
+			break;
+		case 0xA ... 0xF:
+			buf[--p] = 'A' + digit - 10;
+		}
+		i /= 16;
+	} while (i);
+	uart.write(&buf[p], 4-p);
+}
+
+uint16_t my_atoi(char* c)
+{
+	uint16_t r = 0;
+	while (*c) {
+		uint8_t h = *(uint8_t*)c;
+		uint8_t e = (uint8_t)'0';
+		r = r * 10 + h - e;
+		c++;
+	}
+	return r;
+}
+
+void my_printInt(uint16_t i) {
+	char c[5];
+	uint8_t len = 5;
+
+	uint8_t p = i % 10;
+	c[--len] = p + '0';
+	i -= p; // not neccessary? taken care of with integer division
+
+	while (i) {
+		i /= 10;
+		p = i % 10;
+		c[--len] = p  + '0';
+		i -= p; // not neccessary? taken care of with integer division
+	}
+	uart.write(&c[len], 5-len);
+}
+
 // This file has some random helper and system functions
 // printf goes to __io_putchar here
 void nvic_config(const uint8_t irq, const uint8_t priority, const FunctionalState enabled)

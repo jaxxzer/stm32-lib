@@ -78,12 +78,12 @@ void Flash::init() {
 			break;
 		}
 	}
-	printf("\n\rFirst Erased: %d \tSpace remaining: %d", (uint32_t)pageAddress + firstErasedOffset, available());
+	//printf("\n\rFirst Erased: %d \tSpace remaining: %d", (uint32_t)pageAddress + firstErasedOffset, available());
 }
 
 
 void Flash::erase() {
-	printf("Erasing flash");
+	//printf("Erasing flash");
 	FLASH_ErasePage((uint32_t)pageAddress);
 	firstErasedOffset = 0;
 }
@@ -108,7 +108,7 @@ uint16_t* Flash::currentBlock(void) {
 }
 
 void Flash::readBlock(uint16_t* block, uint8_t len) {
-	printf("\n\rreading config from: %d", currentBlock());
+	//printf("\n\rreading config from: %d", currentBlock());
 
 	for (int i = 0; i < len; i++) { // TODO memcpy?
 		block[i] = currentBlock()[i];
@@ -120,7 +120,7 @@ void Flash::readBlock(uint16_t* block, uint8_t len) {
 
 
 void Flash::writeBlock(uint16_t* block, uint8_t len) {
-	printContents();
+	//printContents();
 	if (available()/2 < len) {
 		erase();
 	}
@@ -137,7 +137,7 @@ void Flash::writeBlock(uint16_t* block, uint8_t len) {
 	}
 
 	firstErasedOffset += len * sizeof(uint16_t);
-	printf("\n\rFirst Erased: %d \tSpace remaining: %d", (uint32_t)pageAddress + firstErasedOffset, available());
+	//printf("\n\rFirst Erased: %d \tSpace remaining: %d", (uint32_t)pageAddress + firstErasedOffset, available());
 
 	//printf("\n\rFirstErased: %d", (uint32_t)pageAddress + firstErasedOffset);
 }
