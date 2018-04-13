@@ -2,7 +2,7 @@
 
 #include <stdio.h>
 
-
+#include "helpers.h"
 // On STM32F0 Datasheet:
 // 16-bit programming time: 53.5 microseconds
 // Page/Mass erase time: 30 milliseconds
@@ -52,9 +52,10 @@ private:
 
 void Flash::printContents()
 {
-	printf("\n\r               ");
+	print("\n\r               ");
 	for (uint8_t i = 0; i < _blockSize; i++) {
-		printf("  %d  ", i);
+		print("  ");
+		my_printInt(i);
 	}
 	for (uint16_t* i = pageAddress; i < pageAddress + (_pageSize/2) * _pages; i += _blockSize )
 	{
@@ -64,13 +65,10 @@ void Flash::printContents()
 
 void Flash::printBlock(uint16_t* block)
 {
-	printf("\n\rBlock %d", (uint32_t)block);
+	print("\n\r");
 	for (uint16_t* i = block; i < block + _blockSize; i++) {
-		if (*i == FLASH_ERASED) {
-			printf(" 0xFF ");
-		} else {
-			printf("  %d  ", *i);
-		}
+		print("  ");
+		printHex(*i);
 	}
 }
 
@@ -128,7 +126,6 @@ void Flash::readBlock(uint16_t* block, uint8_t len) {
 
 
 void Flash::writeBlock(uint16_t* block, uint8_t len) {
-	//printContents();
     FLASH_Unlock();
 	if (available()/2 < len) {
 		erase();
@@ -137,16 +134,19 @@ void Flash::writeBlock(uint16_t* block, uint8_t len) {
 	{
 	       FLASH_ClearFlag(FLASH_FLAG_EOP|FLASH_FLAG_PGERR);
 
-	       while(FLASH_GetStatus() == FLASH_BUSY);
 	       uint16_t offset = i * sizeof(uint16_t);
 		uint32_t addr = (uint32_t)pageAddress + firstErasedOffset + offset;
 		//printf("\n\r%dWriting to address: %d: %d ", i, addr, config[i]);
 		FLASH_ProgramHalfWord(addr, *(block + i));
+	       while(FLASH_GetStatus() == FLASH_BUSY);
+
 		//mDelay(50);
 	}
 
 	firstErasedOffset += len * sizeof(uint16_t);
     FLASH_Lock();
+
+	printContents();
 
 	//printf("\n\rFirst Erased: %d \tSpace remaining: %d", (uint32_t)pageAddress + firstErasedOffset, available());
 
