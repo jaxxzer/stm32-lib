@@ -62,7 +62,7 @@ public:
 
 	void setClockEnabled(FunctionalState enabled);
 
-	static const uint8_t bufSize = 64;
+	static const uint8_t bufSize = 32;
 	char rxBuf[bufSize];
 	char txBuf[bufSize];
 

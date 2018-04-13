@@ -14,7 +14,9 @@ public:
 	Flash(uint8_t pages, uint8_t blockSize)
 		: _blockSize(blockSize)
 		, _pages(pages)
-	{}
+	{
+	    FLASH_SetLatency(FLASH_Latency_1);
+	}
 
 	static const uint16_t FLASH_ERASED = 0xFFFF;
 

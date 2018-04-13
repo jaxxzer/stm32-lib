@@ -46,6 +46,22 @@ uint16_t my_atoi(char* c)
 	return r;
 }
 
+void print(uint16_t i) {
+	char c[5];
+	uint8_t len = 5;
+
+	uint8_t p = i % 10;
+	c[--len] = p + '0';
+	i -= p; // not neccessary? taken care of with integer division
+
+	while (i) {
+		i /= 10;
+		p = i % 10;
+		c[--len] = p  + '0';
+		i -= p; // not neccessary? taken care of with integer division
+	}
+	uart.write(&c[len], 5-len);
+}
 void my_printInt(uint16_t i) {
 	char c[5];
 	uint8_t len = 5;
