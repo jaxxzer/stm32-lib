@@ -12,7 +12,8 @@ uint32_t crcCalcChecksum(uint32_t* buf, uint8_t len) {
 	for (uint8_t i = 0; i < len; i++) {
 		CRC_CalcCRC(buf[i]);
 	}
-	return CRC_GetCRC();
+	//return CRC_GetCRC();
+	return 0xFFFFFFFF;
 }
 
 class Flash
@@ -141,8 +142,18 @@ bool Flash::verifyChecksum(void)
 	uint32_t cs = crcCalcChecksum(start, _blockSize/2 -1);
 	// blocksize is in (16bit)words
 	// we are checking 32bits at a time
+	print("\n\rChecksum: "); printHex(cs); print("Check: "); printHex(start[_blockSize/2 -1]);
 
-	print("\n\rChecksum: "); printHex(CRC_GetCRC()); print("Check: "); printHex(start[_blockSize/2 -1]);
+	if ((cs & FLASH_ERASED) == FLASH_ERASED) {
+		cs -= 1;
+	}
+
+	if ((cs & (FLASH_ERASED << 8)) == (FLASH_ERASED << 8)) {
+		cs -= 0x10000;
+	}
+
+	print("\n\rChecksum: "); printHex(cs); print("Check: "); printHex(start[_blockSize/2 -1]);
+
 	return cs == start[_blockSize/2 -1];
 }
 
@@ -174,10 +185,12 @@ void Flash::writeBlock(uint16_t* block, uint8_t len)
 	       uint16_t offset = i * sizeof(uint16_t);
 		uint32_t addr = (uint32_t)pageAddress + firstErasedOffset + offset;
 		//printf("\n\r%dWriting to address: %d: %d ", i, addr, config[i]);
-		FLASH_ProgramHalfWord(addr, *(block + i));
-	       while(FLASH_GetStatus() == FLASH_BUSY);
+		uint16_t value = *(block + i);
 
-		//mDelay(50);
+		if (value == FLASH_ERASED) value = FLASH_ERASED - 1; // sentinal value not allowed
+		FLASH_ProgramHalfWord(addr, value);
+	    while(FLASH_GetStatus() == FLASH_BUSY)
+	    {}
 	}
 
 	firstErasedOffset += len * sizeof(uint16_t);
