@@ -16,10 +16,10 @@ void println(void)
 {
 	print("\n\r");
 }
-void printHex(uint16_t i)
+void printHex(uint32_t i)
 {
-	char buf[4];
-	uint8_t p = 4;
+	char buf[8];
+	uint8_t p = 8;
 
 	do {
 		uint8_t digit = i%16;
@@ -35,7 +35,10 @@ void printHex(uint16_t i)
 		}
 		i /= 16;
 	} while (i);
-	uart.write(&buf[p], 4-p);
+	while (p--) {
+		buf[p] = '0';
+	}
+	uart.write(buf, 8);
 }
 
 uint16_t my_atoi(char* c)
@@ -66,9 +69,9 @@ void print(uint16_t i) {
 	}
 	uart.write(&c[len], 5-len);
 }
-void my_printInt(uint16_t i) {
-	char c[5];
-	uint8_t len = 5;
+void my_printInt(uint32_t i) {
+	char c[10];
+	uint8_t len = 10;
 
 	uint8_t p = i % 10;
 	c[--len] = p + '0';
@@ -80,7 +83,7 @@ void my_printInt(uint16_t i) {
 		c[--len] = p  + '0';
 		i -= p; // not neccessary? taken care of with integer division
 	}
-	uart.write(&c[len], 5-len);
+	uart.write(&c[len], 10-len);
 }
 
 // This file has some random helper and system functions

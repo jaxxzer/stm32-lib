@@ -7,6 +7,13 @@
 // 16-bit programming time: 53.5 microseconds
 // Page/Mass erase time: 30 milliseconds
 // Endurance: 1 kcycle! *based on characterization, not empirical results
+uint32_t crcCalcChecksum(uint32_t* buf, uint8_t len) {
+	CRC_ResetDR();
+	for (uint8_t i = 0; i < len; i++) {
+		CRC_CalcCRC(buf[i]);
+	}
+	return CRC_GetCRC();
+}
 
 class Flash
 {
@@ -27,6 +34,7 @@ public:
 	void init(void);
 	void writeBlock(uint16_t* block, uint8_t len);
 	void readBlock(uint16_t* block, uint8_t len);
+	bool verifyChecksum(void);
 
 	uint16_t totalSize(void) { return _pageSize * _pages; }
 
@@ -53,9 +61,9 @@ uint8_t bNum;
 void Flash::printContents()
 {
 	println();
-	print("   ");
+	print("    ");
 	for (uint8_t i = 0; i < _blockSize; i++) {
-		print("  ");
+		print("       ");
 		my_printInt(i);
 	}
 	bNum = 0;
@@ -70,10 +78,13 @@ void Flash::printBlock(uint16_t* block)
 {
 	println();
 	my_printInt(bNum++);
+	if ((bNum) < 11) { // 0-9...
+		print(" ");
+	}
 	print("   ");
 	for (uint16_t* i = block; i < block + _blockSize; i++) {
 		if (i < pageAddress + (_pageSize/2) * _pages) {
-			print("  ");
+			print(" ");
 			printHex(*i);
 		}
 	}
@@ -102,7 +113,8 @@ void Flash::erase() {
 }
 
 // bytes remaining
-uint16_t Flash::available(void) {
+uint16_t Flash::available(void)
+{
 	if (firstErasedOffset > _pageSize) {
 		return 0;
 	}
@@ -111,7 +123,8 @@ uint16_t Flash::available(void) {
 
 
 
-uint16_t* Flash::currentBlock(void) {
+uint16_t* Flash::currentBlock(void)
+{
 	uint16_t offset = firstErasedOffset >= _blockSize
 			? firstErasedOffset - _blockSize * sizeof(uint16_t)
 			: 0;
@@ -120,7 +133,23 @@ uint16_t* Flash::currentBlock(void) {
 	return (uint16_t*)addr;
 }
 
-void Flash::readBlock(uint16_t* block, uint8_t len) {
+bool Flash::verifyChecksum(void)
+{
+	print("\n\n\n\n");
+
+	uint32_t* start = (uint32_t*)currentBlock();
+	uint32_t cs = crcCalcChecksum(start, _blockSize/2 -1);
+	// blocksize is in (16bit)words
+	// we are checking 32bits at a time
+
+	print("\n\rChecksum: "); printHex(CRC_GetCRC()); print("Check: "); printHex(start[_blockSize/2 -1]);
+	return cs == start[_blockSize/2 -1];
+}
+
+
+
+void Flash::readBlock(uint16_t* block, uint8_t len)
+{
 	//printf("\n\rreading config from: %d", currentBlock());
 
 	for (int i = 0; i < len; i++) { // TODO memcpy?
@@ -132,7 +161,8 @@ void Flash::readBlock(uint16_t* block, uint8_t len) {
 
 
 
-void Flash::writeBlock(uint16_t* block, uint8_t len) {
+void Flash::writeBlock(uint16_t* block, uint8_t len)
+{
     FLASH_Unlock();
 	if (available()/2 < len) {
 		erase();
