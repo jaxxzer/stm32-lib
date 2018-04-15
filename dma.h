@@ -5,13 +5,11 @@
 class Dma {
 	public:
 	Dma(DMA_Channel_TypeDef* peripheral) : _peripheral(peripheral) {
-		DMA_StructInit(&_config);
 		_clockEnable();
 	};
 
 	DMA_Channel_TypeDef* _peripheral;
 
-	DMA_InitTypeDef _config;
 	void init(	uint32_t peripheralBaseAddr,
 				uint32_t memoryBaseAddr,
 				uint32_t bufferSize,
@@ -24,6 +22,8 @@ class Dma {
 				uint32_t peripheralInc = DMA_PeripheralInc_Disable,
 				uint32_t m2m = DMA_M2M_Disable)
 	{
+		DMA_InitTypeDef _config;
+
 		_config.DMA_PeripheralBaseAddr = peripheralBaseAddr;
 		_config.DMA_MemoryBaseAddr = memoryBaseAddr;
 		_config.DMA_DIR = direction;
@@ -35,12 +35,9 @@ class Dma {
 		_config.DMA_Mode = mode;
 		_config.DMA_Priority = priority;
 		_config.DMA_M2M = m2m;
-		init();
-	}
-
-	void init(void) {
 		DMA_Init(_peripheral, &_config);
 	}
+
 	void setEnabled(FunctionalState enabled) {
 		DMA_Cmd(_peripheral, enabled);
 	}
