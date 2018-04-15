@@ -3,53 +3,60 @@
 #include <stdio.h>
 #include "crc.h"
 #include "helpers.h"
-// On STM32F0 Datasheet:
+
+// STM32F0 Datasheet:
 // 16-bit programming time: 53.5 microseconds
 // Page/Mass erase time: 30 milliseconds
-// Endurance: 1 kcycle! *based on characterization, not empirical results
+// Endurance: 1 kcycle only! *based on characterization, not empirical results
+
+// _blockSize in 16bit words
+
+// TODO make singleton/static
 class Flash
 {
 public:
 	Flash(uint8_t pages, uint8_t blockSize)
-		: _blockSize(blockSize)
+		: _blockSize(blockSize) // add two 16 bit words for the 32 bit checksum
 		, _pages(pages)
 	{
 	    FLASH_SetLatency(FLASH_Latency_1);
+	    crcInit();
 	}
 
 	static const uint16_t FLASH_ERASED = 0xFFFF;
 
 	uint16_t available(void);
-
 	uint16_t* currentBlock(void);
-	void erase(void);
+
+	// Initialize
 	void init(void);
+	void erase(void); // Erase entire reserved flash region
 	void writeBlock(uint16_t* block, uint8_t len);
 	void readBlock(uint16_t* block, uint8_t len);
 	bool verifyChecksum(void);
 
 	uint16_t totalSize(void) { return _pageSize * _pages; }
 
+	void printBlock(uint16_t* block);
 	void printContents();
 
 private:
 
-	void _lock();
-	void _unlock();
-	void _waitOperation();
+	void _lock(); // Write lock flash
+	void _unlock(); // Unlock flash for write access
+	void _waitOperation(); // Wait for current flash operation to complete
 
-	const uint8_t wordSize = 2;
+	const uint8_t wordSize = 2; // 16 bit word, 2 bytes
 
 	uint16_t* pageAddress = (uint16_t*)0x08003C00; // Page 16
-	uint16_t firstErasedOffset;
-	const uint16_t _pageSize = 1024; // TODO words, also platform dependent 'low, medium, high density..'
+	uint16_t firstAvailableWordOffset;
+	const uint16_t _pageSize = 1024 / sizeof(uint16_t); // TODO words, also platform dependent 'low, medium, high density..'
 	const uint8_t _pages;
 	const uint16_t _blockSize;
 
-	void printBlock(uint16_t* block);
 
 };
-uint8_t bNum;
+
 void Flash::printContents()
 {
 	println();
@@ -58,24 +65,24 @@ void Flash::printContents()
 		print("    ");
 		my_printInt(i);
 	}
-	bNum = 0;
 
-	for (uint16_t* i = pageAddress; i < pageAddress + (_pageSize/2) * _pages; i += _blockSize )
+	uint8_t bNum = 0;
+	for (uint16_t* i = pageAddress; i < pageAddress + _pageSize * _pages; i += _blockSize)
 	{
+		println();
+		my_printInt(bNum++);
+		if ((bNum) < 11) { // 0-9...
+			print(" ");
+		}
+		print("   ");
 		printBlock(i);
 	}
 }
 
 void Flash::printBlock(uint16_t* block)
 {
-	println();
-	my_printInt(bNum++);
-	if ((bNum) < 11) { // 0-9...
-		print(" ");
-	}
-	print("   ");
 	for (uint16_t* i = block; i < block + _blockSize; i++) {
-		if (i < pageAddress + (_pageSize/2) * _pages) {
+		if (i < pageAddress + _pageSize * _pages) {
 			print(" ");
 			printHex(*i);
 		}
@@ -83,48 +90,55 @@ void Flash::printBlock(uint16_t* block)
 }
 
 void Flash::init() {
-    crcInit();
 
-	firstErasedOffset = _pageSize;
+	firstAvailableWordOffset = _pageSize * _pages;
 
-	for (uint16_t i = 0; i < _pageSize/2; i++) {
-		uint16_t* addr = (pageAddress + i);
+	for (uint16_t* addr = pageAddress; addr < pageAddress + _pageSize * _pages; addr++) {
 		uint16_t val = *addr;
-		//printf("\n\rSearching for first address: %d \t%d", addr, val);
 		if (val == 0xFFFF) {
-			firstErasedOffset = i * sizeof(uint16_t);
+			firstAvailableWordOffset = addr - pageAddress;
 			break;
 		}
 	}
+
+//	for (uint16_t i = 0; i < _pageSize; i++) {
+//		uint16_t* addr = (pageAddress + i);
+//		uint16_t val = *addr;
+//		//printf("\n\rSearching for first address: %d \t%d", addr, val);
+//		if (val == 0xFFFF) {
+//			firstAvailableWordOffset = i * sizeof(uint16_t);
+//			break;
+//		}
+//	}
 	//printf("\n\rFirst Erased: %d \tSpace remaining: %d", (uint32_t)pageAddress + firstErasedOffset, available());
 }
 
 
 void Flash::erase() {
-	//printf("Erasing flash");
-	FLASH_ErasePage((uint32_t)pageAddress);
-	firstErasedOffset = 0;
+	for (uint8_t i = 0; i < _pages; i++) {
+		FLASH_ErasePage((uint32_t)pageAddress + i * _pageSize);
+	}
+	firstAvailableWordOffset = 0;
 }
 
 // bytes remaining
 uint16_t Flash::available(void)
 {
-	if (firstErasedOffset > _pageSize) {
+	if (firstAvailableWordOffset > _pageSize) {
 		return 0;
 	}
-	return _pageSize - firstErasedOffset;
+	return _pageSize - firstAvailableWordOffset;
 }
 
 
 
 uint16_t* Flash::currentBlock(void)
 {
-	uint16_t offset = firstErasedOffset >= _blockSize
-			? firstErasedOffset - _blockSize * sizeof(uint16_t)
+	uint16_t offset = firstAvailableWordOffset >= _blockSize
+			? firstAvailableWordOffset - _blockSize
 			: 0;
 
-	uint32_t addr = (uint32_t)pageAddress + offset;
-	return (uint16_t*)addr;
+	return pageAddress + offset;
 }
 
 bool Flash::verifyChecksum(void)
@@ -163,29 +177,28 @@ void Flash::readBlock(uint16_t* block, uint8_t len)
 
 
 
-
-void Flash::writeBlock(uint16_t* block, uint8_t len)
+// TODO use buffer/dma
+void Flash::writeBlock(uint16_t* block, uint8_t len) // todo takeout len argument, use blocksize
 {
     FLASH_Unlock();
 	if (available()/2 < len) {
 		erase();
 	}
+
+	//uint16_t* writeStart = pageAddress + firstAvailableWordOffset;
 	for (uint8_t i = 0; i < len; i++)
 	{
-	       FLASH_ClearFlag(FLASH_FLAG_EOP|FLASH_FLAG_PGERR);
+	    FLASH_ClearFlag(FLASH_FLAG_EOP|FLASH_FLAG_PGERR); // TODO check this
 
-	       uint16_t offset = i * sizeof(uint16_t);
-		uint32_t addr = (uint32_t)pageAddress + firstErasedOffset + offset;
-		//printf("\n\r%dWriting to address: %d: %d ", i, addr, config[i]);
-		uint16_t value = *(block + i);
+		uint16_t value = block[i];
 
 		if (value == FLASH_ERASED) value = FLASH_ERASED - 1; // sentinal value not allowed
-		FLASH_ProgramHalfWord(addr, value);
+		FLASH_ProgramHalfWord((uint32_t)&pageAddress[firstAvailableWordOffset++], value);
 	    while(FLASH_GetStatus() == FLASH_BUSY)
 	    {}
 	}
 
-	firstErasedOffset += len * sizeof(uint16_t);
+	//firstAvailableWordOffset += len;
     FLASH_Lock();
 
 	printContents();

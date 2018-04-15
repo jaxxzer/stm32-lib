@@ -265,7 +265,7 @@ void assert_failed(uint8_t* file, uint32_t line)
 extern "C" void __assert_func(const char *file, int line, const char *func, const char *failedexpr)
 {
 	while(1)
-	{}
+	{ print("fuck");}
 }
 
 /*
