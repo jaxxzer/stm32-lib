@@ -1,21 +1,12 @@
 #pragma once
 
 #include <stdio.h>
-
+#include "crc.h"
 #include "helpers.h"
 // On STM32F0 Datasheet:
 // 16-bit programming time: 53.5 microseconds
 // Page/Mass erase time: 30 milliseconds
 // Endurance: 1 kcycle! *based on characterization, not empirical results
-uint32_t crcCalcChecksum(uint32_t* buf, uint8_t len) {
-	CRC_ResetDR();
-	for (uint8_t i = 0; i < len; i++) {
-		CRC_CalcCRC(buf[i]);
-	}
-	//return CRC_GetCRC();
-	return 0xFFFFFFFF;
-}
-
 class Flash
 {
 public:
@@ -92,6 +83,8 @@ void Flash::printBlock(uint16_t* block)
 }
 
 void Flash::init() {
+    crcInit();
+
 	firstErasedOffset = _pageSize;
 
 	for (uint16_t i = 0; i < _pageSize/2; i++) {
@@ -142,7 +135,6 @@ bool Flash::verifyChecksum(void)
 	uint32_t cs = crcCalcChecksum(start, _blockSize/2 -1);
 	// blocksize is in (16bit)words
 	// we are checking 32bits at a time
-	print("\n\rChecksum: "); printHex(cs); print("Check: "); printHex(start[_blockSize/2 -1]);
 
 	if ((cs & FLASH_ERASED) == FLASH_ERASED) {
 		cs -= 1;
