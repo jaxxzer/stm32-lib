@@ -181,11 +181,11 @@ void Flash::readBlock(uint16_t* block, uint8_t len)
 void Flash::writeBlock(uint16_t* block, uint8_t len) // todo takeout len argument, use blocksize
 {
     FLASH_Unlock();
-	if (available()/2 < len) {
+
+	if (available() < len) {
 		erase();
 	}
 
-	//uint16_t* writeStart = pageAddress + firstAvailableWordOffset;
 	for (uint8_t i = 0; i < len; i++)
 	{
 	    FLASH_ClearFlag(FLASH_FLAG_EOP|FLASH_FLAG_PGERR); // TODO check this
@@ -198,13 +198,8 @@ void Flash::writeBlock(uint16_t* block, uint8_t len) // todo takeout len argumen
 	    {}
 	}
 
-	//firstAvailableWordOffset += len;
     FLASH_Lock();
 
 	printContents();
-
-	//printf("\n\rFirst Erased: %d \tSpace remaining: %d", (uint32_t)pageAddress + firstErasedOffset, available());
-
-	//printf("\n\rFirstErased: %d", (uint32_t)pageAddress + firstErasedOffset);
 }
 
