@@ -53,9 +53,9 @@ uint8_t bNum;
 void Flash::printContents()
 {
 	println();
-	print("    ");
+	print("  ");
 	for (uint8_t i = 0; i < _blockSize; i++) {
-		print("       ");
+		print("    ");
 		my_printInt(i);
 	}
 	bNum = 0;

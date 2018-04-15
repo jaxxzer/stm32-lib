@@ -18,6 +18,11 @@ void println(void)
 }
 void printHex(uint32_t i)
 {
+	uint8_t size = 4;
+	if (i > 0xFFFF) {
+		size = 8;
+	}
+
 	char buf[8];
 	uint8_t p = 8;
 
@@ -35,7 +40,7 @@ void printHex(uint32_t i)
 		}
 		i /= 16;
 	} while (i);
-	while (p--) {
+	while (p-- > 8 - size) {
 		buf[p] = '0';
 	}
 	uart.write(buf, 8);
