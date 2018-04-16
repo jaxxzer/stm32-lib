@@ -98,7 +98,7 @@ void Flash::init() {
 			break;
 		}
 	}
-	while(firstAvailableWordOffset % sizeof(uint32_t)) { // allow 32-bit alignment only, required for use with CRC peripheral
+	while(firstAvailableWordOffset % 2) { // allow 32-bit alignment only, required for use with CRC peripheral
 		FLASH_Unlock();
 		FLASH_ProgramHalfWord((uint32_t)&pageAddress[firstAvailableWordOffset++], 0);
 		FLASH_Lock();
