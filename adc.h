@@ -57,8 +57,9 @@ public:
 		, _dmaBuf(nullptr)
 	{
 			_enableClock();
-			ADC_StructInit(&_config); // TODO Take this out to save flash
 	}
+
+	//  15012	    156	    412	  15580	   3cdc	BlueBMS.elf
 
 	// Initialize peripheral with common/default config
 	// More commonly used arguments are listed first
@@ -70,19 +71,14 @@ public:
 			uint32_t dataAlign = ADC_DataAlign_Right,
 			uint32_t scanDirection = ADC_ScanDirection_Upward)
 	{
+		// Configuration
+		ADC_InitTypeDef _config;
 		_config.ADC_ContinuousConvMode = continuousConvMode;
 		_config.ADC_Resolution = resolution;
 		_config.ADC_ExternalTrigConvEdge = extTrigConvEdge;
 		_config.ADC_ExternalTrigConv = extTrigConv;
 		_config.ADC_DataAlign = dataAlign;
 		_config.ADC_ScanDirection = scanDirection;
-
-		init(); // commit
-	}
-
-	// Initialize peripheral with current config
-	void init(void)
-	{
 		ADC_Init(_peripheral, &_config);
 	}
 
@@ -114,14 +110,13 @@ private:
 	ADC_TypeDef* _peripheral; // Eg. ADC1, ADC2...
 	AdcChannel* _head; // First channel in sequence
 
-	// Configuration
-	ADC_InitTypeDef _config;
+
 
 	// Number of channels we are currently sequencing
 	uint8_t _numChannels;
 
 	// Number of samples to be averaged for each channel update
-	uint16_t _numSamples = 20;
+	uint16_t _numSamples = 200;
 
 	// Buffer to dump conversion results
 	volatile uint16_t* _dmaBuf;
