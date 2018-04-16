@@ -58,11 +58,11 @@ public:
 
 	void setClockEnabled(FunctionalState enabled);
 
-	static const uint8_t bufSize = 4;
+	static const uint8_t bufSize = 32;
 	char rxBuf[bufSize];
 	char txBuf[bufSize];
 
-	uint8_t rxHead;
+	uint8_t rxHead = 1;
 	uint8_t rxTail;
 	uint8_t rxOverruns;
 
