@@ -40,10 +40,10 @@ void printHex(uint32_t i)
 		}
 		i /= 16;
 	} while (i);
-	while (p-- > 8 - size) {
-		buf[p] = '0';
+	while (p > 8 - size) {
+		buf[--p] = '0';
 	}
-	uart.write(buf, 8);
+	uart.write(&buf[p], size);
 }
 
 uint16_t my_atoi(char* c)
