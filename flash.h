@@ -98,12 +98,20 @@ void Flash::init() {
 			break;
 		}
 	}
+	while(firstAvailableWordOffset % sizeof(uint32_t)) { // allow 32-bit alignment only, required for use with CRC peripheral
+		FLASH_Unlock();
+		FLASH_ProgramHalfWord((uint32_t)&pageAddress[firstAvailableWordOffset++], 0);
+		FLASH_Lock();
+	}
 }
 
 void Flash::erase() {
+	FLASH_Unlock();
 	for (uint8_t i = 0; i < _pages; i++) {
+	    FLASH_ClearFlag(FLASH_FLAG_PGERR); // TODO check this
 		FLASH_ErasePage((uint32_t)pageAddress + i * _pageSize);
 	}
+	FLASH_Lock();
 	firstAvailableWordOffset = 0;
 }
 
@@ -155,11 +163,11 @@ void Flash::readBlock(uint16_t* block, uint8_t len)
 // TODO use buffer/dma
 void Flash::writeBlock(uint16_t* block, uint8_t len) // todo takeout len argument, use blocksize
 {
-    FLASH_Unlock();
-
 	if (available() < len) {
 		erase();
 	}
+
+    FLASH_Unlock();
 
 	for (uint16_t* addr = block; addr < block + len; addr++)
 	{
