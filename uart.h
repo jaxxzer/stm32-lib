@@ -9,7 +9,7 @@ class Uart
 public:
 	Uart(USART_TypeDef* usartx) : _peripheral(usartx) {
 		setClockEnabled(ENABLE);
-		USART_StructInit(&_config);
+		//USART_StructInit(&_config);
 	}
 
 	void write(const char* p, uint16_t len);
@@ -31,19 +31,18 @@ public:
 				uint32_t mode = USART_Mode_Rx | USART_Mode_Tx,
 				uint32_t flowcontrol = USART_HardwareFlowControl_None)
 	{
+		USART_InitTypeDef _config;
+
 		_config.USART_BaudRate = baudrate;
 		_config.USART_StopBits = stopbits;
 		_config.USART_WordLength = wordlength;
 		_config.USART_Parity = parity;
 		_config.USART_Mode = mode;
 		_config.USART_HardwareFlowControl = flowcontrol;
-		init();
+
+		USART_Init(_peripheral, &_config);
 	}
 
-	void set_baudrate(uint32_t baudrate)
-	{
-		_config.USART_BaudRate = baudrate;
-	}
 
 	// Start auto baud rate detection
 	// Requires the next byte received to start with a 1
@@ -52,9 +51,6 @@ public:
 		USART_AutoBaudRateCmd(_peripheral, ENABLE);
 	}
 
-	void init() {
-		USART_Init(_peripheral, &_config);
-	}
 
 	void setEnabled(FunctionalState enabled) {
 		USART_Cmd(_peripheral, enabled);
@@ -75,10 +71,6 @@ public:
 	uint8_t txOverruns;
 
 	USART_TypeDef* _peripheral;
-
-private:
-
-	USART_InitTypeDef _config;
 };
 
 void Uart::setClockEnabled(FunctionalState enabled)

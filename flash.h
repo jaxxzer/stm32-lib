@@ -181,5 +181,5 @@ void Flash::writeBlock(uint16_t* block, uint8_t len) // todo takeout len argumen
 
     FLASH_Lock();
 
-	printContents();
+//	printContents();
 }
