@@ -4,93 +4,6 @@
 #include <inttypes.h>
 #include "uart.h"
 
-extern Uart uart;
-
-void print(const char* c) {
-	while (*c != 0) {
-		uart.write(c++);
-	}
-}
-
-void println(void)
-{
-	print("\n\r");
-}
-void printHex(uint32_t i)
-{
-	uint8_t size = 4;
-	if (i > 0xFFFF) {
-		size = 8;
-	}
-
-	char buf[8];
-	uint8_t p = 8;
-
-	do {
-		uint8_t digit = i%16;
-		switch (digit) {
-		case 0 ... 9:
-			buf[--p] = '0' + digit;
-			break;
-		case 0xA ... 0xF:
-			buf[--p] = 'A' + digit - 10;
-			break;
-		default:
-			break;
-		}
-		i /= 16;
-	} while (i);
-	while (p > 8 - size) {
-		buf[--p] = '0';
-	}
-	uart.write(&buf[p], size);
-}
-
-uint16_t my_atoi(char* c)
-{
-	uint16_t r = 0;
-	while (*c) {
-		uint8_t h = *(uint8_t*)c;
-		uint8_t e = (uint8_t)'0';
-		r = r * 10 + h - e;
-		c++;
-	}
-	return r;
-}
-
-void print(uint16_t i) {
-	char c[5];
-	uint8_t len = 5;
-
-	uint8_t p = i % 10;
-	c[--len] = p + '0';
-	i -= p; // not neccessary? taken care of with integer division
-
-	while (i) {
-		i /= 10;
-		p = i % 10;
-		c[--len] = p  + '0';
-		i -= p; // not neccessary? taken care of with integer division
-	}
-	uart.write(&c[len], 5-len);
-}
-void my_printInt(uint32_t i) {
-	char c[10];
-	uint8_t len = 10;
-
-	uint8_t p = i % 10;
-	c[--len] = p + '0';
-	i -= p; // not neccessary? taken care of with integer division
-
-	while (i) {
-		i /= 10;
-		p = i % 10;
-		c[--len] = p  + '0';
-		i -= p; // not neccessary? taken care of with integer division
-	}
-	uart.write(&c[len], 10-len);
-}
-
 // This file has some random helper and system functions
 // printf goes to __io_putchar here
 void nvic_config(const uint8_t irq, const uint8_t priority, const FunctionalState enabled)
@@ -203,7 +116,7 @@ extern "C" {
 	int16_t __io_putchar(uint8_t* ch, uint32_t file) {
 		switch(file) {
 		case FD_STDOUT: // TODO find an easy way to map this (function pointer?) without modifying library
-			uart.write((char*)ch);
+			uart1.write((char*)ch);
 			break;
 		case FD_STDERR:
 		case FD_USART1: // For example

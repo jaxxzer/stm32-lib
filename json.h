@@ -20,35 +20,12 @@ enum {
 
 void printJson(char* key, uint16_t value)
 {
-  uart.write("{\"", 2);
-  while (*key != '\0') {
-	  uart.write(key++);
-  }
-  uart.write("\":", 2);
+  print("{\"");
+  print(key);
+  print("\":");
   my_printInt(value);
-  uart.write("}");
+  print("}");
 }
-
-//
-//void printJson(char* key, char* value)
-//{
-//  printf("{\"");
-//  printf(key);
-//  printf("\":");
-//  printf(value);
-//  printf("}");
-//}
-//
-//void printJson(char* key, float value)
-//{
-//	printf("{\"");
-//	printf(key);
-//	printf("\":");
-//	printf("%d", value * 1000);
-//	printf("}");
-//}
-
-
 
 uint8_t parseByte(const char& byte)
 {
