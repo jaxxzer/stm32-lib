@@ -62,7 +62,9 @@ public:
 	char rxBuf[bufSize];
 	char txBuf[bufSize];
 
-	uint8_t rxHead = 1; // TODO allow use of full buffer, right now we use only bufSize-1 bytes
+	// tail == head      means empty
+	// tail == head - 1  means full
+	uint8_t rxHead; // TODO allow use of full buffer, right now we use only bufSize-1 bytes
 	uint8_t rxTail;
 	uint8_t rxOverruns;
 
