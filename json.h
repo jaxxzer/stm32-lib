@@ -18,7 +18,7 @@ enum {
   wait_value, // <number or string>} // wait for }
 };
 
-void printJson(char* key, uint16_t value)
+void printJson(char* key, uint32_t value)
 {
   print("{\"");
   print(key);
