@@ -16,7 +16,7 @@ uint32_t crcCalcChecksum(uint32_t* buf, uint8_t len)
 	return CRC->DR;
 }
 
-uint32_t crcTest(void)
+void crcTest(void)
 {
 	uint32_t n = 0x77777777;
 	CRC_ReverseInputDataSelect(CRC_ReverseInputData_No);
