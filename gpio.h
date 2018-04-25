@@ -27,6 +27,7 @@ public:
 	void reset(void);
 	void toggle(void);
 
+	void setInversion(bool inverted) { _inverted = inverted; }
 
 private:
 	void _clockEnable(void);
@@ -34,6 +35,8 @@ private:
 	GPIO_TypeDef* _port;
 	uint16_t _pin;
 	uint16_t _pinSource;
+
+	bool _inverted;
 
 	//GPIO_InitTypeDef _config;
 };
@@ -50,7 +53,7 @@ void Gpio::init(GPIOMode_TypeDef mode // GPIO_Mode_IN, GPIO_Mode_OUT, GPIO_Mode_
 	_config.GPIO_Speed = speed;
 	_config.GPIO_Pin = (_pin);
 	GPIO_Init(_port, &_config);
-	//init();
+	reset();
 }
 
 Gpio::Gpio(GPIO_TypeDef* port, uint16_t pin)
@@ -117,30 +120,34 @@ void Gpio::configAF(uint8_t af) {
 
 void Gpio::set(bool set)
 {
-	if (set) {
+	bool state = _inverted ? !set : set;
+
+	if (state) {
 		//GPIO_SetBits(_port, _pin);
 		_port->BSRR = _pin;
 	} else {
-		reset();
+		_port->BRR = _pin;
 	}
 }
 
 void Gpio::reset(void)
 {
 	//GPIO_ResetBits(_port, _pin);
-	_port->BRR = _pin;
+	set(false);
 }
 
 bool Gpio::readOutput(void)
 {
 	//return GPIO_ReadOutputDataBit(_port, _pin);
-	return _port->ODR & _pin;
+	bool state = _port->ODR & _pin;
+	return _inverted ? !state : state;
 }
 
 bool Gpio::readInput(void)
 {
 	//return GPIO_ReadInputDataBit(_port, _pin);
-	return _port->IDR & _pin;
+	bool state = _port->IDR & _pin;
+	return _inverted ? !state : state;
 }
 
 
@@ -150,8 +157,8 @@ void Gpio::toggle(void)
 	//GPIO_WriteBit(_port, _pin, new_state);
 
 	if (new_state != Bit_RESET) {
-		_port->BSRR = _pin;
+		set(true);
 	} else {
-		_port->BRR = _pin ;
+		set(false);
 	}
 }
