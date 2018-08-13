@@ -103,6 +103,11 @@ uint8_t Uart::txSpaceAvailable(void)
 }
 
 void Uart::write(const char* ch) {
+
+	// Use this instead for blocking write
+//    USART_SendData(USART1, *ch);
+//    while (!USART_GetFlagStatus(USART1, USART_FLAG_TXE));
+
 	while (!txSpaceAvailable()) {
 		txOverruns++; // block when buffer is full
 	}
@@ -260,6 +265,7 @@ void print(uint16_t i) {
 	}
 	uart1.write(&c[len], 5-len);
 }
+
 void my_printInt(uint32_t i) {
 	char c[10];
 	uint8_t len = 10;
@@ -276,4 +282,3 @@ void my_printInt(uint32_t i) {
 	}
 	uart1.write(&c[len], 10-len);
 }
-
