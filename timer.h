@@ -137,7 +137,7 @@ public:
 	void disableInterrupt(void);
 
 	void setDeadtime(uint16_t deadTime);
-	void setDutyCycle(float duty);
+	void setDuty(uint16_t duty);
 	void setCompare(uint16_t ccr);
 
 	void preloadConfig(FunctionalState enabled);
@@ -222,9 +222,11 @@ void TimerChannelOutput::setMode(uint16_t mode)
 	TIM_SelectOCxM(_peripheral, _channel, mode);
 }
 
-void TimerChannelOutput::setDutyCycle(float duty)
+// input duty normalized to 0~u16max
+// duty is applied according to current timer resolution settings
+void TimerChannelOutput::setDuty(uint16_t duty)
 {
-	uint16_t compare = map(duty, 0, 1.0f, 0, _peripheral->ARR);
+	uint16_t compare = map(duty, 0, UINT16MAX, 0, _peripheral->ARR);
 	setCompare(compare);
 }
 

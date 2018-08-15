@@ -4,6 +4,7 @@
 #include <inttypes.h>
 #include "uart.h"
 
+#define UINT16MAX ( (1U << 16) - 1 )
 // This file has some random helper and system functions
 // printf goes to __io_putchar here
 void nvic_config(const uint8_t irq, const uint8_t priority, const FunctionalState enabled)
