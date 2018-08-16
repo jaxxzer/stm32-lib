@@ -227,7 +227,7 @@ void TimerChannelOutput::setMode(uint16_t mode)
 // duty is applied according to current timer resolution settings
 void TimerChannelOutput::setDuty(uint16_t duty)
 {
-	uint16_t compare = map(duty, 0, UINT16MAX, 0, _peripheral->ARR);
+	uint16_t compare = map(duty, 0, UINT16MAX, 10, _peripheral->ARR);
 	setCompare(compare);
 }
 
