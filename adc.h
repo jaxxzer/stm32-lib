@@ -110,8 +110,6 @@ private:
 	ADC_TypeDef* _peripheral; // Eg. ADC1, ADC2...
 	AdcChannel* _head; // First channel in sequence
 
-
-
 	// Number of channels we are currently sequencing
 	uint8_t _numChannels;
 

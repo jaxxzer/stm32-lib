@@ -16,6 +16,13 @@ void nvic_config(const uint8_t irq, const uint8_t priority, const FunctionalStat
 	NVIC_Init(&NVIC_InitStructure);
 }
 
+typedef struct it_callback
+{
+	void (*callback)(void);
+	it_callback* next;
+} it_callback_t;
+
+
 void print_clocks()
 {
 

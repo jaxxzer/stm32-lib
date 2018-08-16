@@ -41,6 +41,7 @@ public:
 	void setICPrescaler(uint16_t prescaler);
 	void setICFilter(uint16_t filter);
 
+
 	// Defaults
 	void init(uint16_t polarity = TIM_ICPolarity_Rising,
 			uint16_t filter = 0x00,
@@ -313,6 +314,20 @@ public:
     	setClockEnabled(ENABLE);
     	TIM_TimeBaseStructInit(&_config);
     };
+    ~Timer() {
+    		it_callback_t* cb = ccCallbacks;
+    		while (cb) {
+    			it_callback_t* tmp = cb->next;
+    			delete(cb);
+    			cb = tmp;
+    		}
+    		cb = upCallbacks;
+    		while (cb) {
+    			it_callback_t* tmp = cb->next;
+    			delete(cb);
+    			cb = tmp;
+    		}
+    } // delete callbacks
 
     // current config
     void _init(void);
@@ -345,6 +360,44 @@ public:
     void ITConfig(uint16_t its, FunctionalState enabled);
 
     TIM_TypeDef* peripheral(void) { return _peripheral; };
+
+
+	it_callback_t* upCallbacks;
+	it_callback_t* ccCallbacks;
+
+	void setupUpCallback(void (*upCallbackFn)(void))
+	{
+		it_callback_t* newCb = new it_callback_t;
+		newCb->callback = upCallbackFn;
+
+		if (!upCallbacks)
+		{
+			upCallbacks = newCb;
+		} else {
+			it_callback_t* tail = upCallbacks;
+			while (tail->next != nullptr) {
+				tail = tail->next;
+			}
+			tail->next = newCb;
+		}
+	}
+
+	void setupCcCallback(void (*upCallbackFn)(void))
+	{
+		it_callback_t* newCb = new it_callback_t;
+		newCb->callback = upCallbackFn;
+
+		if (!ccCallbacks)
+		{
+			ccCallbacks = newCb;
+		} else {
+			it_callback_t* tail = ccCallbacks;
+			while (tail->next != nullptr) {
+				tail = tail->next;
+			}
+			tail->next = newCb;
+		}
+	}
 
 private:
 
@@ -509,4 +562,88 @@ void InitializeFrequencyTimer(uint16_t period = 1000)// AKA TIMx_ARR = 500000 mi
     timerInitStructure.TIM_RepetitionCounter = 0;
     TIM_TimeBaseInit(TIM1, &timerInitStructure);
     TIM_Cmd(TIM1, ENABLE);
+}
+
+#define USE_TIMER_1
+#define USE_TIMER_2
+#define USE_TIMER_3
+#define USE_TIMER_14
+#define USE_TIMER_15
+#define USE_TIMER_17
+#define USE_TIMER_6
+
+
+// see stm32f05x datasheet 3.14 Timers and watchdogs
+#ifdef USE_TIMER_1
+Timer timer1  { TIM1 }; // 16 bit Advanced control
+#endif
+//Timer timer2   { TIM2 }; // 32 bit General purpose
+//Timer timer3   { TIM3 }; // 16 bit General purpose
+//Timer timer14  { TIM4 }; // 16 bit General purpose
+//Timer timer15  { TIM4 }; // 16 bit General purpose
+//Timer timer16  { TIM4 }; // 16 bit General purpose
+//Timer timer17  { TIM4 }; // 16 bit General purpose
+//Timer timer6   { TIM4 }; // 16 bit Basic
+
+
+
+
+/// ~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@
+/// Interrupts
+extern "C" {
+
+#ifdef USE_TIMER_1
+void TIM1_CC_IRQHandler(void) {
+
+	it_callback_t* cb = timer1.ccCallbacks;
+	while (cb) {
+		cb->callback();
+		cb = cb->next;
+	}
+	TIM1->SR = (uint16_t)~(TIM_IT_CC1 | TIM_IT_CC2 | TIM_IT_CC3 | TIM_IT_CC4); // Clear pending interrupts (do not do this in the callbacks!)
+	//printf("\n\r%d", TIM1->SR);
+//	if (TIM_GetITStatus(TIM1, TIM_IT_CC2)) {
+//		TIM_SelectOCxM(TIM1, TIM_Channel_2, TIM_ForcedAction_InActive);
+//		TIM1->SR = (uint16_t)~TIM_IT_CC2;
+//	} else if (TIM_GetITStatus(TIM1, TIM_IT_CC3)){
+//		TIM_SelectOCxM(TIM1, TIM_Channel_3, TIM_ForcedAction_InActive);
+//		flip = !flip;
+//		TIM1->SR = (uint16_t)~TIM_IT_CC3;
+//	} else if (TIM_GetITStatus(TIM1, TIM_IT_CC4)) {
+//		if (flip) {
+//			TIM_SelectOCxM(TIM1, TIM_Channel_3, TIM_OCMode_PWM1);
+//		} else {
+//			TIM_SelectOCxM(TIM1, TIM_Channel_2, TIM_OCMode_PWM1);
+//		}
+//		TIM1->SR = (uint16_t)~TIM_IT_CC4;
+//	}
+}
+#endif
+	/// ~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!
+	/// CC2: Handler for Hall sensor input capture
+	/// Update:
+//	void TIM3_IRQHandler(void)
+//	{
+//		if (TIM_GetITStatus(TIM3, TIM_IT_CC2)) {
+//			b.commutate();
+//			TIM3->CNT = 0;
+//			b.HallHandler(TIM3->CCR2);
+//			TIM_ClearFlag(TIM3, TIM_FLAG_CC2);
+//		} else if (TIM_GetITStatus(TIM3, TIM_IT_Update)) {
+//			TIM_ClearFlag(TIM3, TIM_FLAG_Update);
+//		}
+//	}
+//
+//	/// ~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!
+//	/// CC2: left phase for audio state
+//	/// CC3: right phase for audio state
+//	/// CC4: offset timing counter for audio state
+//	/// Update:
+//
+//
+//	void TIM6_DAC_IRQHandler(void)
+//	{
+//		//b.commutate();
+////		TIM_ClearFlag(TIM6, TIM_FLAG_Update);
+//	}
 }
