@@ -390,10 +390,10 @@ public:
 			uint16_t clockDivision = TIM_CKD_DIV1,
 			uint8_t repetitionCounter = 0x0000);
 
+    // contorl/config
+    void setEnabled(FunctionalState enabled); // enable output
     void setMOE(FunctionalState enabled);
-
     void setClockEnabled(FunctionalState enabled);
-    void setEnabled(FunctionalState enabled);
     void preloadConfig(FunctionalState enabled);
     void setCCPreloadControl(FunctionalState enabled);
     void setAutoreload(uint32_t arr);
@@ -405,13 +405,10 @@ public:
     void clearFlag(uint16_t flag) { TIM_ClearFlag(_peripheral, flag); };
 	void setPrescaler(uint16_t prescaler);
 
-    void interruptConfig(const uint8_t interrupt, const FunctionalState enabled);
-    void playNote(uint16_t frequency, uint16_t duration_ms);
-
-    void ITConfig(uint16_t its, FunctionalState enabled);
-
     TIM_TypeDef* peripheral(void) { return _peripheral; };
 
+    // Interrupt configuration and handling
+    void interruptConfig(const uint8_t interrupts, const FunctionalState newState);
 
 	it_callback_t* upCallbacks;
 	it_callback_t* cc1Callbacks;
@@ -483,46 +480,14 @@ public:
 		return newCb;
 	}
 
-
 private:
-
     TIM_TypeDef* _peripheral;
-
-//    typedef struct
-//    {
-//      uint16_t TIM_Prescaler;         /*!< Specifies the prescaler value used to divide the TIM clock.
-//                                           This parameter can be a number between 0x0000 and 0xFFFF */
-//
-//      uint16_t TIM_CounterMode;       /*!< Specifies the counter mode.
-//                                           This parameter can be a value of @ref TIM_Counter_Mode */
-//
-//      uint32_t TIM_Period;            /*!< Specifies the period value to be loaded into the active
-//                                           Auto-Reload Register at the next update event.
-//                                           This parameter must be a number between 0x0000 and 0xFFFF.  */
-//
-//      uint16_t TIM_ClockDivision;     /*!< Specifies the clock division.
-//                                          This parameter can be a value of @ref TIM_Clock_Division_CKD */
-//
-//      uint8_t TIM_RepetitionCounter;  /*!< Specifies the repetition counter value. Each time the RCR downcounter
-//                                           reaches zero, an update event is generated and counting restarts
-//                                           from the RCR value (N).
-//                                           This means in PWM mode that (N+1) corresponds to:
-//                                              - the number of PWM periods in edge-aligned mode
-//                                              - the number of half PWM period in center-aligned mode
-//                                           This parameter must be a number between 0x00 and 0xFF.
-//                                           @note This parameter is valid only for TIM1. */
-//    } TIM_TimeBaseInitTypeDef;
     TIM_TimeBaseInitTypeDef _config;
 };
 
 void Timer::setCCPreloadControl(FunctionalState enabled) //  AKA CCPC
 {
 	TIM_CCPreloadControl(_peripheral, enabled);
-}
-// TODO inline
-void Timer::ITConfig(uint16_t its, FunctionalState enabled)
-{
-	TIM_ITConfig(_peripheral, its, enabled);
 }
 
 void Timer::init(uint16_t prescaler,
@@ -543,10 +508,9 @@ void Timer::init(uint16_t prescaler,
 // - Configure the peripheral
 // Fails if: SystemCoreClock is not divisible by input frequency
 
-void Timer::interruptConfig(const uint8_t interrupt, const FunctionalState enabled)
+void Timer::interruptConfig(const uint8_t interrupts, const FunctionalState newState)
 {
-	TIM_ITConfig(_peripheral, interrupt, enabled);
-
+	TIM_ITConfig(_peripheral, interrupts, newState);
 }
 // TODO inline
 void Timer::setMOE(FunctionalState enabled)
