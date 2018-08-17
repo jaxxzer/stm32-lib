@@ -10,10 +10,10 @@
 * - A timer peripheral
 */
 #pragma once
-//#include "stm32f0xx_conf.h"
+#include "stm32f0xx_conf.h"
 
 
-//#include "helpers.h"
+#include "helpers.h"
 class TimerChannel
 {
 public:
