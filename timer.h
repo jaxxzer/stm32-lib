@@ -10,10 +10,10 @@
 * - A timer peripheral
 */
 #pragma once
-#include "stm32f0xx_conf.h"
+//#include "stm32f0xx_conf.h"
 
 
-#include "helpers.h"
+//#include "helpers.h"
 class TimerChannel
 {
 public:
@@ -53,75 +53,8 @@ public:
 
 	FunctionalState _enabled; // TODO: extend TIM_ICInitTypeDef to support this too
 
-//	typedef struct
-//	{
-//
-//	  uint16_t TIM_Channel;      /*!< Specifies the TIM channel.
-//	                                  This parameter can be a value of @ref TIM_Channel */
-//
-//	  uint16_t TIM_ICPolarity;   /*!< Specifies the active edge of the input signal.
-//	                                  This parameter can be a value of @ref TIM_Input_Capture_Polarity */
-//
-//	  uint16_t TIM_ICSelection;  /*!< Specifies the input.
-//	                                  This parameter can be a value of @ref TIM_Input_Capture_Selection */
-//
-//	  uint16_t TIM_ICPrescaler;  /*!< Specifies the Input Capture Prescaler.
-//	                                  This parameter can be a value of @ref TIM_Input_Capture_Prescaler */
-//
-//	  uint16_t TIM_ICFilter;     /*!< Specifies the input capture filter.
-//	                                  This parameter can be a number between 0x0 and 0xF */
-//	} TIM_ICInitTypeDef;
 	TIM_ICInitTypeDef _config;
 };
-
-void TimerChannelInput::init(uint16_t polarity,
-			uint16_t filter,
-			uint16_t prescaler,
-			uint16_t selection)
-{
-	_config.TIM_ICPolarity = polarity;
-	_config.TIM_ICFilter = filter;
-	_config.TIM_ICPrescaler = prescaler;
-	_config.TIM_ICSelection = selection;
-	_init();
-}
-
-void TimerChannelInput::setICSelection(uint16_t selection)
-{
-	_config.TIM_ICSelection = selection;
-	// TODO commit
-}
-
-void TimerChannelInput::setICPolarity(uint16_t polarity)
-{
-	_config.TIM_ICPolarity = polarity;
-	// TODO commit
-}
-
-void TimerChannelInput::setICPrescaler(uint16_t prescaler)
-{
-	_config.TIM_ICPrescaler = prescaler;
-	// TODO commit
-}
-
-void TimerChannelInput::setICFilter(uint16_t filter)
-{
-	_config.TIM_ICFilter = filter;
-	// TODO commit
-}
-
-void TimerChannelInput::setEnabled(FunctionalState enabled)
-{
-	_enabled = enabled;
-	TIM_CCxCmd(_peripheral, _channel, _enabled);
-}
-
-void TimerChannelInput::_init(void)
-{
-	_enabled = ENABLE;
-	_config.TIM_Channel = _channel;
-	TIM_ICInit(_peripheral, &_config); // Note: enables CCR too
-}
 
 class TimerChannelOutput : public TimerChannel
 {
@@ -162,148 +95,8 @@ public:
 			, uint16_t ocNIdleState = TIM_OCNIdleState_Reset);
 	void _init(void);
 
-
-//	typedef struct
-//	{
-//	  uint16_t TIM_OCMode;        /*!< Specifies the TIM mode.
-//	                                   This parameter can be a value of @ref TIM_Output_Compare_and_PWM_modes */
-//
-//	  uint16_t TIM_OutputState;   /*!< Specifies the TIM Output Compare state.
-//	                                   This parameter can be a value of @ref TIM_Output_Compare_state */
-//
-//	  uint16_t TIM_OutputNState;  /*!< Specifies the TIM complementary Output Compare state.
-//	                                   This parameter can be a value of @ref TIM_Output_Compare_N_state
-//	                                   @note This parameter is valid only for TIM1. */
-//
-//	  uint32_t TIM_Pulse;         /*!< Specifies the pulse value to be loaded into the Capture Compare Register.
-//	                                   This parameter can be a number between 0x0000 and 0xFFFF ( or 0xFFFFFFFF
-//	                                   for TIM2) */
-//
-//	  uint16_t TIM_OCPolarity;    /*!< Specifies the output polarity.
-//	                                   This parameter can be a value of @ref TIM_Output_Compare_Polarity */
-//
-//	  uint16_t TIM_OCNPolarity;   /*!< Specifies the complementary output polarity.
-//	                                   This parameter can be a value of @ref TIM_Output_Compare_N_Polarity
-//	                                   @note This parameter is valid only for TIM1. */
-//
-//	  uint16_t TIM_OCIdleState;   /*!< Specifies the TIM Output Compare pin state during Idle state.
-//	                                   This parameter can be a value of @ref TIM_Output_Compare_Idle_State
-//	                                   @note This parameter is valid only for TIM1. */
-//
-//	  uint16_t TIM_OCNIdleState;  /*!< Specifies the TIM Output Compare pin state during Idle state.
-//	                                   This parameter can be a value of @ref TIM_Output_Compare_N_Idle_State
-//	                                   @note This parameter is valid only for TIM1. */
-//	} TIM_OCInitTypeDef;
 	TIM_OCInitTypeDef _config;
 };
-
-void TimerChannelOutput::init(uint16_t ocMode
-							, uint32_t pulse
-							, uint16_t outputState
-							, uint16_t outputNState
-							, uint16_t ocPolarity
-							, uint16_t ocNPolarity
-							, uint16_t ocIdleState
-							, uint16_t ocNIdleState)
-{
-	_config.TIM_OCMode = ocMode;
-	_config.TIM_OutputState = outputState;
-	_config.TIM_OutputNState = outputNState;
-	_config.TIM_Pulse = pulse;
-	_config.TIM_OCPolarity = ocPolarity;
-	_config.TIM_OCNPolarity = ocNPolarity;
-	_config.TIM_OCIdleState = ocIdleState;
-	_config.TIM_OCNIdleState = ocNIdleState;
-	_init();
-}
-
-void TimerChannelOutput::setMode(uint16_t mode)
-{
-	_config.TIM_OCMode = mode;
-	TIM_SelectOCxM(_peripheral, _channel, mode);
-}
-
-// input duty normalized to 0~u16max
-// duty is applied according to current timer resolution settings
-void TimerChannelOutput::setDuty(uint16_t duty)
-{
-	uint16_t compare = map(duty, 0, UINT16MAX, 10, _peripheral->ARR);
-	setCompare(compare);
-}
-
-void TimerChannelOutput::setCompare(uint16_t compare)
-{
-	_config.TIM_Pulse = compare;
-    switch (_channel) {
-    case TIM_Channel_1:
-        TIM_SetCompare1(_peripheral, compare);
-    	break;
-    case TIM_Channel_2:
-        TIM_SetCompare2(_peripheral, compare);
-    	break;
-    case TIM_Channel_3:
-        TIM_SetCompare3(_peripheral, compare);
-    	break;
-    case TIM_Channel_4:
-        TIM_SetCompare4(_peripheral, compare);
-    	break;
-    default:
-    	break;
-    }
-}
-void TimerChannelOutput::setEnabled(FunctionalState enabled)
-{
-	_config.TIM_OutputState = enabled ? TIM_OutputState_Enable : TIM_OutputState_Disable;
-	_init();
-}
-
-void TimerChannelOutput::setEnabledN(FunctionalState enabled)
-{
-    _config.TIM_OutputNState = enabled ? TIM_OutputNState_Disable : TIM_OutputNState_Disable;
-    _init();
-}
-
-void TimerChannelOutput::preloadConfig(FunctionalState enabled)
-{
-	uint16_t config = enabled ? TIM_OCPreload_Enable : TIM_OCPreload_Disable;
-
-    switch (_channel) {
-    case TIM_Channel_1:
-        TIM_OC1PreloadConfig(_peripheral, config);
-    	break;
-    case TIM_Channel_2:
-        TIM_OC2PreloadConfig(_peripheral, config);
-    	break;
-    case TIM_Channel_3:
-        TIM_OC3PreloadConfig(_peripheral, config);
-    	break;
-    case TIM_Channel_4:
-        TIM_OC4PreloadConfig(_peripheral, config);
-    	break;
-    default:
-    	break;
-    }
-}
-
-void TimerChannelOutput::_init(void)
-{
-    switch (_channel) {
-    case TIM_Channel_1:
-        TIM_OC1Init(_peripheral, &_config);
-    	break;
-    case TIM_Channel_2:
-        TIM_OC2Init(_peripheral, &_config);
-    	break;
-    case TIM_Channel_3:
-        TIM_OC3Init(_peripheral, &_config);
-    	break;
-    case TIM_Channel_4:
-        TIM_OC4Init(_peripheral, &_config);
-    	break;
-    default:
-    	break;
-    }
-}
 
 class Timer
 {
@@ -654,13 +447,7 @@ extern "C" {
 
 void TIM1_CC_IRQHandler(void) {
 #ifdef USE_TIM_1
-
-	it_callback_t* cb = timer1.cc1Callbacks;
-	while (cb) {
-		cb->callback();
-		cb = cb->next;
-	}
-	TIM1->SR = (uint16_t)~(TIM_IT_CC1 | TIM_IT_CC2 | TIM_IT_CC3 | TIM_IT_CC4); // Clear pending interrupts (do not do this in the callbacks!)
+    timer1._irqHandler();
 	//printf("\n\r%d", TIM1->SR);
 //	if (TIM_GetITStatus(TIM1, TIM_IT_CC2)) {
 //		TIM_SelectOCxM(TIM1, TIM_Channel_2, TIM_ForcedAction_InActive);
@@ -683,8 +470,6 @@ void TIM1_CC_IRQHandler(void) {
 void TIM2_IRQHandler(void) {
 #ifdef USE_TIM_2
 	timer2._irqHandler();
-	TIM1->SR = 0;
-	TIM1->SR = (uint16_t)~(TIM_IT_CC1 | TIM_IT_CC2 | TIM_IT_CC3 | TIM_IT_CC4); // Clear pending interrupts (do not do this in the callbacks!)
 #endif
 }
 
