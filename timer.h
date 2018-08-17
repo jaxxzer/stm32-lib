@@ -315,22 +315,73 @@ public:
     	TIM_TimeBaseStructInit(&_config);
     };
     ~Timer() {
-    		it_callback_t* cb = ccCallbacks;
-    		while (cb) {
-    			it_callback_t* tmp = cb->next;
-    			delete(cb);
-    			cb = tmp;
-    		}
-    		cb = upCallbacks;
-    		while (cb) {
-    			it_callback_t* tmp = cb->next;
-    			delete(cb);
-    			cb = tmp;
-    		}
+//    		it_callback_t* cb = ccCallbacks;
+//    		while (cb) {
+//    			it_callback_t* tmp = cb->next;
+//    			delete(cb);
+//    			cb = tmp;
+//    		}
+//    		cb = upCallbacks;
+//    		while (cb) {
+//    			it_callback_t* tmp = cb->next;
+//    			delete(cb);
+//    			cb = tmp;
+//    		}
     } // delete callbacks
 
     // current config
     void _init(void);
+
+    void _irqHandler(void) {
+
+    	// Note TIM_GetITStatus checks flag status as well as that interrupt is enabled
+    	// TIM_GetFlagStatus only checks the flag status, and you can pass a bitmask
+
+	   if (TIM_GetITStatus(_peripheral, TIM_IT_Update)) {
+			it_callback_t* cb = upCallbacks;
+			while (cb) {
+				cb->callback();
+				cb = cb->next;
+			}
+			_peripheral->SR = (uint16_t)~(TIM_IT_Update);
+		}
+
+		if (IS_TIM_LIST4_PERIPH(_peripheral) && TIM_GetITStatus(_peripheral, TIM_IT_CC1)) {
+			it_callback_t* cb = cc1Callbacks;
+			while (cb) {
+				cb->callback();
+				cb = cb->next;
+			}
+			_peripheral->SR = (uint16_t)~(TIM_IT_CC1);
+		}
+
+		if (IS_TIM_LIST6_PERIPH(_peripheral) && TIM_GetITStatus(_peripheral, TIM_IT_CC2)) {
+			it_callback_t* cb = cc2Callbacks;
+			while (cb) {
+				cb->callback();
+				cb = cb->next;
+			}
+			_peripheral->SR = (uint16_t)~(TIM_IT_CC2);
+		}
+
+		if (IS_TIM_LIST3_PERIPH(_peripheral) && TIM_GetITStatus(_peripheral, TIM_IT_CC3)) {
+			it_callback_t* cb = cc3Callbacks;
+			while (cb) {
+				cb->callback();
+				cb = cb->next;
+			}
+			_peripheral->SR = (uint16_t)~(TIM_IT_CC3);
+		}
+
+		if (IS_TIM_LIST3_PERIPH(_peripheral) && TIM_GetITStatus(_peripheral, TIM_IT_CC4)) {
+			it_callback_t* cb = cc4Callbacks;
+			while (cb) {
+				cb->callback();
+				cb = cb->next;
+			}
+			_peripheral->SR = (uint16_t)~(TIM_IT_CC4);
+		}
+    }
 
     // Defaults
     void init(uint16_t prescaler = 0x0000,
@@ -363,41 +414,75 @@ public:
 
 
 	it_callback_t* upCallbacks;
-	it_callback_t* ccCallbacks;
+	it_callback_t* cc1Callbacks;
+	it_callback_t* cc2Callbacks;
+	it_callback_t* cc3Callbacks;
+	it_callback_t* cc4Callbacks;
 
-	void setupUpCallback(void (*upCallbackFn)(void))
+	void addCallback(it_callback_t* callbacks, it_callback_t* newCallback) {
+			if (!callbacks) {
+				callbacks = newCallback;
+			} else {
+				it_callback_t* tail = callbacks;
+				while (tail->next != nullptr) {
+					tail = tail->next;
+				}
+				tail->next = newCallback;
+			}
+	}
+
+	it_callback_t* setupUpCallback(void (*upCallbackFn)(void))
 	{
 		it_callback_t* newCb = new it_callback_t;
 		newCb->callback = upCallbackFn;
-
-		if (!upCallbacks)
-		{
-			upCallbacks = newCb;
-		} else {
-			it_callback_t* tail = upCallbacks;
-			while (tail->next != nullptr) {
-				tail = tail->next;
-			}
-			tail->next = newCb;
-		}
+		addCallback(upCallbacks, newCb);
+		return newCb;
 	}
 
-	void setupCcCallback(void (*upCallbackFn)(void))
+	it_callback_t* setupCc1Callback(void (*upCallbackFn)(void))
 	{
+		if (!IS_TIM_LIST4_PERIPH(_peripheral)) {
+			return nullptr;
+		}
 		it_callback_t* newCb = new it_callback_t;
 		newCb->callback = upCallbackFn;
-
-		if (!ccCallbacks)
-		{
-			ccCallbacks = newCb;
-		} else {
-			it_callback_t* tail = ccCallbacks;
-			while (tail->next != nullptr) {
-				tail = tail->next;
-			}
-			tail->next = newCb;
-		}
+		addCallback(cc1Callbacks, newCb);
+		return newCb;
 	}
+
+	it_callback_t* setupCc2Callback(void (*upCallbackFn)(void))
+	{
+		if (!IS_TIM_LIST6_PERIPH(_peripheral)) {
+			return nullptr;
+		}
+		it_callback_t* newCb = new it_callback_t;
+		newCb->callback = upCallbackFn;
+		addCallback(cc2Callbacks, newCb);
+		return newCb;
+	}
+
+	it_callback_t* setupCc3Callback(void (*upCallbackFn)(void))
+	{
+		if (!IS_TIM_LIST3_PERIPH(_peripheral)) {
+			return nullptr;
+		}
+		it_callback_t* newCb = new it_callback_t;
+		newCb->callback = upCallbackFn;
+		addCallback(cc3Callbacks, newCb);
+		return newCb;
+	}
+
+	it_callback_t* setupCc4Callback(void (*upCallbackFn)(void))
+	{
+		if (!IS_TIM_LIST3_PERIPH(_peripheral)) {
+			return nullptr;
+		}
+		it_callback_t* newCb = new it_callback_t;
+		newCb->callback = upCallbackFn;
+		addCallback(cc4Callbacks, newCb);
+		return newCb;
+	}
+
 
 private:
 
@@ -603,10 +688,10 @@ Timer timer17  { TIM17 }; // 16 bit Advanced control
 /// Interrupts
 extern "C" {
 
-#ifdef USE_TIM_1
 void TIM1_CC_IRQHandler(void) {
+#ifdef USE_TIM_1
 
-	it_callback_t* cb = timer1.ccCallbacks;
+	it_callback_t* cb = timer1.cc1Callbacks;
 	while (cb) {
 		cb->callback();
 		cb = cb->next;
@@ -628,8 +713,18 @@ void TIM1_CC_IRQHandler(void) {
 //		}
 //		TIM1->SR = (uint16_t)~TIM_IT_CC4;
 //	}
-}
 #endif
+}
+
+void TIM2_IRQHandler(void) {
+#ifdef USE_TIM_2
+	timer2._irqHandler();
+	TIM1->SR = 0;
+	TIM1->SR = (uint16_t)~(TIM_IT_CC1 | TIM_IT_CC2 | TIM_IT_CC3 | TIM_IT_CC4); // Clear pending interrupts (do not do this in the callbacks!)
+#endif
+}
+
+
 	/// ~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!
 	/// CC2: Handler for Hall sensor input capture
 	/// Update:
