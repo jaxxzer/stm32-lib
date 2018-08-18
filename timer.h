@@ -11,7 +11,12 @@
 */
 #pragma once
 #include "stm32f0xx_conf.h"
-
+#define USE_TIM_1
+#define USE_TIM_2
+#define USE_TIM_3
+#define USE_TIM_6
+#define USE_TIM_15
+#define USE_TIM_16
 
 #include "helpers.h"
 class TimerChannel
@@ -279,29 +284,32 @@ private:
 };
 
 // see stm32f05x datasheet 3.14 Timers and watchdogs
+#ifndef USE_TIM_1
+#error fuck
+#endif
 #ifdef USE_TIM_1
-Timer timer1  { TIM1 }; // 16 bit Advanced control
+extern Timer timer1; // 16 bit Advanced control
 #endif
 #ifdef USE_TIM_2
-Timer timer2  { TIM2 }; // 32 bit General purpose
+extern Timer timer2; // 32 bit General purpose
 #endif
 #ifdef USE_TIM_3
-Timer timer3  { TIM3 }; // 16 bit Advanced control
+extern Timer timer3; // 16 bit Advanced control
 #endif
 #ifdef USE_TIM_6
-Timer timer6  { TIM6 }; // 16 bit Basic
+extern Timer timer6; // 16 bit Basic
 #endif
 #ifdef USE_TIM_14
-Timer timer14  { TIM14 }; // 16 bit Advanced control
+extern Timer timer14; // 16 bit Advanced control
 #endif
 #ifdef USE_TIM_15
-Timer timer15  { TIM15 }; // 16 bit Advanced control
+extern Timer timer15; // 16 bit Advanced control
 #endif
 #ifdef USE_TIM_16
-Timer timer16  { TIM16 }; // 16 bit Advanced control
+extern Timer timer16; // 16 bit Advanced control
 #endif
 #ifdef USE_TIM_17
-Timer timer17  { TIM17 }; // 16 bit Advanced control
+Timer timer17; // 16 bit Advanced control
 #endif
 
 

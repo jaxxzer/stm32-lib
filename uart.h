@@ -75,4 +75,10 @@ public:
 
 	USART_TypeDef* _peripheral;
 };
+#define USE_USART_1
+extern Uart uart1;
 
+#ifdef USE_USART_1
+#endif
+//Uart uart2 { USART2 };
+//Uart uart3 { USART3 };

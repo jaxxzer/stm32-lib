@@ -1,7 +1,9 @@
 #pragma once
+
 #include <inttypes.h>
-volatile uint32_t MicroSeconds = 0;
-static uint32_t systick_frequency;
+
+extern volatile uint32_t MicroSeconds;
+extern uint32_t systick_frequency;
 
 
 void configureClocks(uint32_t frequency);

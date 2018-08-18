@@ -84,7 +84,7 @@ extern "C" {
     /**********************************************************
      * USART1 interrupt request handler
      *********************************************************/
-    extern Uart uart1;
+
     void USART1_IRQHandler(void)
     {
         if (USART_GetITStatus(USART1, USART_IT_RXNE) != RESET) {
@@ -117,4 +117,8 @@ extern "C" {
     }
 }
 
-
+#ifdef USE_USART_1
+Uart uart1 { USART1 };
+#endif
+//Uart uart2 { USART2 };
+//Uart uart3 { USART3 };
