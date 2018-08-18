@@ -28,7 +28,7 @@ inline int32_t constrain_int32(const int32_t amt, const int32_t low, const int32
 
 
 template <typename T>
-T constrain_value(const T amt, const T low, const T high)
+inline T constrain_value(const T amt, const T low, const T high)
 {
     // the check for NaN as a float prevents propagation of floating point
     // errors through any function that uses constrain_value(). The normal

@@ -1,5 +1,34 @@
 #include "timer.h"
 
+
+// see stm32f05x datasheet 3.14 Timers and watchdogs
+#ifdef USE_TIM_1
+Timer timer1  { TIM1 }; // 16 bit Advanced control
+#endif
+#ifdef USE_TIM_2
+Timer timer2  { TIM2 }; // 32 bit General purpose
+#endif
+#ifdef USE_TIM_3
+Timer timer3  { TIM3 }; // 16 bit Advanced control
+#endif
+#ifdef USE_TIM_6
+Timer timer6  { TIM6 }; // 16 bit Basic
+#endif
+#ifdef USE_TIM_14
+Timer timer14  { TIM14 }; // 16 bit Advanced control
+#endif
+#ifdef USE_TIM_15
+Timer timer15  { TIM15 }; // 16 bit Advanced control
+#endif
+#ifdef USE_TIM_16
+Timer timer16  { TIM16 }; // 16 bit Advanced control
+#endif
+#ifdef USE_TIM_17
+Timer timer17  { TIM17 }; // 16 bit Advanced control
+#endif
+
+
+
 ///////////////////////////////////
 /////////////  Input Channel //////
 ///////////////////////////////////
@@ -296,33 +325,6 @@ void InitializeFrequencyTimer(uint16_t period = 1000)// AKA TIMx_ARR = 500000 mi
     TIM_TimeBaseInit(TIM1, &timerInitStructure);
     TIM_Cmd(TIM1, ENABLE);
 }
-
-// see stm32f05x datasheet 3.14 Timers and watchdogs
-#ifdef USE_TIM_1
-Timer timer1  { TIM1 }; // 16 bit Advanced control
-#endif
-#ifdef USE_TIM_2
-Timer timer2  { TIM2 }; // 32 bit General purpose
-#endif
-#ifdef USE_TIM_3
-Timer timer3  { TIM3 }; // 16 bit Advanced control
-#endif
-#ifdef USE_TIM_6
-Timer timer6  { TIM6 }; // 16 bit Basic
-#endif
-#ifdef USE_TIM_14
-Timer timer14  { TIM14 }; // 16 bit Advanced control
-#endif
-#ifdef USE_TIM_15
-Timer timer15  { TIM15 }; // 16 bit Advanced control
-#endif
-#ifdef USE_TIM_16
-Timer timer16  { TIM16 }; // 16 bit Advanced control
-#endif
-#ifdef USE_TIM_17
-Timer timer17  { TIM17 }; // 16 bit Advanced control
-#endif
-
 
 //Timer timer2   { TIM2 }; // 32 bit General purpose
 //Timer timer3   { TIM3 }; // 16 bit General purpose

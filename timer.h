@@ -309,7 +309,7 @@ extern Timer timer15; // 16 bit Advanced control
 extern Timer timer16; // 16 bit Advanced control
 #endif
 #ifdef USE_TIM_17
-Timer timer17; // 16 bit Advanced control
+extern Timer timer17; // 16 bit Advanced control
 #endif
 
 
