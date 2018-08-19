@@ -153,75 +153,20 @@ public:
     // Interrupt configuration and handling
     void interruptConfig(const uint8_t interrupts, const FunctionalState newState);
 
+    // todo private
 	it_callback_t* upCallbacks;
 	it_callback_t* cc1Callbacks;
 	it_callback_t* cc2Callbacks;
 	it_callback_t* cc3Callbacks;
 	it_callback_t* cc4Callbacks;
 
-	void addCallback(it_callback_t* callbacks, it_callback_t* newCallback) {
-			if (!callbacks) {
-				callbacks = newCallback;
-			} else {
-				it_callback_t* tail = callbacks;
-				while (tail->next != nullptr) {
-					tail = tail->next;
-				}
-				tail->next = newCallback;
-			}
-	}
-
-	it_callback_t* setupUpCallback(void (*upCallbackFn)(void))
-	{
-		it_callback_t* newCb = new it_callback_t;
-		newCb->callback = upCallbackFn;
-		addCallback(upCallbacks, newCb);
-		return newCb;
-	}
-
-	it_callback_t* setupCc1Callback(void (*upCallbackFn)(void))
-	{
-		if (!IS_TIM_LIST4_PERIPH(_peripheral)) {
-			return nullptr;
-		}
-		it_callback_t* newCb = new it_callback_t;
-		newCb->callback = upCallbackFn;
-		addCallback(cc1Callbacks, newCb);
-		return newCb;
-	}
-
-	it_callback_t* setupCc2Callback(void (*upCallbackFn)(void))
-	{
-		if (!IS_TIM_LIST6_PERIPH(_peripheral)) {
-			return nullptr;
-		}
-		it_callback_t* newCb = new it_callback_t;
-		newCb->callback = upCallbackFn;
-		addCallback(cc2Callbacks, newCb);
-		return newCb;
-	}
-
-	it_callback_t* setupCc3Callback(void (*upCallbackFn)(void))
-	{
-		if (!IS_TIM_LIST3_PERIPH(_peripheral)) {
-			return nullptr;
-		}
-		it_callback_t* newCb = new it_callback_t;
-		newCb->callback = upCallbackFn;
-		addCallback(cc3Callbacks, newCb);
-		return newCb;
-	}
-
-	it_callback_t* setupCc4Callback(void (*upCallbackFn)(void))
-	{
-		if (!IS_TIM_LIST3_PERIPH(_peripheral)) {
-			return nullptr;
-		}
-		it_callback_t* newCb = new it_callback_t;
-		newCb->callback = upCallbackFn;
-		addCallback(cc4Callbacks, newCb);
-		return newCb;
-	}
+	// todo private
+	it_callback_t* addCallback(it_callback_t* callbacks, void (*newCallbackFn)(void));
+	it_callback_t* setupUpCallback(void (*upCallbackFn)(void));
+	it_callback_t* setupCc1Callback(void (*cc1CallbackFn)(void));
+	it_callback_t* setupCc2Callback(void (*cc2CallbackFn)(void));
+	it_callback_t* setupCc3Callback(void (*cc3CallbackFn)(void));
+	it_callback_t* setupCc4Callback(void (*cc4CallbackFn)(void));
 
 private:
     TIM_TypeDef* _peripheral;

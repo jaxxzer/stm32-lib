@@ -1,6 +1,5 @@
 #include "timer.h"
 
-
 // see stm32f05x datasheet 3.14 Timers and watchdogs
 #ifdef USE_TIM_1
 Timer timer1  { TIM1 }; // 16 bit Advanced control
@@ -26,8 +25,6 @@ Timer timer16  { TIM16 }; // 16 bit Advanced control
 #ifdef USE_TIM_17
 Timer timer17  { TIM17 }; // 16 bit Advanced control
 #endif
-
-
 
 ///////////////////////////////////
 /////////////  Input Channel //////
@@ -354,6 +351,63 @@ void Timer::_irqHandler(void)
 	}
 }
 
+it_callback_t* Timer::addCallback(it_callback_t* callbacks, void (*newCallbackFn)(void)) {
+	it_callback_t* newCb = new it_callback_t;
+	newCb->callback = newCallbackFn;
+
+	if (!callbacks) {
+		callbacks = newCb;
+	} else {
+		it_callback_t* tail = callbacks;
+		while (tail->next != nullptr) {
+			tail = tail->next;
+		}
+		tail->next = newCb;
+	}
+	return newCb;
+}
+
+it_callback_t* Timer::setupUpCallback(void (*upCallbackFn)(void))
+{
+	return addCallback(upCallbacks, upCallbackFn);
+}
+
+it_callback_t* Timer::setupCc1Callback(void (*cc1CallbackFn)(void))
+{
+	if (!IS_TIM_LIST4_PERIPH(_peripheral)) {
+		return nullptr;
+	}
+	//return nullptr;
+	//return addCallback(cc2Callbacks, cc1CallbackFn);
+
+	return addCallback(cc1Callbacks, cc1CallbackFn);
+}
+
+it_callback_t* Timer::setupCc2Callback(void (*cc2CallbackFn)(void))
+{
+	if (!IS_TIM_LIST6_PERIPH(_peripheral)) {
+		return nullptr;
+	}
+	return addCallback(cc2Callbacks, cc2CallbackFn);
+}
+
+it_callback_t* Timer::setupCc3Callback(void (*cc3CallbackFn)(void))
+{
+	if (!IS_TIM_LIST3_PERIPH(_peripheral)) {
+		return nullptr;
+	}
+	return addCallback(cc3Callbacks, cc3CallbackFn);
+}
+
+it_callback_t* Timer::setupCc4Callback(void (*cc4CallbackFn)(void))
+{
+	if (!IS_TIM_LIST3_PERIPH(_peripheral)) {
+		return nullptr;
+	}
+	return addCallback(cc4Callbacks, cc4CallbackFn);
+}
+
+
 /// ~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@
 /// Interrupts
 extern "C" {
@@ -383,6 +437,12 @@ void TIM1_CC_IRQHandler(void) {
 void TIM2_IRQHandler(void) {
 #ifdef USE_TIM_2
 	timer2._irqHandler();
+#endif
+}
+
+void TIM3_IRQHandler(void) {
+#ifdef USE_TIM_3
+	timer3._irqHandler();
 #endif
 }
 
