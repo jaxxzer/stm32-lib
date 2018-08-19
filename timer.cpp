@@ -287,18 +287,24 @@ void Timer::setPrescaler(uint16_t prescaler)
 	TIM_PrescalerConfig(_peripheral, prescaler, TIM_PSCReloadMode_Immediate);
 }
 
+// Sets timer frequency within bounds of current clock frequency and prescaler configuration
 void Timer::setFrequency(uint16_t f) // Hz
 {
-//	float period = 1.0f/f;
-//	float tickPeriod = 1.0f/_tickFrequency;
-//	uint16_t ticks = period/tickPeriod; = tickFrequency/f;
 	RCC_ClocksTypeDef RCC_ClocksStruct;
 	RCC_GetClocksFreq(&RCC_ClocksStruct);
 
-	float tickPeriod = RCC_ClocksStruct.PCLK_Frequency;
-	uint16_t ticks = RCC_ClocksStruct.PCLK_Frequency / f;
+	uint32_t clk_f = RCC_ClocksStruct.PCLK_Frequency / _config.TIM_Prescaler;
 
-	setAutoreload(ticks);
+	if (f > clk_f) {
+		f = clk_f;
+	} else {
+		uint16_t min_f  = clk_f / UINT16MAX;
+		if (f < min_f) {
+			f = min_f;
+		}
+	}
+
+	setAutoreload(clk_f / f);
 }
 
 // period in ticks
