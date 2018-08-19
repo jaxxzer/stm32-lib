@@ -76,7 +76,7 @@ public:
 	void disableInterrupt(void);
 
 	void setDeadtime(uint16_t deadTime);
-	void setDuty(uint16_t duty);
+	void setDuty(uint16_t duty); // 0 ~ UINT16MAX
 	void setCompare(uint16_t ccr);
 
 	void preloadConfig(FunctionalState enabled);
@@ -113,73 +113,18 @@ public:
     	TIM_TimeBaseStructInit(&_config);
     };
     ~Timer() {
-//    		it_callback_t* cb = ccCallbacks;
-//    		while (cb) {
-//    			it_callback_t* tmp = cb->next;
-//    			delete(cb);
-//    			cb = tmp;
-//    		}
-//    		cb = upCallbacks;
-//    		while (cb) {
-//    			it_callback_t* tmp = cb->next;
-//    			delete(cb);
-//    			cb = tmp;
-//    		}
-    } // delete callbacks
+    	// delete callbacks
+    	_deleteCallbacks();
+    }
 
     // current config
     void _init(void);
 
-    void _irqHandler(void) {
+    void _irqHandler(void);
 
-    	// Note TIM_GetITStatus checks flag status as well as that interrupt is enabled
-    	// TIM_GetFlagStatus only checks the flag status, and you can pass a bitmask
+    void _executeCallbacks(it_callback_t* callbacks);
 
-	   if (TIM_GetITStatus(_peripheral, TIM_IT_Update)) {
-			it_callback_t* cb = upCallbacks;
-			while (cb) {
-				cb->callback();
-				cb = cb->next;
-			}
-			_peripheral->SR = (uint16_t)~(TIM_IT_Update);
-		}
-
-		if (IS_TIM_LIST4_PERIPH(_peripheral) && TIM_GetITStatus(_peripheral, TIM_IT_CC1)) {
-			it_callback_t* cb = cc1Callbacks;
-			while (cb) {
-				cb->callback();
-				cb = cb->next;
-			}
-			_peripheral->SR = (uint16_t)~(TIM_IT_CC1);
-		}
-
-		if (IS_TIM_LIST6_PERIPH(_peripheral) && TIM_GetITStatus(_peripheral, TIM_IT_CC2)) {
-			it_callback_t* cb = cc2Callbacks;
-			while (cb) {
-				cb->callback();
-				cb = cb->next;
-			}
-			_peripheral->SR = (uint16_t)~(TIM_IT_CC2);
-		}
-
-		if (IS_TIM_LIST3_PERIPH(_peripheral) && TIM_GetITStatus(_peripheral, TIM_IT_CC3)) {
-			it_callback_t* cb = cc3Callbacks;
-			while (cb) {
-				cb->callback();
-				cb = cb->next;
-			}
-			_peripheral->SR = (uint16_t)~(TIM_IT_CC3);
-		}
-
-		if (IS_TIM_LIST3_PERIPH(_peripheral) && TIM_GetITStatus(_peripheral, TIM_IT_CC4)) {
-			it_callback_t* cb = cc4Callbacks;
-			while (cb) {
-				cb->callback();
-				cb = cb->next;
-			}
-			_peripheral->SR = (uint16_t)~(TIM_IT_CC4);
-		}
-    }
+    void _deleteCallbacks(void);
 
     // Defaults
     void init(uint16_t prescaler = 0x0000,
@@ -312,20 +257,9 @@ extern Timer timer16; // 16 bit Advanced control
 extern Timer timer17; // 16 bit Advanced control
 #endif
 
-
-//Timer timer2   { TIM2 }; // 32 bit General purpose
-//Timer timer3   { TIM3 }; // 16 bit General purpose
-//Timer timer14  { TIM4 }; // 16 bit General purpose
-//Timer timer15  { TIM4 }; // 16 bit General purpose
-//Timer timer16  { TIM4 }; // 16 bit General purpose
-//Timer timer17  { TIM4 }; // 16 bit General purpose
-//Timer timer6   { TIM4 }; // 16 bit Basic - Commutation?
-
 /// ~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@
 /// Interrupts
 extern "C" {
-
 void TIM1_CC_IRQHandler(void);
-
 void TIM2_IRQHandler(void);
 }

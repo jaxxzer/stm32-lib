@@ -304,35 +304,55 @@ void Timer::setFrequency(uint16_t f) // Hz
 	setAutoreload(ticks);
 }
 
-
-
 // period in ticks
 void Timer::setPeriod(uint32_t microseconds)
 {
 //	TIM_SetAutoreload(_peripheral, _period);
 }
 
-
-// frequency
-void InitializeFrequencyTimer(uint16_t period = 1000)// AKA TIMx_ARR = 500000 microseconds = 2Hz
+void Timer::_executeCallbacks(it_callback_t* callbacks)
 {
-    TIM_TimeBaseInitTypeDef timerInitStructure;
-    timerInitStructure.TIM_Prescaler = (SystemCoreClock / 10000) - 1; // Every 100 microseconds
-    timerInitStructure.TIM_CounterMode = TIM_CounterMode_Up;
-    timerInitStructure.TIM_Period = period;
-    timerInitStructure.TIM_ClockDivision = TIM_CKD_DIV1;
-    timerInitStructure.TIM_RepetitionCounter = 0;
-    TIM_TimeBaseInit(TIM1, &timerInitStructure);
-    TIM_Cmd(TIM1, ENABLE);
+	it_callback_t* cb = callbacks;
+	while (cb) {
+		cb->callback();
+		cb = cb->next;
+	}
 }
 
-//Timer timer2   { TIM2 }; // 32 bit General purpose
-//Timer timer3   { TIM3 }; // 16 bit General purpose
-//Timer timer14  { TIM4 }; // 16 bit General purpose
-//Timer timer15  { TIM4 }; // 16 bit General purpose
-//Timer timer16  { TIM4 }; // 16 bit General purpose
-//Timer timer17  { TIM4 }; // 16 bit General purpose
-//Timer timer6   { TIM4 }; // 16 bit Basic - Commutation?
+void Timer::_deleteCallbacks(void)
+{
+	return;
+}
+
+void Timer::_irqHandler(void)
+{
+	// Note TIM_GetITStatus checks flag status as well as that interrupt is enabled
+	// TIM_GetFlagStatus only checks the flag status, and you can pass a bitmask
+   if (TIM_GetITStatus(_peripheral, TIM_IT_Update)) {
+		_executeCallbacks(upCallbacks);
+		_peripheral->SR = (uint16_t)~(TIM_IT_Update);
+	}
+
+	if (IS_TIM_LIST4_PERIPH(_peripheral) && TIM_GetITStatus(_peripheral, TIM_IT_CC1)) {
+		_executeCallbacks(cc1Callbacks);
+		_peripheral->SR = (uint16_t)~(TIM_IT_CC1);
+	}
+
+	if (IS_TIM_LIST6_PERIPH(_peripheral) && TIM_GetITStatus(_peripheral, TIM_IT_CC2)) {
+		_executeCallbacks(cc2Callbacks);
+		_peripheral->SR = (uint16_t)~(TIM_IT_CC2);
+	}
+
+	if (IS_TIM_LIST3_PERIPH(_peripheral) && TIM_GetITStatus(_peripheral, TIM_IT_CC3)) {
+		_executeCallbacks(cc3Callbacks);
+		_peripheral->SR = (uint16_t)~(TIM_IT_CC3);
+	}
+
+	if (IS_TIM_LIST3_PERIPH(_peripheral) && TIM_GetITStatus(_peripheral, TIM_IT_CC4)) {
+		_executeCallbacks(cc4Callbacks);
+		_peripheral->SR = (uint16_t)~(TIM_IT_CC4);
+	}
+}
 
 /// ~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@
 /// Interrupts
