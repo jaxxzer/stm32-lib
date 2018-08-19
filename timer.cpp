@@ -288,7 +288,7 @@ void Timer::setPrescaler(uint16_t prescaler)
 }
 
 // Sets timer frequency within bounds of current clock frequency and prescaler configuration
-void Timer::setFrequency(uint16_t f) // Hz
+bool Timer::setFrequency(uint16_t f) // Hz
 {
 	RCC_ClocksTypeDef RCC_ClocksStruct;
 	RCC_GetClocksFreq(&RCC_ClocksStruct);
@@ -296,15 +296,16 @@ void Timer::setFrequency(uint16_t f) // Hz
 	uint32_t clk_f = RCC_ClocksStruct.PCLK_Frequency / _config.TIM_Prescaler;
 
 	if (f > clk_f) {
-		f = clk_f;
+		return false;
 	} else {
 		uint16_t min_f  = clk_f / UINT16MAX;
 		if (f < min_f) {
-			f = min_f;
+			return false;
 		}
 	}
 
 	setAutoreload(clk_f / f);
+	return true;
 }
 
 // period in ticks

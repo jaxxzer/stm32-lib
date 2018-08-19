@@ -141,7 +141,7 @@ public:
     void setCCPreloadControl(FunctionalState enabled);
     void setAutoreload(uint32_t arr);
     uint32_t getAutoreload(void);
-    void setFrequency(uint16_t Hz);
+    bool setFrequency(uint16_t Hz);
 	void setPeriod(uint32_t microseconds);
     uint16_t getPeriod(void);
 
