@@ -211,7 +211,7 @@ void Timer::init(uint16_t prescaler,
 	_config.TIM_Prescaler = prescaler;
 	_config.TIM_RepetitionCounter = repetitionCounter;
 	_config.TIM_CounterMode = counterMode;
-	_init();
+	_initTimeBase();
 }
 // Input: period (ticks), tick frequency (Hz)
 // - Enable the peripheral clock
@@ -221,11 +221,6 @@ void Timer::init(uint16_t prescaler,
 void Timer::interruptConfig(const uint8_t interrupts, const FunctionalState newState)
 {
 	TIM_ITConfig(_peripheral, interrupts, newState);
-}
-// TODO inline
-void Timer::setMOE(FunctionalState enabled)
-{
-	TIM_CtrlPWMOutputs(_peripheral, enabled);
 }
 
 void Timer::setAutoreload(uint32_t arr)
@@ -276,9 +271,20 @@ void Timer::setEnabled(FunctionalState enabled)
 	TIM_Cmd(_peripheral, enabled);
 }
 
-void Timer::_init(void)
+
+void Timer::_initTimeBase(void)
 {
     TIM_TimeBaseInit(_peripheral, &_config);
+}
+
+void Timer::_configBDTR()
+{
+	TIM_BDTRConfig(_peripheral, &_config_bdtr);
+}
+
+void Timer::_initBDTR(void){
+	TIM_BDTRStructInit(&_config_bdtr);
+	_configBDTR();
 }
 
 void Timer::setPrescaler(uint16_t prescaler)
@@ -309,10 +315,10 @@ bool Timer::setFrequency(uint16_t f) // Hz
 }
 
 // period in ticks
-void Timer::setPeriod(uint32_t microseconds)
-{
-//	TIM_SetAutoreload(_peripheral, _period);
-}
+//void Timer::setPeriod(uint32_t microseconds)
+//{
+////	TIM_SetAutoreload(_peripheral, _period);
+//}
 
 void Timer::_executeCallbacks(it_callback_t* callbacks)
 {

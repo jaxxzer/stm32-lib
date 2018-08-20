@@ -75,7 +75,6 @@ public:
 	void enableInterrupt(void);
 	void disableInterrupt(void);
 
-	void setDeadtime(uint16_t deadTime);
 	void setDuty(uint16_t duty); // 0 ~ UINT16MAX
 	void setCompare(uint16_t ccr);
 
@@ -117,14 +116,24 @@ public:
     	_deleteCallbacks();
     }
 
-    // current config
-    void _init(void);
-
+    // apply current config (TIM_TimeBaseInitTypeDef)
+    void setAutoreload(uint32_t arr);
+    void _initTimeBase(void);
     void _irqHandler(void);
 
     void _executeCallbacks(it_callback_t* callbacks);
 
     void _deleteCallbacks(void);
+
+    // apply default (startup) bdtr configuration
+	void _initBDTR(void);
+    // apply current BDTR configuration
+	void _configBDTR();
+    // this has separate handling than the rest of btdr bits in stm spl due to.. safety? or maybe this cannot be written synchronously with other bits
+    void setMOE(FunctionalState newState) { TIM_CtrlPWMOutputs(_peripheral, newState); }
+	void setOSSR(FunctionalState newState) { _config_bdtr.TIM_OSSRState = newState ? TIM_OSSRState_Enable : TIM_OSSRState_Disable; _initBDTR(); }
+	void setOSSI(FunctionalState newState) { _config_bdtr.TIM_OSSIState = newState ? TIM_OSSIState_Enable : TIM_OSSIState_Disable; _initBDTR(); }
+	void setDTG(uint16_t deadTime) { _config_bdtr.TIM_DeadTime= deadTime; _initBDTR(); } // in nanoseconds
 
     // Defaults
     void init(uint16_t prescaler = 0x0000,
@@ -135,15 +144,13 @@ public:
 
     // contorl/config
     void setEnabled(FunctionalState enabled); // enable output
-    void setMOE(FunctionalState enabled);
     void setClockEnabled(FunctionalState enabled);
     void preloadConfig(FunctionalState enabled);
     void setCCPreloadControl(FunctionalState enabled);
-    void setAutoreload(uint32_t arr);
     uint32_t getAutoreload(void);
     bool setFrequency(uint16_t Hz);
-	void setPeriod(uint32_t microseconds);
-    uint16_t getPeriod(void);
+//	void setPeriod(uint32_t microseconds);
+//    uint16_t getPeriod(void);
 
     void clearFlag(uint16_t flag) { TIM_ClearFlag(_peripheral, flag); };
 	void setPrescaler(uint16_t prescaler);
@@ -171,6 +178,16 @@ public:
 private:
     TIM_TypeDef* _peripheral;
     TIM_TimeBaseInitTypeDef _config;
+	TIM_BDTRInitTypeDef _config_bdtr // todo add constructor
+	{
+		TIM_OSSRState_Enable, //TIM_OSSRState = 0;
+		TIM_OSSIState_Disable, //TIM_OSSIState = 0;
+		TIM_LOCKLevel_OFF, //TIM_LOCKLevel = 0;
+		0, //TIM_DeadTime = 0; 0 ~ 0xFF
+		TIM_Break_Disable, //TIM_Break = 0;
+		TIM_BreakPolarity_Low, //TIM_BreakPolarity = 0;
+		TIM_AutomaticOutput_Disable //TIM_AutomaticOutput = 0;
+	};
 };
 
 // see stm32f05x datasheet 3.14 Timers and watchdogs
