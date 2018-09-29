@@ -1,6 +1,15 @@
 #pragma once
+#ifndef STM_TARGET
+#define STM_TARGET STM_TARGET_F1
+#endif
 
+#if STM_TARGET == STM_TARGET_F0
 #include "stm32f0xx_conf.h"
+#elif STM_TARGET == STM_TARGET_F1 
+#include "stm32f10x_conf.h"
+#else
+#error "No valid STM_TARGET!"
+#endif
 
 #include "gpio.h"
 #include "dma.h"
