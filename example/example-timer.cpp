@@ -1,10 +1,18 @@
+#define USE_TIM1
+
 #include "stm32lib.h"
+
+// Timer update interrupt is used for 
 
 Gpio gpio_Led { GPIOB, 1 };
 
-static const int delay_ms = 100;
 
-int main(void)
+void tim1UpdateCallback(void)
+{
+    gpio_Led.toggle();
+}
+
+int main()
 {
 	SystemInit();
 
@@ -13,8 +21,7 @@ int main(void)
     RCC_PLLCmd(ENABLE);
 
     // Wait for PLLRDY after enabling PLL.
-    while (RCC_GetFlagStatus(RCC_FLAG_PLLRDY) != SET)
-    { }
+    while (RCC_GetFlagStatus(RCC_FLAG_PLLRDY) != SET) {  }
 
     RCC_SYSCLKConfig(RCC_SYSCLKSource_PLLCLK);  // Select the PLL as clock source.
 
@@ -23,13 +30,21 @@ int main(void)
 	// 1millisecond system interrupt
 	SysTick_Config(SystemCoreClock/1000);
 	systick_frequency = 1000; // todo fix this in hal somehow. this is needed when we are configured for internal clock?
+    //Timer timer1  { TIM1 }; // 16 bit Advanced control
 
     gpio_Led.init(GPIO_Mode_OUT);
 
-    while (1) {
-        gpio_Led.toggle();
-        mDelay(delay_ms);
-    }
+    nvic_config(TIM1_BRK_UP_TRG_COM_IRQn, 0, ENABLE);
+    timer1.setClockEnabled(ENABLE);
+    //*(uint32_t*)0x40021018 |= (1U<<14);
+    timer1.initFreq(10); // 10Hz update
+    timer1.setupUpCallback(&tim1UpdateCallback);
+    timer1.setEnabled(ENABLE);
+    timer1.interruptConfig(TIM_IT_Update, ENABLE);
+
+    while (1) { 
+        mDelay(1000);
+     }
 
     return 0;
 }

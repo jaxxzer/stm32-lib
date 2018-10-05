@@ -314,6 +314,28 @@ bool Timer::setFrequency(uint16_t f) // Hz
 	return true;
 }
 
+bool Timer::setFrequencyForce(uint16_t f)
+{
+	
+	// f = f_PCLCK / (PSC * ARR)
+	// Choose ARR and PSC, maximizing ARR (resolution)
+	RCC_ClocksTypeDef RCC_ClocksStruct;
+	RCC_GetClocksFreq(&RCC_ClocksStruct);
+	// ex 50 hz:
+	// 0x
+	uint32_t PSC = RCC_ClocksStruct.PCLK_Frequency / (f * 0xFFFF);
+
+	if (RCC_ClocksStruct.PCLK_Frequency % (f * 0xFFFF)) {
+		PSC++;
+	}
+
+	uint32_t ARR = RCC_ClocksStruct.PCLK_Frequency / (PSC * f);
+
+	setPrescaler(PSC);
+	setAutoreload(ARR);
+	return true;
+}
+
 // period in ticks
 //void Timer::setPeriod(uint32_t microseconds)
 //{
@@ -340,12 +362,12 @@ void Timer::_irqHandler(void)
 	// TIM_GetFlagStatus only checks the flag status, and you can pass a bitmask
    if (TIM_GetITStatus(_peripheral, TIM_IT_Update)) {
 		_executeCallbacks(upCallbacks);
-		_peripheral->SR = (uint16_t)~(TIM_IT_Update);
+		_peripheral->SR &= (uint16_t)~(TIM_IT_Update);
 	}
 
 	if (IS_TIM_LIST4_PERIPH(_peripheral) && TIM_GetITStatus(_peripheral, TIM_IT_CC1)) {
 		_executeCallbacks(cc1Callbacks);
-		_peripheral->SR = (uint16_t)~(TIM_IT_CC1);
+		_peripheral->SR  &=  (uint16_t)~(TIM_IT_CC1);
 	}
 
 	if (IS_TIM_LIST6_PERIPH(_peripheral) && TIM_GetITStatus(_peripheral, TIM_IT_CC2)) {
@@ -364,14 +386,14 @@ void Timer::_irqHandler(void)
 	}
 }
 
-it_callback_t* Timer::addCallback(it_callback_t* callbacks, void (*newCallbackFn)(void)) {
+it_callback_t* Timer::addCallback(it_callback_t** callbacks, void (*newCallbackFn)(void)) {
 	it_callback_t* newCb = new it_callback_t;
 	newCb->callback = newCallbackFn;
-
-	if (!callbacks) {
-		callbacks = newCb;
+    it_callback_t* currentCb = *callbacks;
+	if (!currentCb) {
+		*callbacks = newCb;
 	} else {
-		it_callback_t* tail = callbacks;
+		it_callback_t* tail = *callbacks;
 		while (tail->next != nullptr) {
 			tail = tail->next;
 		}
@@ -382,7 +404,8 @@ it_callback_t* Timer::addCallback(it_callback_t* callbacks, void (*newCallbackFn
 
 it_callback_t* Timer::setupUpCallback(void (*upCallbackFn)(void))
 {
-	return addCallback(upCallbacks, upCallbackFn);
+	upCallbacks = addCallback(&upCallbacks, upCallbackFn);
+	return upCallbacks;
 }
 
 it_callback_t* Timer::setupCc1Callback(void (*cc1CallbackFn)(void))
@@ -393,7 +416,7 @@ it_callback_t* Timer::setupCc1Callback(void (*cc1CallbackFn)(void))
 	//return nullptr;
 	//return addCallback(cc2Callbacks, cc1CallbackFn);
 
-	return addCallback(cc1Callbacks, cc1CallbackFn);
+	return addCallback(&cc1Callbacks, cc1CallbackFn);
 }
 
 it_callback_t* Timer::setupCc2Callback(void (*cc2CallbackFn)(void))
@@ -401,7 +424,7 @@ it_callback_t* Timer::setupCc2Callback(void (*cc2CallbackFn)(void))
 	if (!IS_TIM_LIST6_PERIPH(_peripheral)) {
 		return nullptr;
 	}
-	return addCallback(cc2Callbacks, cc2CallbackFn);
+	return addCallback(&cc2Callbacks, cc2CallbackFn);
 }
 
 it_callback_t* Timer::setupCc3Callback(void (*cc3CallbackFn)(void))
@@ -409,7 +432,7 @@ it_callback_t* Timer::setupCc3Callback(void (*cc3CallbackFn)(void))
 	if (!IS_TIM_LIST3_PERIPH(_peripheral)) {
 		return nullptr;
 	}
-	return addCallback(cc3Callbacks, cc3CallbackFn);
+	return addCallback(&cc3Callbacks, cc3CallbackFn);
 }
 
 it_callback_t* Timer::setupCc4Callback(void (*cc4CallbackFn)(void))
@@ -417,13 +440,19 @@ it_callback_t* Timer::setupCc4Callback(void (*cc4CallbackFn)(void))
 	if (!IS_TIM_LIST3_PERIPH(_peripheral)) {
 		return nullptr;
 	}
-	return addCallback(cc4Callbacks, cc4CallbackFn);
+	return addCallback(&cc4Callbacks, cc4CallbackFn);
 }
 
 
 /// ~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@
 /// Interrupts
 extern "C" {
+
+void TIM1_BRK_UP_TRG_COM_IRQHandler(void) {
+#ifdef USE_TIM_1
+    timer1._irqHandler();
+#endif
+}
 
 void TIM1_CC_IRQHandler(void) {
 #ifdef USE_TIM_1

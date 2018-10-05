@@ -12,11 +12,11 @@
 #pragma once
 #include "stm32f0xx_conf.h"
 #define USE_TIM_1
-#define USE_TIM_2
-#define USE_TIM_3
-#define USE_TIM_6
-#define USE_TIM_15
-#define USE_TIM_16
+//#define USE_TIM_2
+//#define USE_TIM_3
+//#define USE_TIM_6
+//#define USE_TIM_15
+//#define USE_TIM_16
 
 #include "helpers.h"
 class TimerChannel
@@ -141,6 +141,12 @@ public:
     		uint16_t counterMode = TIM_CounterMode_Up,
 			uint16_t clockDivision = TIM_CKD_DIV1,
 			uint8_t repetitionCounter = 0x0000);
+	
+	void initFreq(uint16_t frequency)
+	{
+		init();
+		setFrequencyForce(frequency);
+	}
 
     // contorl/config
     void setEnabled(FunctionalState enabled); // enable output
@@ -148,7 +154,8 @@ public:
     void preloadConfig(FunctionalState enabled);
     void setCCPreloadControl(FunctionalState enabled);
     uint32_t getAutoreload(void);
-    bool setFrequency(uint16_t Hz);
+    bool setFrequency(uint16_t f);
+    bool setFrequencyForce(uint16_t f);
 //	void setPeriod(uint32_t microseconds);
 //    uint16_t getPeriod(void);
 
@@ -161,14 +168,14 @@ public:
     void interruptConfig(const uint8_t interrupts, const FunctionalState newState);
 
     // todo private
-	it_callback_t* upCallbacks;
-	it_callback_t* cc1Callbacks;
-	it_callback_t* cc2Callbacks;
-	it_callback_t* cc3Callbacks;
-	it_callback_t* cc4Callbacks;
+	it_callback_t* upCallbacks = nullptr;
+	it_callback_t* cc1Callbacks = nullptr;
+	it_callback_t* cc2Callbacks = nullptr;
+	it_callback_t* cc3Callbacks = nullptr;
+	it_callback_t* cc4Callbacks = nullptr;
 
 	// todo private
-	it_callback_t* addCallback(it_callback_t* callbacks, void (*newCallbackFn)(void));
+	it_callback_t* addCallback(it_callback_t** callbacks, void (*newCallbackFn)(void));
 	it_callback_t* setupUpCallback(void (*upCallbackFn)(void));
 	it_callback_t* setupCc1Callback(void (*cc1CallbackFn)(void));
 	it_callback_t* setupCc2Callback(void (*cc2CallbackFn)(void));
