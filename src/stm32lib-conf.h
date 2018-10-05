@@ -1,0 +1,1 @@
+#define USE_TIM_3

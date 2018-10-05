@@ -1,4 +1,5 @@
 #include "timer.h"
+#include "stm32lib-conf.h"
 
 // see stm32f05x datasheet 3.14 Timers and watchdogs
 #ifdef USE_TIM_1

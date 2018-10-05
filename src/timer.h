@@ -11,7 +11,7 @@
 */
 #pragma once
 #include "stm32f0xx_conf.h"
-#define USE_TIM_1
+//#define USE_TIM_1
 //#define USE_TIM_2
 //#define USE_TIM_3
 //#define USE_TIM_6
@@ -198,9 +198,6 @@ private:
 };
 
 // see stm32f05x datasheet 3.14 Timers and watchdogs
-#ifndef USE_TIM_1
-#error fuck
-#endif
 #ifdef USE_TIM_1
 extern Timer timer1; // 16 bit Advanced control
 #endif

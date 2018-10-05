@@ -1,16 +1,11 @@
-#define USE_TIM1
+#define USE_TIM_3
 
 #include "stm32lib.h"
 
 // Timer update interrupt is used for 
 
 Gpio gpio_Led { GPIOB, 1 };
-
-
-void tim1UpdateCallback(void)
-{
-    gpio_Led.toggle();
-}
+TimerChannelOutput tco_4 { TIM3, TIM_Channel_4 };
 
 int main()
 {
@@ -30,20 +25,26 @@ int main()
 	// 1millisecond system interrupt
 	SysTick_Config(SystemCoreClock/1000);
 	systick_frequency = 1000; // todo fix this in hal somehow. this is needed when we are configured for internal clock?
-    //Timer timer1  { TIM1 }; // 16 bit Advanced control
 
-    gpio_Led.init(GPIO_Mode_OUT);
+    gpio_Led.init(GPIO_Mode_AF);
+    gpio_Led.configAF(1);
 
-    nvic_config(TIM1_BRK_UP_TRG_COM_IRQn, 0, ENABLE);
-    timer1.setClockEnabled(ENABLE);
-    //*(uint32_t*)0x40021018 |= (1U<<14);
-    timer1.initFreq(10); // 10Hz update
-    timer1.setupUpCallback(&tim1UpdateCallback);
-    timer1.setEnabled(ENABLE);
-    timer1.interruptConfig(TIM_IT_Update, ENABLE);
+    timer3.setClockEnabled(ENABLE);
+    timer3.initFreq(1e4); // 10kHz pwm frequency
+    timer3.setEnabled(ENABLE);
 
+    tco_4.init(TIM_OCMode_PWM1, 0, TIM_OutputState_Enable);
+    uint16_t duty = 0;
+    int8_t inc = 75;
     while (1) { 
-        mDelay(1000);
+        mDelay(1);
+        tco_4.setDuty(duty);
+        if ( (inc > 0 && inc > 65535 - duty) ||
+             (inc < 0 && duty < -inc) )
+        {
+            inc = -inc;
+        }       
+        duty += inc;
      }
 
     return 0;
