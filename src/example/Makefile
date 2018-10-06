@@ -74,7 +74,7 @@ $(OBJ_DIR)/%.os: %.s
 
 example-%: $(TARGET_OBJS) $(OBJ_DIR)/example-%.opp
 	@echo "deps: $^"
-	arm-none-eabi-g++ -o $@.elf $^ -DRAM="64K" -T $(LD_SRC) $(LD_FLAGS)
+	arm-none-eabi-g++ -o $@.elf $^ -T $(LD_SRC) $(LD_FLAGS)
 	arm-none-eabi-size $@.elf
 	arm-none-eabi-objcopy -O ihex $@.elf $@.hex
 	arm-none-eabi-objcopy -O binary $@.elf $@.bin

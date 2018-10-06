@@ -65,7 +65,7 @@ $(OBJ_DIR)/%.o: %.c
 
 example-%: $(TARGET_OBJS) $(OBJ_DIR)/src/example/example-%.opp
 	@echo "deps: $^"
-	arm-none-eabi-g++ -o $@.elf $^ -DRAM="64K" -T $(LD_SRC) $(LD_FLAGS)
+	arm-none-eabi-g++ -o $@.elf $^ -T $(LD_SRC) $(LD_FLAGS)
 	arm-none-eabi-size $@.elf
 	arm-none-eabi-objcopy -O ihex $@.elf $@.hex
 	arm-none-eabi-objcopy -O binary $@.elf $@.bin
@@ -81,25 +81,7 @@ $(OBJ_DIR)/%.os: %.s
 	mkdir -p $(dir $@)
 	$(CC) -c $(ASFLAGS) -o $@ $<
 
-
-
-
-
-
-test: $(TARGET_OBJS)
-	@echo "deps: $(TARGET_OBJS)"
-	@echo "INCLUDES: $(INCLUDES)"
-	@echo "CC: $(CC)"
-	@echo "CXX: $(CXX)"
-	@echo "C_SRC: $(C_SRC)"
-	@echo "CXX_SRC: $(CXX_SRC)"
-	@echo "TARGET_OBJS: $(TARGET_OBJS)"
-	arm-none-eabi-g++ -o $@.elf $(TARGET_OBJS) -DRAM="64K" -T $(LD_SRC) $(LD_FLAGS)
-	arm-none-eabi-size $@.elf
-	arm-none-eabi-objcopy -O ihex $@.elf $@.hex
-	arm-none-eabi-objcopy -O binary $@.elf $@.bin
-
-flash: test
+%-flash: %
 	openocd -f flash.cfg
 
 .PHONY: clean
