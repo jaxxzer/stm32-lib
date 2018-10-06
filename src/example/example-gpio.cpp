@@ -1,6 +1,6 @@
 #include "stm32lib-conf.h"
 
-Gpio gpio_Led { GPIOB, 1 };
+Gpio gpio_Led { GPIOB, 12 };
 
 static const int delay_ms = 100;
 
