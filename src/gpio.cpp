@@ -40,7 +40,7 @@ Gpio::Gpio(GPIO_TypeDef* port, uint16_t pin)
 void Gpio::_clockEnable(void)
 {
 	switch ((uint32_t)_port) {
-#if defined (STM32F051) || defined (STM32F030)
+#if defined STM32F0
 	case GPIOA_BASE:
 		RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA, ENABLE);
 	    break;
@@ -53,7 +53,7 @@ void Gpio::_clockEnable(void)
 	case GPIOD_BASE:
 		RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOD, ENABLE);
 		break;
-#else
+#elif STM32F1
 	case GPIOA_BASE:
 		RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
 	    break;

@@ -47,7 +47,7 @@ C_SRC += $(wildcard $(STDPERIPH_DIR)/src/*.c)
 C_SRC += $(SYSTEM_SRC)
 S_SRC += $(STARTUP_SRC)
 LD_SRC += $(LINK_SCRIPT)
-LD_FLAGS = -mthumb -specs=nosys.specs -static -Wl,-cref,-u,Reset_Handler -Wl,-Map=asf.map -Wl,--gc-sections -Wl,--defsym=malloc_getpagesize_P=0x1000 -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group -specs=nano.specs 
+LD_FLAGS = -mthumb -specs=nosys.specs -static -Wl,-cref,-u,Reset_Handler -Wl,-Map=$(BUILD_DIR)/build.map -Wl,--gc-sections -Wl,--defsym=malloc_getpagesize_P=0x1000 -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group -specs=nano.specs 
 LD_FLAGS += $(ARCH_FLAGS)
 
 
@@ -57,6 +57,7 @@ AS = arm-none-eabi-as
 
 BUILD_DIR = build
 OBJ_DIR = $(BUILD_DIR)/obj
+BIN_DIR = $(BUILD_DIR)/bin
 
 TARGET_OBJS = $(patsubst %.cpp,$(OBJ_DIR)/%.opp,$(CXX_SRC))
 TARGET_OBJS += $(patsubst %.c,$(OBJ_DIR)/%.o,$(C_SRC))
@@ -70,10 +71,11 @@ $(OBJ_DIR)/%.o: %.c
 
 example-%: $(TARGET_OBJS) $(OBJ_DIR)/src/example/example-%.opp
 	@echo "deps: $^"
-	arm-none-eabi-g++ -o $@.elf $^ -T $(LD_SRC) $(LD_FLAGS)
-	arm-none-eabi-size $@.elf
-	arm-none-eabi-objcopy -O ihex $@.elf $@.hex
-	arm-none-eabi-objcopy -O binary $@.elf $@.bin
+	mkdir -p $(BIN_DIR)
+	arm-none-eabi-g++ -o $(BIN_DIR)/$@.elf $^ -T $(LD_SRC) $(LD_FLAGS)
+	arm-none-eabi-size $(BIN_DIR)/$@.elf
+	arm-none-eabi-objcopy -O ihex $(BIN_DIR)/$@.elf $(BIN_DIR)/$@.hex
+	arm-none-eabi-objcopy -O binary $(BIN_DIR)/$@.elf $(BIN_DIR)/$@.bin
 
 	
 $(OBJ_DIR)/%.opp: %.cpp
