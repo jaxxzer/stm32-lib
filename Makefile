@@ -7,12 +7,12 @@ SYSTEM_FILE = system_stm32f0xx.c
 ARCH_FLAGS += -DSTM32F030
 #ARCH_FLAGS += -DSTM32F051
 #ARCH_FLAGS += -DSTM32F072
-ARCH_FLAGS += -mcpu=cortex-m0
+ARCH_FLAGS += -mcpu=cortex-m0 -mthumb
 endif
 ARCH_FLAGS += -DSTM32F1
 SYSTEM_FILE = system_stm32f10x.c
 ARCH_FLAGS += -DSTM32F10X_HD
-ARCH_FLAGS ?= -mcpu=cortex-m3
+ARCH_FLAGS += -mcpu=cortex-m3 -mthumb -mno-thumb-interwork -mfpu=vfp -msoft-float -mfix-cortex-m3-ldrd
 
 STM32LIB_DIR = .
 CMSIS_DIR = $(STM32LIB_DIR)/driver/$(TARGET_MCU)/cmsis
@@ -31,13 +31,13 @@ INCLUDES += -I $(STDPERIPH_DIR)/inc
 INCLUDES += -I $(STM32LIB_DIR)/src
 
 OPTIMIZE = -O0
-CFLAGS = -mthumb $(ARCH_FLAGS) 
+CFLAGS = $(ARCH_FLAGS) 
 CFLAGS += -Os -g -Wa,--warn -x assembler-with-cpp -specs=nano.specs
 CFLAGS += $(INCLUDES)
-CXXFLAGS = -mthumb -std=gnu++14 $(ARCH_FLAGS)
+CXXFLAGS = -std=gnu++14 $(ARCH_FLAGS)
 CXXFLAGS += $(OPTIMIZE) -ffunction-sections -fdata-sections -fno-rtti -fno-exceptions -g -fstack-usage -Wall -fno-threadsafe-statics -specs=nano.specs
 CXXFLAGS += $(INCLUDES) -DUSE_TIM_3
-ASFLAGS = -mthumb $(ARCH_FLAGS)
+ASFLAGS = $(ARCH_FLAGS)
 ASFLAGS +=  -g -Wa,--warn -x assembler-with-cpp -specs=nano.specs
 ASFLAGS += $(INCLUDES)
 CXX_SRC += $(wildcard $(STM32LIB_DIR)/src/*.cpp)

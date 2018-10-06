@@ -20,7 +20,7 @@ typedef struct it_callback
 #include "helpers.h"
 #include "timer.h"
 //#include "uart.h"
-//#include "scheduling.h"
+#include "scheduling.h"
 //#include "dma.h"
 #include "gpio.h"
 //#include "adc.h"

@@ -9,7 +9,11 @@ int main(void)
 	SystemInit();
 
     // Set up 48 MHz Core Clock using HSI (4Mhz? - HSI_Div2) with PLL x 6
+    #ifdef STM32F0
     RCC_PLLConfig(RCC_PLLSource_HSI, RCC_PLLMul_12);
+    #elif STM32F1
+        RCC_PLLConfig(RCC_PLLSource_HSI_Div2, RCC_PLLMul_12);
+    #endif
     RCC_PLLCmd(ENABLE);
 
     // Wait for PLLRDY after enabling PLL.
