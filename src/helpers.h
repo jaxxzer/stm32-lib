@@ -1,6 +1,5 @@
 #pragma once
-
-#include "stm32f0xx_conf.h"
+#include "stm32lib-conf.h"
 #include <inttypes.h>
 
 #define UINT16MAX ( (1U << 16) - 1 )
@@ -8,11 +7,7 @@
 // printf goes to __io_putchar here
 void nvic_config(const uint8_t irq, const uint8_t priority, const FunctionalState enabled);
 
-typedef struct it_callback
-{
-	void (*callback)(void);
-	it_callback* next = 0x0;
-} it_callback_t;
+
 
 
 

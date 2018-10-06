@@ -1,6 +1,7 @@
 #pragma once
 
-#include "stm32f0xx_conf.h"
+#include "stm32lib-conf.h"
+#include <inttypes.h>
 
 class Gpio
 {
@@ -8,14 +9,20 @@ public:
 	Gpio(GPIO_TypeDef* port, uint16_t pin);
 	void gpioInit(GPIO_InitTypeDef* gpioInitStruct);
 
+
+
+#ifdef STM32F0
 	// Initialization and configuration
 	void configAF(uint8_t af);
-
 	void init(GPIOMode_TypeDef mode
 			, GPIOPuPd_TypeDef pupd = GPIO_PuPd_NOPULL
 			, GPIOOType_TypeDef otype = GPIO_OType_PP
 			, GPIOSpeed_TypeDef speed = GPIO_Speed_Level_2);
-
+#elif STM32F1
+	void configRemap(uint32_t remap, FunctionalState newstate);
+	void init(GPIOMode_TypeDef mode
+			, GPIOSpeed_TypeDef speed = GPIO_Speed_50MHz);
+#endif
 	void init(void);
 
 	// Read

@@ -1,5 +1,6 @@
 #include "helpers.h"
 
+#ifdef STM32F0
 void nvic_config(const uint8_t irq, const uint8_t priority, const FunctionalState enabled)
 {
 	NVIC_InitTypeDef NVIC_InitStructure;
@@ -8,8 +9,17 @@ void nvic_config(const uint8_t irq, const uint8_t priority, const FunctionalStat
 	NVIC_InitStructure.NVIC_IRQChannelCmd = enabled;
 	NVIC_Init(&NVIC_InitStructure);
 }
-
-
+#elif STM32F1
+void nvic_config(const uint8_t irq, const uint8_t priority, const uint8_t subpriority, const FunctionalState enabled)
+{
+	NVIC_InitTypeDef NVIC_InitStructure;
+	NVIC_InitStructure.NVIC_IRQChannel = irq;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = priority;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = subpriority;
+	NVIC_InitStructure.NVIC_IRQChannelCmd = enabled;
+	NVIC_Init(&NVIC_InitStructure);
+}
+#endif
 // map float from input range to output range
 float map(float in, float in_min, float in_max, float out_min, float out_max)
 {

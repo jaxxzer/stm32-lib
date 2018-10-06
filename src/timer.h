@@ -10,7 +10,8 @@
 * - A timer peripheral
 */
 #pragma once
-#include "stm32f0xx_conf.h"
+#include "stm32lib-conf.h"
+
 //#define USE_TIM_1
 //#define USE_TIM_2
 //#define USE_TIM_3
@@ -18,7 +19,6 @@
 //#define USE_TIM_15
 //#define USE_TIM_16
 
-#include "helpers.h"
 class TimerChannel
 {
 public:

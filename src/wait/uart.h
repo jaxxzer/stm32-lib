@@ -1,9 +1,11 @@
 #pragma once
+#ifdef STM32F0
+#include "stm32f0xx_conf.h"
+#elif STM32F1
+#include "stm32f10x_conf.h"
+#endif
 
 #include <stdio.h>
-#include "stm32f0xx_conf.h"
-#include "scheduling.h"
-
 
 class Uart
 {

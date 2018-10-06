@@ -1,14 +1,4 @@
 #pragma once
-#ifndef STM_TARGET
-#define STM_TARGET STM_TARGET_F1
-#endif
-
-#ifdef STM32F0
-#include "stm32f0xx_conf.h"
-#endif
-#ifdef STM32F1
-#include "stm32f10x_conf.h"
-#endif
 
 #include "gpio.h"
 #include "dma.h"

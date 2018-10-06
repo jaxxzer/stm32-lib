@@ -1,5 +1,4 @@
 #include "scheduling.h"
-#include "stm32f0xx.h"
 
 volatile uint32_t MicroSeconds = 0;
 uint32_t systick_frequency;

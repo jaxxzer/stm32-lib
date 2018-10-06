@@ -1,5 +1,4 @@
 #include "timer.h"
-#include "stm32lib-conf.h"
 
 // see stm32f05x datasheet 3.14 Timers and watchdogs
 #ifdef USE_TIM_1
@@ -300,8 +299,11 @@ bool Timer::setFrequency(uint16_t f) // Hz
 	RCC_ClocksTypeDef RCC_ClocksStruct;
 	RCC_GetClocksFreq(&RCC_ClocksStruct);
 
+#ifdef STM32F0
 	uint32_t clk_f = RCC_ClocksStruct.PCLK_Frequency / _config.TIM_Prescaler;
-
+#elif STM32F1
+	uint32_t clk_f = RCC_ClocksStruct.PCLK1_Frequency / _config.TIM_Prescaler;
+#endif
 	if (f > clk_f) {
 		return false;
 	} else {
@@ -324,13 +326,19 @@ bool Timer::setFrequencyForce(uint16_t f)
 	RCC_GetClocksFreq(&RCC_ClocksStruct);
 	// ex 50 hz:
 	// 0x
-	uint32_t PSC = RCC_ClocksStruct.PCLK_Frequency / (f * 0xFFFF);
+	#ifdef STM32F0
+	uint32_t pclk_f = RCC_ClocksStruct.PCLK_Frequency / _config.TIM_Prescaler;
+#elif STM32F1
+	uint32_t pclk_f = RCC_ClocksStruct.PCLK1_Frequency / _config.TIM_Prescaler;
+#endif
 
-	if (RCC_ClocksStruct.PCLK_Frequency % (f * 0xFFFF)) {
+	uint32_t PSC = pclk_f / (f * 0xFFFF);
+
+	if (pclk_f % (f * 0xFFFF)) {
 		PSC++;
 	}
 
-	uint32_t ARR = RCC_ClocksStruct.PCLK_Frequency / (PSC * f);
+	uint32_t ARR = pclk_f / (PSC * f);
 
 	setPrescaler(PSC);
 	setAutoreload(ARR);

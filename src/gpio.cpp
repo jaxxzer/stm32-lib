@@ -1,4 +1,6 @@
 #include "gpio.h"
+
+#ifdef STM32F0
 void Gpio::init(GPIOMode_TypeDef mode // GPIO_Mode_IN, GPIO_Mode_OUT, GPIO_Mode_AF, GPIO_Mode_AN
 			, GPIOPuPd_TypeDef pupd
 			, GPIOOType_TypeDef otype
@@ -13,6 +15,18 @@ void Gpio::init(GPIOMode_TypeDef mode // GPIO_Mode_IN, GPIO_Mode_OUT, GPIO_Mode_
 	GPIO_Init(_port, &_config);
 	reset();
 }
+#elif STM32F1
+void Gpio::init(GPIOMode_TypeDef mode // GPIO_Mode_IN, GPIO_Mode_OUT, GPIO_Mode_AF, GPIO_Mode_AN
+			, GPIOSpeed_TypeDef speed)
+{
+	GPIO_InitTypeDef _config;
+	_config.GPIO_Mode = mode;
+	_config.GPIO_Speed = speed;
+	_config.GPIO_Pin = (_pin);
+	GPIO_Init(_port, &_config);
+	reset();
+}
+#endif
 
 Gpio::Gpio(GPIO_TypeDef* port, uint16_t pin)
 	: _port(port)
@@ -72,9 +86,16 @@ void Gpio::_clockEnable(void)
 
 // alternate function config
 // See datasheet section 4 'Pinouts and pin descriptions'
+#ifdef STM32F0
 void Gpio::configAF(uint8_t af) {
     GPIO_PinAFConfig(_port, _pinSource, af);
 }
+#elif STM32F1
+void Gpio::configRemap(uint32_t remap, FunctionalState newstate)
+{
+	GPIO_PinRemapConfig(remap, newstate);
+}
+#endif
 
 void Gpio::set(bool set)
 {

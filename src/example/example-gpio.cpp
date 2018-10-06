@@ -1,4 +1,4 @@
-#include "stm32lib.h"
+#include "stm32lib-conf.h"
 
 Gpio gpio_Led { GPIOB, 1 };
 
@@ -24,8 +24,11 @@ int main(void)
 	SysTick_Config(SystemCoreClock/1000);
 	systick_frequency = 1000; // todo fix this in hal somehow. this is needed when we are configured for internal clock?
 
+#ifdef STM32F0
     gpio_Led.init(GPIO_Mode_OUT);
-
+#elif STM32F1
+    gpio_Led.init(GPIO_Mode_Out_PP);
+#endif
     while (1) {
         gpio_Led.toggle();
         mDelay(delay_ms);
