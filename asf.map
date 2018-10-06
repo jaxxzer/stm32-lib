@@ -103,44 +103,24 @@ Discarded input sections
                 0x0000000000000000       0x30 build/obj/./src/timer.opp
  .text._ZN17TimerChannelInput5_initEv
                 0x0000000000000000       0x30 build/obj/./src/timer.opp
- .text._ZN18TimerChannelOutput4initEtmtttttt
-                0x0000000000000000       0x54 build/obj/./src/timer.opp
  .text._ZN18TimerChannelOutput7setModeEt
                 0x0000000000000000       0x2c build/obj/./src/timer.opp
- .text._ZN18TimerChannelOutput7setDutyEt
-                0x0000000000000000       0x5c build/obj/./src/timer.opp
- .text._ZN18TimerChannelOutput10setCompareEt
-                0x0000000000000000       0xa0 build/obj/./src/timer.opp
  .text._ZN18TimerChannelOutput10setEnabledE15FunctionalState
                 0x0000000000000000       0x2a build/obj/./src/timer.opp
  .text._ZN18TimerChannelOutput11setEnabledNE15FunctionalState
                 0x0000000000000000       0x20 build/obj/./src/timer.opp
  .text._ZN18TimerChannelOutput13preloadConfigE15FunctionalState
                 0x0000000000000000       0xa8 build/obj/./src/timer.opp
- .text._ZN18TimerChannelOutput5_initEv
-                0x0000000000000000       0xa0 build/obj/./src/timer.opp
- .text._ZN5Timer4initEtmtth
-                0x0000000000000000       0x44 build/obj/./src/timer.opp
  .text._ZN5Timer15interruptConfigEh15FunctionalState
                 0x0000000000000000       0x28 build/obj/./src/timer.opp
- .text._ZN5Timer13setAutoreloadEm
-                0x0000000000000000       0x2a build/obj/./src/timer.opp
  .text._ZN5Timer13getAutoreloadEv
                 0x0000000000000000       0x16 build/obj/./src/timer.opp
- .text._ZN5Timer10setEnabledE15FunctionalState
-                0x0000000000000000       0x22 build/obj/./src/timer.opp
- .text._ZN5Timer13_initTimeBaseEv
-                0x0000000000000000       0x20 build/obj/./src/timer.opp
  .text._ZN5Timer11_configBDTREv
                 0x0000000000000000       0x20 build/obj/./src/timer.opp
  .text._ZN5Timer9_initBDTREv
                 0x0000000000000000       0x20 build/obj/./src/timer.opp
- .text._ZN5Timer12setPrescalerEt
-                0x0000000000000000       0x28 build/obj/./src/timer.opp
  .text._ZN5Timer12setFrequencyEt
                 0x0000000000000000       0x64 build/obj/./src/timer.opp
- .text._ZN5Timer17setFrequencyForceEt
-                0x0000000000000000       0x82 build/obj/./src/timer.opp
  .text._ZN11it_callbackC2Ev
                 0x0000000000000000       0x1a build/obj/./src/timer.opp
  .text._ZN5Timer11addCallbackEPP11it_callbackPFvvE
@@ -156,29 +136,16 @@ Discarded input sections
  .text._ZN5Timer16setupCc4CallbackEPFvvE
                 0x0000000000000000       0x78 build/obj/./src/timer.opp
  .text.TIM1_BRK_UP_TRG_COM_IRQHandler
-                0x0000000000000000        0xc build/obj/./src/timer.opp
+                0x0000000000000000       0x14 build/obj/./src/timer.opp
  .text          0x0000000000000000        0x0 build/obj/./src/helpers.opp
  .data          0x0000000000000000        0x0 build/obj/./src/helpers.opp
  .bss           0x0000000000000000        0x0 build/obj/./src/helpers.opp
  .text._Z11nvic_confighhh15FunctionalState
                 0x0000000000000000       0x40 build/obj/./src/helpers.opp
- .text._Z3mapfffff
-                0x0000000000000000       0x7a build/obj/./src/helpers.opp
  .text.__assert_func
                 0x0000000000000000       0x18 build/obj/./src/helpers.opp
  .text.__assert
                 0x0000000000000000       0x20 build/obj/./src/helpers.opp
- .debug_info    0x0000000000000000      0xb23 build/obj/./src/helpers.opp
- .debug_abbrev  0x0000000000000000      0x21c build/obj/./src/helpers.opp
- .debug_aranges
-                0x0000000000000000       0x38 build/obj/./src/helpers.opp
- .debug_ranges  0x0000000000000000       0x28 build/obj/./src/helpers.opp
- .debug_line    0x0000000000000000      0x1e3 build/obj/./src/helpers.opp
- .debug_str     0x0000000000000000      0xbfa build/obj/./src/helpers.opp
- .comment       0x0000000000000000       0x1e build/obj/./src/helpers.opp
- .debug_frame   0x0000000000000000       0xac build/obj/./src/helpers.opp
- .ARM.attributes
-                0x0000000000000000       0x2d build/obj/./src/helpers.opp
  .text          0x0000000000000000        0x0 build/obj/./src/scheduling.opp
  .data          0x0000000000000000        0x0 build/obj/./src/scheduling.opp
  .bss           0x0000000000000000        0x0 build/obj/./src/scheduling.opp
@@ -195,8 +162,12 @@ Discarded input sections
  .bss           0x0000000000000000        0x0 build/obj/./src/gpio.opp
  .text._ZN4Gpio11configRemapEm15FunctionalState
                 0x0000000000000000       0x20 build/obj/./src/gpio.opp
+ .text._ZN4Gpio10readOutputEv
+                0x0000000000000000       0x3c build/obj/./src/gpio.opp
  .text._ZN4Gpio9readInputEv
                 0x0000000000000000       0x3c build/obj/./src/gpio.opp
+ .text._ZN4Gpio6toggleEv
+                0x0000000000000000       0x38 build/obj/./src/gpio.opp
  .text          0x0000000000000000      0x1b8 build/obj/./driver/stm32f1/spl/src/stm32f10x_dma.o
  .data          0x0000000000000000        0x0 build/obj/./driver/stm32f1/spl/src/stm32f10x_dma.o
  .bss           0x0000000000000000        0x0 build/obj/./driver/stm32f1/spl/src/stm32f10x_dma.o
@@ -487,11 +458,13 @@ Discarded input sections
  .text          0x0000000000000000       0x14 build/obj/./src/startup/startup_stm32f1.os
  .data          0x0000000000000000        0x0 build/obj/./src/startup/startup_stm32f1.os
  .bss           0x0000000000000000        0x0 build/obj/./src/startup/startup_stm32f1.os
- .text          0x0000000000000000        0x0 build/obj/src/example/example-gpio.opp
- .data          0x0000000000000000        0x0 build/obj/src/example/example-gpio.opp
- .bss           0x0000000000000000        0x0 build/obj/src/example/example-gpio.opp
- .rodata._ZL8delay_ms
-                0x0000000000000000        0x4 build/obj/src/example/example-gpio.opp
+ .group         0x0000000000000000        0x8 build/obj/src/example/example-pwm.opp
+ .group         0x0000000000000000        0xc build/obj/src/example/example-pwm.opp
+ .group         0x0000000000000000        0xc build/obj/src/example/example-pwm.opp
+ .text          0x0000000000000000        0x0 build/obj/src/example/example-pwm.opp
+ .data          0x0000000000000000        0x0 build/obj/src/example/example-pwm.opp
+ .bss           0x0000000000000000        0x0 build/obj/src/example/example-pwm.opp
+ .rodata.timer  0x0000000000000000        0x4 build/obj/src/example/example-pwm.opp
  .text          0x0000000000000000        0x0 /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libstdc++_nano.a(new_op.o)
  .data          0x0000000000000000        0x0 /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libstdc++_nano.a(new_op.o)
  .bss           0x0000000000000000        0x0 /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libstdc++_nano.a(new_op.o)
@@ -634,30 +607,14 @@ Discarded input sections
                 0x0000000000000000       0x1a /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-reent.o)
  .text._reclaim_reent
                 0x0000000000000000       0xb8 /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-reent.o)
- .text          0x0000000000000000      0x21c /usr/lib/gcc/arm-none-eabi/8.2.0/thumb/v7-m/nofp/libgcc.a(_arm_addsubsf3.o)
  .data          0x0000000000000000        0x0 /usr/lib/gcc/arm-none-eabi/8.2.0/thumb/v7-m/nofp/libgcc.a(_arm_addsubsf3.o)
  .bss           0x0000000000000000        0x0 /usr/lib/gcc/arm-none-eabi/8.2.0/thumb/v7-m/nofp/libgcc.a(_arm_addsubsf3.o)
- .debug_frame   0x0000000000000000       0x4c /usr/lib/gcc/arm-none-eabi/8.2.0/thumb/v7-m/nofp/libgcc.a(_arm_addsubsf3.o)
- .ARM.attributes
-                0x0000000000000000       0x1d /usr/lib/gcc/arm-none-eabi/8.2.0/thumb/v7-m/nofp/libgcc.a(_arm_addsubsf3.o)
- .text          0x0000000000000000      0x2a0 /usr/lib/gcc/arm-none-eabi/8.2.0/thumb/v7-m/nofp/libgcc.a(_arm_muldivsf3.o)
  .data          0x0000000000000000        0x0 /usr/lib/gcc/arm-none-eabi/8.2.0/thumb/v7-m/nofp/libgcc.a(_arm_muldivsf3.o)
  .bss           0x0000000000000000        0x0 /usr/lib/gcc/arm-none-eabi/8.2.0/thumb/v7-m/nofp/libgcc.a(_arm_muldivsf3.o)
- .debug_frame   0x0000000000000000       0x38 /usr/lib/gcc/arm-none-eabi/8.2.0/thumb/v7-m/nofp/libgcc.a(_arm_muldivsf3.o)
- .ARM.attributes
-                0x0000000000000000       0x1d /usr/lib/gcc/arm-none-eabi/8.2.0/thumb/v7-m/nofp/libgcc.a(_arm_muldivsf3.o)
- .text          0x0000000000000000       0xec /usr/lib/gcc/arm-none-eabi/8.2.0/thumb/v7-m/nofp/libgcc.a(_arm_cmpsf2.o)
  .data          0x0000000000000000        0x0 /usr/lib/gcc/arm-none-eabi/8.2.0/thumb/v7-m/nofp/libgcc.a(_arm_cmpsf2.o)
  .bss           0x0000000000000000        0x0 /usr/lib/gcc/arm-none-eabi/8.2.0/thumb/v7-m/nofp/libgcc.a(_arm_cmpsf2.o)
- .debug_frame   0x0000000000000000       0xc8 /usr/lib/gcc/arm-none-eabi/8.2.0/thumb/v7-m/nofp/libgcc.a(_arm_cmpsf2.o)
- .ARM.attributes
-                0x0000000000000000       0x1d /usr/lib/gcc/arm-none-eabi/8.2.0/thumb/v7-m/nofp/libgcc.a(_arm_cmpsf2.o)
- .text          0x0000000000000000       0x40 /usr/lib/gcc/arm-none-eabi/8.2.0/thumb/v7-m/nofp/libgcc.a(_arm_fixunssfsi.o)
  .data          0x0000000000000000        0x0 /usr/lib/gcc/arm-none-eabi/8.2.0/thumb/v7-m/nofp/libgcc.a(_arm_fixunssfsi.o)
  .bss           0x0000000000000000        0x0 /usr/lib/gcc/arm-none-eabi/8.2.0/thumb/v7-m/nofp/libgcc.a(_arm_fixunssfsi.o)
- .debug_frame   0x0000000000000000       0x24 /usr/lib/gcc/arm-none-eabi/8.2.0/thumb/v7-m/nofp/libgcc.a(_arm_fixunssfsi.o)
- .ARM.attributes
-                0x0000000000000000       0x1d /usr/lib/gcc/arm-none-eabi/8.2.0/thumb/v7-m/nofp/libgcc.a(_arm_fixunssfsi.o)
  .text          0x0000000000000000        0x0 /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libnosys.a(getpid.o)
  .data          0x0000000000000000        0x0 /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libnosys.a(getpid.o)
  .bss           0x0000000000000000        0x0 /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libnosys.a(getpid.o)
@@ -737,7 +694,7 @@ LOAD build/obj/./driver/stm32f1/spl/src/stm32f10x_exti.o
 LOAD build/obj/./driver/stm32f1/spl/src/stm32f10x_fsmc.o
 LOAD build/obj/./driver/stm32f1/cmsis/device/system_stm32f10x.o
 LOAD build/obj/./src/startup/startup_stm32f1.os
-LOAD build/obj/src/example/example-gpio.opp
+LOAD build/obj/src/example/example-pwm.opp
                 0x0000000000001000                malloc_getpagesize_P = 0x1000
 START GROUP
 LOAD /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libstdc++_nano.a
@@ -773,7 +730,7 @@ LOAD /usr/lib/gcc/arm-none-eabi/8.2.0/thumb/v7-m/nofp/crtn.o
                 0x0000000008000000                g_pfnVectors
                 0x00000000080001e4                . = ALIGN (0x4)
 
-.text           0x00000000080001e4     0x1df0
+.text           0x00000000080001e4     0x2860
                 0x00000000080001e4                . = ALIGN (0x4)
  *(.text)
  .text          0x00000000080001e4      0x358 build/obj/./driver/stm32f1/spl/src/stm32f10x_rcc.o
@@ -919,255 +876,333 @@ LOAD /usr/lib/gcc/arm-none-eabi/8.2.0/thumb/v7-m/nofp/crtn.o
  .text          0x00000000080013e8      0x148 build/obj/./driver/stm32f1/cmsis/device/system_stm32f10x.o
                 0x00000000080013e8                SystemInit
                 0x00000000080014d8                SystemCoreClockUpdate
+ .text          0x0000000008001530      0x21c /usr/lib/gcc/arm-none-eabi/8.2.0/thumb/v7-m/nofp/libgcc.a(_arm_addsubsf3.o)
+                0x0000000008001530                __aeabi_frsub
+                0x0000000008001538                __subsf3
+                0x0000000008001538                __aeabi_fsub
+                0x000000000800153c                __aeabi_fadd
+                0x000000000800153c                __addsf3
+                0x000000000800169c                __aeabi_ui2f
+                0x000000000800169c                __floatunsisf
+                0x00000000080016a4                __aeabi_i2f
+                0x00000000080016a4                __floatsisf
+                0x00000000080016c0                __floatundisf
+                0x00000000080016c0                __aeabi_ul2f
+                0x00000000080016d0                __floatdisf
+                0x00000000080016d0                __aeabi_l2f
+ .text          0x000000000800174c      0x2a0 /usr/lib/gcc/arm-none-eabi/8.2.0/thumb/v7-m/nofp/libgcc.a(_arm_muldivsf3.o)
+                0x000000000800174c                __mulsf3
+                0x000000000800174c                __aeabi_fmul
+                0x00000000080018b4                __divsf3
+                0x00000000080018b4                __aeabi_fdiv
+ .text          0x00000000080019ec       0xec /usr/lib/gcc/arm-none-eabi/8.2.0/thumb/v7-m/nofp/libgcc.a(_arm_cmpsf2.o)
+                0x00000000080019ec                __gtsf2
+                0x00000000080019ec                __gesf2
+                0x00000000080019f4                __lesf2
+                0x00000000080019f4                __ltsf2
+                0x00000000080019fc                __nesf2
+                0x00000000080019fc                __eqsf2
+                0x00000000080019fc                __cmpsf2
+                0x0000000008001a5c                __aeabi_cfrcmple
+                0x0000000008001a64                __aeabi_cfcmple
+                0x0000000008001a64                __aeabi_cfcmpeq
+                0x0000000008001a74                __aeabi_fcmpeq
+                0x0000000008001a88                __aeabi_fcmplt
+                0x0000000008001a9c                __aeabi_fcmple
+                0x0000000008001ab0                __aeabi_fcmpge
+                0x0000000008001ac4                __aeabi_fcmpgt
+ .text          0x0000000008001ad8       0x40 /usr/lib/gcc/arm-none-eabi/8.2.0/thumb/v7-m/nofp/libgcc.a(_arm_fixunssfsi.o)
+                0x0000000008001ad8                __aeabi_f2uiz
+                0x0000000008001ad8                __fixunssfsi
  *(.text*)
  .text.__do_global_dtors_aux
-                0x0000000008001530       0x24 /usr/lib/gcc/arm-none-eabi/8.2.0/thumb/v7-m/nofp/crtbegin.o
+                0x0000000008001b18       0x24 /usr/lib/gcc/arm-none-eabi/8.2.0/thumb/v7-m/nofp/crtbegin.o
  .text.frame_dummy
-                0x0000000008001554       0x1c /usr/lib/gcc/arm-none-eabi/8.2.0/thumb/v7-m/nofp/crtbegin.o
+                0x0000000008001b3c       0x1c /usr/lib/gcc/arm-none-eabi/8.2.0/thumb/v7-m/nofp/crtbegin.o
  .text._ZN5TimerC2EP11TIM_TypeDef
-                0x0000000008001570       0x76 build/obj/./src/timer.opp
-                0x0000000008001570                Timer::Timer(TIM_TypeDef*)
-                0x0000000008001570                Timer::Timer(TIM_TypeDef*)
+                0x0000000008001b58       0x76 build/obj/./src/timer.opp
+                0x0000000008001b58                Timer::Timer(TIM_TypeDef*)
+                0x0000000008001b58                Timer::Timer(TIM_TypeDef*)
  .text._ZN5TimerD2Ev
-                0x00000000080015e6       0x18 build/obj/./src/timer.opp
-                0x00000000080015e6                Timer::~Timer()
-                0x00000000080015e6                Timer::~Timer()
- *fill*         0x00000000080015fe        0x2 
+                0x0000000008001bce       0x18 build/obj/./src/timer.opp
+                0x0000000008001bce                Timer::~Timer()
+                0x0000000008001bce                Timer::~Timer()
+ .text._ZN18TimerChannelOutput4initEtmtttttt
+                0x0000000008001be6       0x54 build/obj/./src/timer.opp
+                0x0000000008001be6                TimerChannelOutput::init(unsigned short, unsigned long, unsigned short, unsigned short, unsigned short, unsigned short, unsigned short, unsigned short)
+ *fill*         0x0000000008001c3a        0x2 
+ .text._ZN18TimerChannelOutput7setDutyEt
+                0x0000000008001c3c       0x5c build/obj/./src/timer.opp
+                0x0000000008001c3c                TimerChannelOutput::setDuty(unsigned short)
+ .text._ZN18TimerChannelOutput10setCompareEt
+                0x0000000008001c98       0xa0 build/obj/./src/timer.opp
+                0x0000000008001c98                TimerChannelOutput::setCompare(unsigned short)
+ .text._ZN18TimerChannelOutput5_initEv
+                0x0000000008001d38       0xa0 build/obj/./src/timer.opp
+                0x0000000008001d38                TimerChannelOutput::_init()
+ .text._ZN5Timer4initEtmtth
+                0x0000000008001dd8       0x44 build/obj/./src/timer.opp
+                0x0000000008001dd8                Timer::init(unsigned short, unsigned long, unsigned short, unsigned short, unsigned char)
+ .text._ZN5Timer13setAutoreloadEm
+                0x0000000008001e1c       0x2a build/obj/./src/timer.opp
+                0x0000000008001e1c                Timer::setAutoreload(unsigned long)
+ *fill*         0x0000000008001e46        0x2 
  .text._ZN5Timer15setClockEnabledE15FunctionalState
-                0x0000000008001600       0x90 build/obj/./src/timer.opp
-                0x0000000008001600                Timer::setClockEnabled(FunctionalState)
+                0x0000000008001e48       0x90 build/obj/./src/timer.opp
+                0x0000000008001e48                Timer::setClockEnabled(FunctionalState)
+ .text._ZN5Timer10setEnabledE15FunctionalState
+                0x0000000008001ed8       0x22 build/obj/./src/timer.opp
+                0x0000000008001ed8                Timer::setEnabled(FunctionalState)
+ .text._ZN5Timer13_initTimeBaseEv
+                0x0000000008001efa       0x20 build/obj/./src/timer.opp
+                0x0000000008001efa                Timer::_initTimeBase()
+ .text._ZN5Timer12setPrescalerEt
+                0x0000000008001f1a       0x28 build/obj/./src/timer.opp
+                0x0000000008001f1a                Timer::setPrescaler(unsigned short)
+ .text._ZN5Timer17setFrequencyForceEt
+                0x0000000008001f42       0x82 build/obj/./src/timer.opp
+                0x0000000008001f42                Timer::setFrequencyForce(unsigned short)
  .text._ZN5Timer17_executeCallbacksEP11it_callback
-                0x0000000008001690       0x2a build/obj/./src/timer.opp
-                0x0000000008001690                Timer::_executeCallbacks(it_callback*)
+                0x0000000008001fc4       0x2a build/obj/./src/timer.opp
+                0x0000000008001fc4                Timer::_executeCallbacks(it_callback*)
  .text._ZN5Timer16_deleteCallbacksEv
-                0x00000000080016ba       0x12 build/obj/./src/timer.opp
-                0x00000000080016ba                Timer::_deleteCallbacks()
+                0x0000000008001fee       0x12 build/obj/./src/timer.opp
+                0x0000000008001fee                Timer::_deleteCallbacks()
  .text._ZN5Timer11_irqHandlerEv
-                0x00000000080016cc      0x274 build/obj/./src/timer.opp
-                0x00000000080016cc                Timer::_irqHandler()
+                0x0000000008002000      0x274 build/obj/./src/timer.opp
+                0x0000000008002000                Timer::_irqHandler()
  .text.TIM1_CC_IRQHandler
-                0x0000000008001940        0xc build/obj/./src/timer.opp
-                0x0000000008001940                TIM1_CC_IRQHandler
+                0x0000000008002274       0x14 build/obj/./src/timer.opp
+                0x0000000008002274                TIM1_CC_IRQHandler
  .text.TIM2_IRQHandler
-                0x000000000800194c        0xc build/obj/./src/timer.opp
-                0x000000000800194c                TIM2_IRQHandler
+                0x0000000008002288        0xc build/obj/./src/timer.opp
+                0x0000000008002288                TIM2_IRQHandler
  .text.TIM3_IRQHandler
-                0x0000000008001958       0x14 build/obj/./src/timer.opp
-                0x0000000008001958                TIM3_IRQHandler
+                0x0000000008002294        0xc build/obj/./src/timer.opp
+                0x0000000008002294                TIM3_IRQHandler
  .text._Z41__static_initialization_and_destruction_0ii
-                0x000000000800196c       0x44 build/obj/./src/timer.opp
- .text._GLOBAL__sub_I_timer3
-                0x00000000080019b0       0x10 build/obj/./src/timer.opp
+                0x00000000080022a0       0x44 build/obj/./src/timer.opp
+ .text._GLOBAL__sub_I_timer1
+                0x00000000080022e4       0x10 build/obj/./src/timer.opp
+ .text._Z3mapfffff
+                0x00000000080022f4       0x7a build/obj/./src/helpers.opp
+                0x00000000080022f4                map(float, float, float, float, float)
+ *fill*         0x000000000800236e        0x2 
  .text._Z6uDelaym
-                0x00000000080019c0       0x38 build/obj/./src/scheduling.opp
-                0x00000000080019c0                uDelay(unsigned long)
+                0x0000000008002370       0x38 build/obj/./src/scheduling.opp
+                0x0000000008002370                uDelay(unsigned long)
  .text._Z6mDelaym
-                0x00000000080019f8       0x20 build/obj/./src/scheduling.opp
-                0x00000000080019f8                mDelay(unsigned long)
+                0x00000000080023a8       0x20 build/obj/./src/scheduling.opp
+                0x00000000080023a8                mDelay(unsigned long)
  .text.SysTick_Handler
-                0x0000000008001a18       0x2c build/obj/./src/scheduling.opp
-                0x0000000008001a18                SysTick_Handler
+                0x00000000080023c8       0x2c build/obj/./src/scheduling.opp
+                0x00000000080023c8                SysTick_Handler
  .text._ZN4Gpio4initE16GPIOMode_TypeDef17GPIOSpeed_TypeDef
-                0x0000000008001a44       0x3c build/obj/./src/gpio.opp
-                0x0000000008001a44                Gpio::init(GPIOMode_TypeDef, GPIOSpeed_TypeDef)
+                0x00000000080023f4       0x3c build/obj/./src/gpio.opp
+                0x00000000080023f4                Gpio::init(GPIOMode_TypeDef, GPIOSpeed_TypeDef)
  .text._ZN4GpioC2EP12GPIO_TypeDeft
-                0x0000000008001a80       0x38 build/obj/./src/gpio.opp
-                0x0000000008001a80                Gpio::Gpio(GPIO_TypeDef*, unsigned short)
-                0x0000000008001a80                Gpio::Gpio(GPIO_TypeDef*, unsigned short)
+                0x0000000008002430       0x38 build/obj/./src/gpio.opp
+                0x0000000008002430                Gpio::Gpio(GPIO_TypeDef*, unsigned short)
+                0x0000000008002430                Gpio::Gpio(GPIO_TypeDef*, unsigned short)
  .text._ZN4Gpio12_clockEnableEv
-                0x0000000008001ab8       0x70 build/obj/./src/gpio.opp
-                0x0000000008001ab8                Gpio::_clockEnable()
+                0x0000000008002468       0x70 build/obj/./src/gpio.opp
+                0x0000000008002468                Gpio::_clockEnable()
  .text._ZN4Gpio3setEb
-                0x0000000008001b28       0x48 build/obj/./src/gpio.opp
-                0x0000000008001b28                Gpio::set(bool)
+                0x00000000080024d8       0x48 build/obj/./src/gpio.opp
+                0x00000000080024d8                Gpio::set(bool)
  .text._ZN4Gpio5resetEv
-                0x0000000008001b70       0x18 build/obj/./src/gpio.opp
-                0x0000000008001b70                Gpio::reset()
- .text._ZN4Gpio10readOutputEv
-                0x0000000008001b88       0x3c build/obj/./src/gpio.opp
-                0x0000000008001b88                Gpio::readOutput()
- .text._ZN4Gpio6toggleEv
-                0x0000000008001bc4       0x38 build/obj/./src/gpio.opp
-                0x0000000008001bc4                Gpio::toggle()
+                0x0000000008002520       0x18 build/obj/./src/gpio.opp
+                0x0000000008002520                Gpio::reset()
  .text.Reset_Handler
-                0x0000000008001bfc       0x48 build/obj/./src/startup/startup_stm32f1.os
-                0x0000000008001bfc                Reset_Handler
+                0x0000000008002538       0x48 build/obj/./src/startup/startup_stm32f1.os
+                0x0000000008002538                Reset_Handler
  .text.Default_Handler
-                0x0000000008001c44        0x2 build/obj/./src/startup/startup_stm32f1.os
-                0x0000000008001c44                EXTI2_IRQHandler
-                0x0000000008001c44                TIM8_TRG_COM_IRQHandler
-                0x0000000008001c44                TIM8_CC_IRQHandler
-                0x0000000008001c44                DebugMon_Handler
-                0x0000000008001c44                HardFault_Handler
-                0x0000000008001c44                TIM6_IRQHandler
-                0x0000000008001c44                PVD_IRQHandler
-                0x0000000008001c44                SDIO_IRQHandler
-                0x0000000008001c44                PendSV_Handler
-                0x0000000008001c44                NMI_Handler
-                0x0000000008001c44                EXTI3_IRQHandler
-                0x0000000008001c44                EXTI0_IRQHandler
-                0x0000000008001c44                I2C2_EV_IRQHandler
-                0x0000000008001c44                UsageFault_Handler
-                0x0000000008001c44                ADC1_2_IRQHandler
-                0x0000000008001c44                SPI1_IRQHandler
-                0x0000000008001c44                TAMPER_IRQHandler
-                0x0000000008001c44                TIM8_UP_IRQHandler
-                0x0000000008001c44                DMA2_Channel2_IRQHandler
-                0x0000000008001c44                DMA1_Channel4_IRQHandler
-                0x0000000008001c44                USART3_IRQHandler
-                0x0000000008001c44                RTC_IRQHandler
-                0x0000000008001c44                DMA1_Channel7_IRQHandler
-                0x0000000008001c44                CAN1_RX1_IRQHandler
-                0x0000000008001c44                UART5_IRQHandler
-                0x0000000008001c44                ADC3_IRQHandler
-                0x0000000008001c44                TIM4_IRQHandler
-                0x0000000008001c44                DMA2_Channel1_IRQHandler
-                0x0000000008001c44                I2C1_EV_IRQHandler
-                0x0000000008001c44                DMA1_Channel6_IRQHandler
-                0x0000000008001c44                UART4_IRQHandler
-                0x0000000008001c44                RCC_IRQHandler
-                0x0000000008001c44                TIM1_TRG_COM_IRQHandler
-                0x0000000008001c44                DMA1_Channel1_IRQHandler
-                0x0000000008001c44                Default_Handler
-                0x0000000008001c44                EXTI15_10_IRQHandler
-                0x0000000008001c44                TIM7_IRQHandler
-                0x0000000008001c44                TIM5_IRQHandler
-                0x0000000008001c44                EXTI9_5_IRQHandler
-                0x0000000008001c44                SPI2_IRQHandler
-                0x0000000008001c44                MemManage_Handler
-                0x0000000008001c44                SVC_Handler
-                0x0000000008001c44                DMA1_Channel5_IRQHandler
-                0x0000000008001c44                EXTI4_IRQHandler
-                0x0000000008001c44                USB_LP_CAN1_RX0_IRQHandler
-                0x0000000008001c44                USB_HP_CAN1_TX_IRQHandler
-                0x0000000008001c44                DMA1_Channel3_IRQHandler
-                0x0000000008001c44                FSMC_IRQHandler
-                0x0000000008001c44                TIM1_UP_IRQHandler
-                0x0000000008001c44                WWDG_IRQHandler
-                0x0000000008001c44                TIM1_BRK_IRQHandler
-                0x0000000008001c44                EXTI1_IRQHandler
-                0x0000000008001c44                RTCAlarm_IRQHandler
-                0x0000000008001c44                DMA2_Channel4_5_IRQHandler
-                0x0000000008001c44                USART2_IRQHandler
-                0x0000000008001c44                I2C2_ER_IRQHandler
-                0x0000000008001c44                DMA1_Channel2_IRQHandler
-                0x0000000008001c44                TIM8_BRK_IRQHandler
-                0x0000000008001c44                CAN1_SCE_IRQHandler
-                0x0000000008001c44                FLASH_IRQHandler
-                0x0000000008001c44                BusFault_Handler
-                0x0000000008001c44                USART1_IRQHandler
-                0x0000000008001c44                SPI3_IRQHandler
-                0x0000000008001c44                I2C1_ER_IRQHandler
-                0x0000000008001c44                USBWakeUp_IRQHandler
-                0x0000000008001c44                DMA2_Channel3_IRQHandler
- *fill*         0x0000000008001c46        0x2 
+                0x0000000008002580        0x2 build/obj/./src/startup/startup_stm32f1.os
+                0x0000000008002580                EXTI2_IRQHandler
+                0x0000000008002580                TIM8_TRG_COM_IRQHandler
+                0x0000000008002580                TIM8_CC_IRQHandler
+                0x0000000008002580                DebugMon_Handler
+                0x0000000008002580                HardFault_Handler
+                0x0000000008002580                TIM6_IRQHandler
+                0x0000000008002580                PVD_IRQHandler
+                0x0000000008002580                SDIO_IRQHandler
+                0x0000000008002580                PendSV_Handler
+                0x0000000008002580                NMI_Handler
+                0x0000000008002580                EXTI3_IRQHandler
+                0x0000000008002580                EXTI0_IRQHandler
+                0x0000000008002580                I2C2_EV_IRQHandler
+                0x0000000008002580                UsageFault_Handler
+                0x0000000008002580                ADC1_2_IRQHandler
+                0x0000000008002580                SPI1_IRQHandler
+                0x0000000008002580                TAMPER_IRQHandler
+                0x0000000008002580                TIM8_UP_IRQHandler
+                0x0000000008002580                DMA2_Channel2_IRQHandler
+                0x0000000008002580                DMA1_Channel4_IRQHandler
+                0x0000000008002580                USART3_IRQHandler
+                0x0000000008002580                RTC_IRQHandler
+                0x0000000008002580                DMA1_Channel7_IRQHandler
+                0x0000000008002580                CAN1_RX1_IRQHandler
+                0x0000000008002580                UART5_IRQHandler
+                0x0000000008002580                ADC3_IRQHandler
+                0x0000000008002580                TIM4_IRQHandler
+                0x0000000008002580                DMA2_Channel1_IRQHandler
+                0x0000000008002580                I2C1_EV_IRQHandler
+                0x0000000008002580                DMA1_Channel6_IRQHandler
+                0x0000000008002580                UART4_IRQHandler
+                0x0000000008002580                RCC_IRQHandler
+                0x0000000008002580                TIM1_TRG_COM_IRQHandler
+                0x0000000008002580                DMA1_Channel1_IRQHandler
+                0x0000000008002580                Default_Handler
+                0x0000000008002580                EXTI15_10_IRQHandler
+                0x0000000008002580                TIM7_IRQHandler
+                0x0000000008002580                TIM5_IRQHandler
+                0x0000000008002580                EXTI9_5_IRQHandler
+                0x0000000008002580                SPI2_IRQHandler
+                0x0000000008002580                MemManage_Handler
+                0x0000000008002580                SVC_Handler
+                0x0000000008002580                DMA1_Channel5_IRQHandler
+                0x0000000008002580                EXTI4_IRQHandler
+                0x0000000008002580                USB_LP_CAN1_RX0_IRQHandler
+                0x0000000008002580                USB_HP_CAN1_TX_IRQHandler
+                0x0000000008002580                DMA1_Channel3_IRQHandler
+                0x0000000008002580                FSMC_IRQHandler
+                0x0000000008002580                TIM1_UP_IRQHandler
+                0x0000000008002580                WWDG_IRQHandler
+                0x0000000008002580                TIM1_BRK_IRQHandler
+                0x0000000008002580                EXTI1_IRQHandler
+                0x0000000008002580                RTCAlarm_IRQHandler
+                0x0000000008002580                DMA2_Channel4_5_IRQHandler
+                0x0000000008002580                USART2_IRQHandler
+                0x0000000008002580                I2C2_ER_IRQHandler
+                0x0000000008002580                DMA1_Channel2_IRQHandler
+                0x0000000008002580                TIM8_BRK_IRQHandler
+                0x0000000008002580                CAN1_SCE_IRQHandler
+                0x0000000008002580                FLASH_IRQHandler
+                0x0000000008002580                BusFault_Handler
+                0x0000000008002580                USART1_IRQHandler
+                0x0000000008002580                SPI3_IRQHandler
+                0x0000000008002580                I2C1_ER_IRQHandler
+                0x0000000008002580                USBWakeUp_IRQHandler
+                0x0000000008002580                DMA2_Channel3_IRQHandler
+ *fill*         0x0000000008002582        0x2 
  .text.NVIC_SetPriority
-                0x0000000008001c48       0x5c build/obj/src/example/example-gpio.opp
+                0x0000000008002584       0x5c build/obj/src/example/example-pwm.opp
  .text.SysTick_Config
-                0x0000000008001ca4       0x44 build/obj/src/example/example-gpio.opp
- .text.main     0x0000000008001ce8       0x7c build/obj/src/example/example-gpio.opp
-                0x0000000008001ce8                main
+                0x00000000080025e0       0x44 build/obj/src/example/example-pwm.opp
+ .text._ZN12TimerChannelC2EP11TIM_TypeDefh
+                0x0000000008002624       0x26 build/obj/src/example/example-pwm.opp
+                0x0000000008002624                TimerChannel::TimerChannel(TIM_TypeDef*, unsigned char)
+                0x0000000008002624                TimerChannel::TimerChannel(TIM_TypeDef*, unsigned char)
+ .text._ZN18TimerChannelOutputC2EP11TIM_TypeDefh
+                0x000000000800264a       0x2e build/obj/src/example/example-pwm.opp
+                0x000000000800264a                TimerChannelOutput::TimerChannelOutput(TIM_TypeDef*, unsigned char)
+                0x000000000800264a                TimerChannelOutput::TimerChannelOutput(TIM_TypeDef*, unsigned char)
+ .text._ZN5Timer8initFreqEt
+                0x0000000008002678       0x34 build/obj/src/example/example-pwm.opp
+                0x0000000008002678                Timer::initFreq(unsigned short)
+ .text.main     0x00000000080026ac      0x114 build/obj/src/example/example-pwm.opp
+                0x00000000080026ac                main
  .text._Z41__static_initialization_and_destruction_0ii
-                0x0000000008001d64       0x34 build/obj/src/example/example-gpio.opp
- .text._GLOBAL__sub_I_gpio_Led
-                0x0000000008001d98       0x10 build/obj/src/example/example-gpio.opp
+                0x00000000080027c0       0x48 build/obj/src/example/example-pwm.opp
+ .text._GLOBAL__sub_I_timer
+                0x0000000008002808       0x10 build/obj/src/example/example-pwm.opp
  .text.__aeabi_atexit
-                0x0000000008001da8        0xa /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libstdc++_nano.a(atexit_arm.o)
-                0x0000000008001da8                __aeabi_atexit
- *fill*         0x0000000008001db2        0x2 
+                0x0000000008002818        0xa /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libstdc++_nano.a(atexit_arm.o)
+                0x0000000008002818                __aeabi_atexit
+ *fill*         0x0000000008002822        0x2 
  .text.__cxa_atexit
-                0x0000000008001db4       0x1c /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-cxa_atexit.o)
-                0x0000000008001db4                __cxa_atexit
+                0x0000000008002824       0x1c /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-cxa_atexit.o)
+                0x0000000008002824                __cxa_atexit
  .text.__libc_init_array
-                0x0000000008001dd0       0x48 /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-init.o)
-                0x0000000008001dd0                __libc_init_array
- .text.malloc   0x0000000008001e18       0x10 /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-malloc.o)
-                0x0000000008001e18                malloc
+                0x0000000008002840       0x48 /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-init.o)
+                0x0000000008002840                __libc_init_array
+ .text.malloc   0x0000000008002888       0x10 /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-malloc.o)
+                0x0000000008002888                malloc
  .text._malloc_r
-                0x0000000008001e28       0xb4 /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-nano-mallocr.o)
-                0x0000000008001e28                _malloc_r
- .text._sbrk_r  0x0000000008001edc       0x20 /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-sbrkr.o)
-                0x0000000008001edc                _sbrk_r
+                0x0000000008002898       0xb4 /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-nano-mallocr.o)
+                0x0000000008002898                _malloc_r
+ .text._sbrk_r  0x000000000800294c       0x20 /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-sbrkr.o)
+                0x000000000800294c                _sbrk_r
  .text.__register_exitproc
-                0x0000000008001efc       0xa0 /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-__atexit.o)
-                0x0000000008001efc                __register_exitproc
+                0x000000000800296c       0xa0 /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-__atexit.o)
+                0x000000000800296c                __register_exitproc
  .text.__malloc_lock
-                0x0000000008001f9c        0x2 /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-mlock.o)
-                0x0000000008001f9c                __malloc_lock
+                0x0000000008002a0c        0x2 /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-mlock.o)
+                0x0000000008002a0c                __malloc_lock
  .text.__malloc_unlock
-                0x0000000008001f9e        0x2 /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-mlock.o)
-                0x0000000008001f9e                __malloc_unlock
- .text._sbrk    0x0000000008001fa0       0x1c /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libnosys.a(sbrk.o)
-                0x0000000008001fa0                _sbrk
+                0x0000000008002a0e        0x2 /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-mlock.o)
+                0x0000000008002a0e                __malloc_unlock
+ .text._sbrk    0x0000000008002a10       0x1c /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libnosys.a(sbrk.o)
+                0x0000000008002a10                _sbrk
  *(.glue_7)
- .glue_7        0x0000000008001fbc        0x0 linker stubs
+ .glue_7        0x0000000008002a2c        0x0 linker stubs
  *(.glue_7t)
- .glue_7t       0x0000000008001fbc        0x0 linker stubs
+ .glue_7t       0x0000000008002a2c        0x0 linker stubs
  *(.eh_frame)
- .eh_frame      0x0000000008001fbc        0x0 /usr/lib/gcc/arm-none-eabi/8.2.0/thumb/v7-m/nofp/crtbegin.o
+ .eh_frame      0x0000000008002a2c        0x0 /usr/lib/gcc/arm-none-eabi/8.2.0/thumb/v7-m/nofp/crtbegin.o
  *(.init)
- .init          0x0000000008001fbc        0x4 /usr/lib/gcc/arm-none-eabi/8.2.0/thumb/v7-m/nofp/crti.o
-                0x0000000008001fbc                _init
- .init          0x0000000008001fc0        0x8 /usr/lib/gcc/arm-none-eabi/8.2.0/thumb/v7-m/nofp/crtn.o
+ .init          0x0000000008002a2c        0x4 /usr/lib/gcc/arm-none-eabi/8.2.0/thumb/v7-m/nofp/crti.o
+                0x0000000008002a2c                _init
+ .init          0x0000000008002a30        0x8 /usr/lib/gcc/arm-none-eabi/8.2.0/thumb/v7-m/nofp/crtn.o
  *(.fini)
- .fini          0x0000000008001fc8        0x4 /usr/lib/gcc/arm-none-eabi/8.2.0/thumb/v7-m/nofp/crti.o
-                0x0000000008001fc8                _fini
- .fini          0x0000000008001fcc        0x8 /usr/lib/gcc/arm-none-eabi/8.2.0/thumb/v7-m/nofp/crtn.o
-                0x0000000008001fd4                . = ALIGN (0x4)
-                0x0000000008001fd4                _etext = .
+ .fini          0x0000000008002a38        0x4 /usr/lib/gcc/arm-none-eabi/8.2.0/thumb/v7-m/nofp/crti.o
+                0x0000000008002a38                _fini
+ .fini          0x0000000008002a3c        0x8 /usr/lib/gcc/arm-none-eabi/8.2.0/thumb/v7-m/nofp/crtn.o
+                0x0000000008002a44                . = ALIGN (0x4)
+                0x0000000008002a44                _etext = .
 
-.vfp11_veneer   0x0000000008001fd4        0x0
- .vfp11_veneer  0x0000000008001fd4        0x0 linker stubs
+.vfp11_veneer   0x0000000008002a44        0x0
+ .vfp11_veneer  0x0000000008002a44        0x0 linker stubs
 
-.v4_bx          0x0000000008001fd4        0x0
- .v4_bx         0x0000000008001fd4        0x0 linker stubs
+.v4_bx          0x0000000008002a44        0x0
+ .v4_bx         0x0000000008002a44        0x0 linker stubs
 
-.iplt           0x0000000008001fd4        0x0
- .iplt          0x0000000008001fd4        0x0 /usr/lib/gcc/arm-none-eabi/8.2.0/thumb/v7-m/nofp/crtbegin.o
+.iplt           0x0000000008002a44        0x0
+ .iplt          0x0000000008002a44        0x0 /usr/lib/gcc/arm-none-eabi/8.2.0/thumb/v7-m/nofp/crtbegin.o
 
-.rodata         0x0000000008001fd4        0x4
-                0x0000000008001fd4                . = ALIGN (0x4)
+.rodata         0x0000000008002a44        0x4
+                0x0000000008002a44                . = ALIGN (0x4)
  *(.rodata)
  *(.rodata*)
  .rodata.__on_exit_args
-                0x0000000008001fd4        0x4 /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-on_exit_args.o)
-                0x0000000008001fd4                __on_exit_args
-                0x0000000008001fd8                . = ALIGN (0x4)
+                0x0000000008002a44        0x4 /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-on_exit_args.o)
+                0x0000000008002a44                __on_exit_args
+                0x0000000008002a48                . = ALIGN (0x4)
 
-.rel.dyn        0x0000000008001fd8        0x0
- .rel.iplt      0x0000000008001fd8        0x0 /usr/lib/gcc/arm-none-eabi/8.2.0/thumb/v7-m/nofp/crtbegin.o
+.rel.dyn        0x0000000008002a48        0x0
+ .rel.iplt      0x0000000008002a48        0x0 /usr/lib/gcc/arm-none-eabi/8.2.0/thumb/v7-m/nofp/crtbegin.o
 
 .ARM.extab
  *(.ARM.extab* .gnu.linkonce.armextab.*)
 
-.ARM            0x0000000008001fd8        0x0
-                0x0000000008001fd8                __exidx_start = .
+.ARM            0x0000000008002a48        0x0
+                0x0000000008002a48                __exidx_start = .
  *(.ARM.exidx*)
-                0x0000000008001fd8                __exidx_end = .
+                0x0000000008002a48                __exidx_end = .
 
-.preinit_array  0x0000000008001fd8        0x0
-                0x0000000008001fd8                PROVIDE (__preinit_array_start = .)
+.preinit_array  0x0000000008002a48        0x0
+                0x0000000008002a48                PROVIDE (__preinit_array_start = .)
  *(.preinit_array*)
-                0x0000000008001fd8                PROVIDE (__preinit_array_end = .)
+                0x0000000008002a48                PROVIDE (__preinit_array_end = .)
 
-.init_array     0x0000000008001fd8        0xc
-                0x0000000008001fd8                PROVIDE (__init_array_start = .)
+.init_array     0x0000000008002a48        0xc
+                0x0000000008002a48                PROVIDE (__init_array_start = .)
  *(SORT_BY_NAME(.init_array.*))
  *(.init_array*)
- .init_array    0x0000000008001fd8        0x4 /usr/lib/gcc/arm-none-eabi/8.2.0/thumb/v7-m/nofp/crtbegin.o
- .init_array    0x0000000008001fdc        0x4 build/obj/./src/timer.opp
- .init_array    0x0000000008001fe0        0x4 build/obj/src/example/example-gpio.opp
-                0x0000000008001fe4                PROVIDE (__init_array_end = .)
+ .init_array    0x0000000008002a48        0x4 /usr/lib/gcc/arm-none-eabi/8.2.0/thumb/v7-m/nofp/crtbegin.o
+ .init_array    0x0000000008002a4c        0x4 build/obj/./src/timer.opp
+ .init_array    0x0000000008002a50        0x4 build/obj/src/example/example-pwm.opp
+                0x0000000008002a54                PROVIDE (__init_array_end = .)
 
-.fini_array     0x0000000008001fe4        0x4
-                0x0000000008001fe4                PROVIDE (__fini_array_start = .)
+.fini_array     0x0000000008002a54        0x4
+                0x0000000008002a54                PROVIDE (__fini_array_start = .)
  *(SORT_BY_NAME(.fini_array.*))
  *(.fini_array*)
- .fini_array    0x0000000008001fe4        0x4 /usr/lib/gcc/arm-none-eabi/8.2.0/thumb/v7-m/nofp/crtbegin.o
-                0x0000000008001fe8                PROVIDE (__fini_array_end = .)
-                0x0000000008001fe8                _sidata = LOADADDR (.data)
+ .fini_array    0x0000000008002a54        0x4 /usr/lib/gcc/arm-none-eabi/8.2.0/thumb/v7-m/nofp/crtbegin.o
+                0x0000000008002a58                PROVIDE (__fini_array_end = .)
+                0x0000000008002a58                _sidata = LOADADDR (.data)
 
-.data           0x0000000020000000       0x90 load address 0x0000000008001fe8
+.data           0x0000000020000000       0x90 load address 0x0000000008002a58
                 0x0000000020000000                . = ALIGN (0x4)
                 0x0000000020000000                _sdata = .
  *(.data)
@@ -1187,11 +1222,11 @@ LOAD /usr/lib/gcc/arm-none-eabi/8.2.0/thumb/v7-m/nofp/crtn.o
                 0x0000000020000090                . = ALIGN (0x4)
                 0x0000000020000090                _edata = .
 
-.igot.plt       0x0000000020000090        0x0 load address 0x0000000008002078
+.igot.plt       0x0000000020000090        0x0 load address 0x0000000008002ae8
  .igot.plt      0x0000000020000090        0x0 /usr/lib/gcc/arm-none-eabi/8.2.0/thumb/v7-m/nofp/crtbegin.o
                 0x0000000020000090                . = ALIGN (0x4)
 
-.bss            0x0000000020000090      0x208 load address 0x0000000008002078
+.bss            0x0000000020000090      0x220 load address 0x0000000008002ae8
                 0x0000000020000090                _sbss = .
                 0x0000000020000090                __bss_start__ = _sbss
  *(.bss)
@@ -1201,47 +1236,49 @@ LOAD /usr/lib/gcc/arm-none-eabi/8.2.0/thumb/v7-m/nofp/crtn.o
  *fill*         0x0000000020000091        0x3 
  .bss.object.8861
                 0x0000000020000094       0x18 /usr/lib/gcc/arm-none-eabi/8.2.0/thumb/v7-m/nofp/crtbegin.o
- .bss.timer3    0x00000000200000ac       0x30 build/obj/./src/timer.opp
-                0x00000000200000ac                timer3
+ .bss.timer1    0x00000000200000ac       0x30 build/obj/./src/timer.opp
+                0x00000000200000ac                timer1
  .bss.MicroSeconds
                 0x00000000200000dc        0x4 build/obj/./src/scheduling.opp
                 0x00000000200000dc                MicroSeconds
  .bss.systick_frequency
                 0x00000000200000e0        0x4 build/obj/./src/scheduling.opp
                 0x00000000200000e0                systick_frequency
- .bss.gpio_Led  0x00000000200000e4        0xc build/obj/src/example/example-gpio.opp
+ .bss.gpio_Led  0x00000000200000e4        0xc build/obj/src/example/example-pwm.opp
                 0x00000000200000e4                gpio_Led
+ .bss.tco       0x00000000200000f0       0x18 build/obj/src/example/example-pwm.opp
+                0x00000000200000f0                tco
  .bss.__malloc_free_list
-                0x00000000200000f0        0x4 /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-nano-mallocr.o)
-                0x00000000200000f0                __malloc_free_list
+                0x0000000020000108        0x4 /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-nano-mallocr.o)
+                0x0000000020000108                __malloc_free_list
  .bss.__malloc_sbrk_start
-                0x00000000200000f4        0x4 /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-nano-mallocr.o)
-                0x00000000200000f4                __malloc_sbrk_start
+                0x000000002000010c        0x4 /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-nano-mallocr.o)
+                0x000000002000010c                __malloc_sbrk_start
  .bss._on_exit_args_instance
-                0x00000000200000f8      0x108 /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-on_exit_args.o)
+                0x0000000020000110      0x108 /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-on_exit_args.o)
  .bss._global_atexit0
-                0x0000000020000200       0x8c /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-__atexit.o)
+                0x0000000020000218       0x8c /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-__atexit.o)
  .bss._global_atexit
-                0x000000002000028c        0x4 /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-__call_atexit.o)
-                0x000000002000028c                _global_atexit
+                0x00000000200002a4        0x4 /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-__call_atexit.o)
+                0x00000000200002a4                _global_atexit
  .bss.heap_end.4194
-                0x0000000020000290        0x4 /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libnosys.a(sbrk.o)
+                0x00000000200002a8        0x4 /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libnosys.a(sbrk.o)
  *(COMMON)
- COMMON         0x0000000020000294        0x4 /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-reent.o)
-                0x0000000020000294                errno
-                0x0000000020000298                . = ALIGN (0x4)
-                0x0000000020000298                _ebss = .
-                0x0000000020000298                __bss_end__ = _ebss
+ COMMON         0x00000000200002ac        0x4 /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-reent.o)
+                0x00000000200002ac                errno
+                0x00000000200002b0                . = ALIGN (0x4)
+                0x00000000200002b0                _ebss = .
+                0x00000000200002b0                __bss_end__ = _ebss
 
 ._user_heap_stack
-                0x0000000020000298       0x80 load address 0x0000000008002078
-                0x0000000020000298                . = ALIGN (0x4)
-                0x0000000020000298                PROVIDE (end = .)
+                0x00000000200002b0       0x80 load address 0x0000000008002ae8
+                0x00000000200002b0                . = ALIGN (0x4)
+                0x00000000200002b0                PROVIDE (end = .)
                 [!provide]                        PROVIDE (_end = .)
-                0x0000000020000298                . = (. + _Min_Heap_Size)
-                0x0000000020000318                . = (. + _Min_Stack_Size)
- *fill*         0x0000000020000298       0x80 
-                0x0000000020000318                . = ALIGN (0x4)
+                0x00000000200002b0                . = (. + _Min_Heap_Size)
+                0x0000000020000330                . = (. + _Min_Stack_Size)
+ *fill*         0x00000000200002b0       0x80 
+                0x0000000020000330                . = ALIGN (0x4)
 
 .memory_b1_text
  *(.mb1text)
@@ -1264,164 +1301,188 @@ LOAD /usr/lib/gcc/arm-none-eabi/8.2.0/thumb/v7-m/nofp/crtn.o
  .ARM.attributes
                 0x000000000000004a       0x2d build/obj/./src/timer.opp
  .ARM.attributes
-                0x0000000000000077       0x2d build/obj/./src/scheduling.opp
+                0x0000000000000077       0x2d build/obj/./src/helpers.opp
  .ARM.attributes
-                0x00000000000000a4       0x2d build/obj/./src/gpio.opp
+                0x00000000000000a4       0x2d build/obj/./src/scheduling.opp
  .ARM.attributes
-                0x00000000000000d1       0x2d build/obj/./driver/stm32f1/spl/src/stm32f10x_rcc.o
+                0x00000000000000d1       0x2d build/obj/./src/gpio.opp
  .ARM.attributes
-                0x00000000000000fe       0x2d build/obj/./driver/stm32f1/spl/src/stm32f10x_tim.o
+                0x00000000000000fe       0x2d build/obj/./driver/stm32f1/spl/src/stm32f10x_rcc.o
  .ARM.attributes
-                0x000000000000012b       0x2d build/obj/./driver/stm32f1/spl/src/stm32f10x_gpio.o
+                0x000000000000012b       0x2d build/obj/./driver/stm32f1/spl/src/stm32f10x_tim.o
  .ARM.attributes
-                0x0000000000000158       0x2d build/obj/./driver/stm32f1/cmsis/device/system_stm32f10x.o
+                0x0000000000000158       0x2d build/obj/./driver/stm32f1/spl/src/stm32f10x_gpio.o
  .ARM.attributes
-                0x0000000000000185       0x21 build/obj/./src/startup/startup_stm32f1.os
+                0x0000000000000185       0x2d build/obj/./driver/stm32f1/cmsis/device/system_stm32f10x.o
  .ARM.attributes
-                0x00000000000001a6       0x2d build/obj/src/example/example-gpio.opp
+                0x00000000000001b2       0x21 build/obj/./src/startup/startup_stm32f1.os
  .ARM.attributes
-                0x00000000000001d3       0x2d /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libstdc++_nano.a(atexit_arm.o)
+                0x00000000000001d3       0x2d build/obj/src/example/example-pwm.opp
  .ARM.attributes
-                0x0000000000000200       0x2d /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-cxa_atexit.o)
+                0x0000000000000200       0x2d /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libstdc++_nano.a(atexit_arm.o)
  .ARM.attributes
-                0x000000000000022d       0x2d /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-impure.o)
+                0x000000000000022d       0x2d /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-cxa_atexit.o)
  .ARM.attributes
-                0x000000000000025a       0x2d /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-init.o)
+                0x000000000000025a       0x2d /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-impure.o)
  .ARM.attributes
-                0x0000000000000287       0x2d /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-malloc.o)
+                0x0000000000000287       0x2d /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-init.o)
  .ARM.attributes
-                0x00000000000002b4       0x2d /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-nano-mallocr.o)
+                0x00000000000002b4       0x2d /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-malloc.o)
  .ARM.attributes
-                0x00000000000002e1       0x2d /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-on_exit_args.o)
+                0x00000000000002e1       0x2d /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-nano-mallocr.o)
  .ARM.attributes
-                0x000000000000030e       0x2d /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-sbrkr.o)
+                0x000000000000030e       0x2d /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-on_exit_args.o)
  .ARM.attributes
-                0x000000000000033b       0x2d /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-__atexit.o)
+                0x000000000000033b       0x2d /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-sbrkr.o)
  .ARM.attributes
-                0x0000000000000368       0x2d /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-__call_atexit.o)
+                0x0000000000000368       0x2d /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-__atexit.o)
  .ARM.attributes
-                0x0000000000000395       0x2d /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-mlock.o)
+                0x0000000000000395       0x2d /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-__call_atexit.o)
  .ARM.attributes
-                0x00000000000003c2       0x2d /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-reent.o)
+                0x00000000000003c2       0x2d /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-mlock.o)
  .ARM.attributes
-                0x00000000000003ef       0x2d /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libnosys.a(sbrk.o)
+                0x00000000000003ef       0x2d /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-reent.o)
  .ARM.attributes
-                0x000000000000041c       0x1d /usr/lib/gcc/arm-none-eabi/8.2.0/thumb/v7-m/nofp/crtn.o
-OUTPUT(example-gpio.elf elf32-littlearm)
+                0x000000000000041c       0x1d /usr/lib/gcc/arm-none-eabi/8.2.0/thumb/v7-m/nofp/libgcc.a(_arm_addsubsf3.o)
+ .ARM.attributes
+                0x0000000000000439       0x1d /usr/lib/gcc/arm-none-eabi/8.2.0/thumb/v7-m/nofp/libgcc.a(_arm_muldivsf3.o)
+ .ARM.attributes
+                0x0000000000000456       0x1d /usr/lib/gcc/arm-none-eabi/8.2.0/thumb/v7-m/nofp/libgcc.a(_arm_cmpsf2.o)
+ .ARM.attributes
+                0x0000000000000473       0x1d /usr/lib/gcc/arm-none-eabi/8.2.0/thumb/v7-m/nofp/libgcc.a(_arm_fixunssfsi.o)
+ .ARM.attributes
+                0x0000000000000490       0x2d /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libnosys.a(sbrk.o)
+ .ARM.attributes
+                0x00000000000004bd       0x1d /usr/lib/gcc/arm-none-eabi/8.2.0/thumb/v7-m/nofp/crtn.o
+OUTPUT(example-pwm.elf elf32-littlearm)
 
-.debug_info     0x0000000000000000     0x862d
+.debug_info     0x0000000000000000     0x95a9
  .debug_info    0x0000000000000000     0x19cb build/obj/./src/timer.opp
- .debug_info    0x00000000000019cb      0xfb9 build/obj/./src/scheduling.opp
- .debug_info    0x0000000000002984      0xebf build/obj/./src/gpio.opp
- .debug_info    0x0000000000003843      0x9c7 build/obj/./driver/stm32f1/spl/src/stm32f10x_rcc.o
- .debug_info    0x000000000000420a     0x245f build/obj/./driver/stm32f1/spl/src/stm32f10x_tim.o
- .debug_info    0x0000000000006669      0x8a4 build/obj/./driver/stm32f1/spl/src/stm32f10x_gpio.o
- .debug_info    0x0000000000006f0d      0x4c8 build/obj/./driver/stm32f1/cmsis/device/system_stm32f10x.o
- .debug_info    0x00000000000073d5       0x22 build/obj/./src/startup/startup_stm32f1.os
- .debug_info    0x00000000000073f7     0x1236 build/obj/src/example/example-gpio.opp
+ .debug_info    0x00000000000019cb      0xb23 build/obj/./src/helpers.opp
+ .debug_info    0x00000000000024ee      0xfb9 build/obj/./src/scheduling.opp
+ .debug_info    0x00000000000034a7      0xebf build/obj/./src/gpio.opp
+ .debug_info    0x0000000000004366      0x9c7 build/obj/./driver/stm32f1/spl/src/stm32f10x_rcc.o
+ .debug_info    0x0000000000004d2d     0x245f build/obj/./driver/stm32f1/spl/src/stm32f10x_tim.o
+ .debug_info    0x000000000000718c      0x8a4 build/obj/./driver/stm32f1/spl/src/stm32f10x_gpio.o
+ .debug_info    0x0000000000007a30      0x4c8 build/obj/./driver/stm32f1/cmsis/device/system_stm32f10x.o
+ .debug_info    0x0000000000007ef8       0x22 build/obj/./src/startup/startup_stm32f1.os
+ .debug_info    0x0000000000007f1a     0x168f build/obj/src/example/example-pwm.opp
 
-.debug_abbrev   0x0000000000000000     0x1631
+.debug_abbrev   0x0000000000000000     0x1904
  .debug_abbrev  0x0000000000000000      0x3a5 build/obj/./src/timer.opp
- .debug_abbrev  0x00000000000003a5      0x2e4 build/obj/./src/scheduling.opp
- .debug_abbrev  0x0000000000000689      0x2c1 build/obj/./src/gpio.opp
- .debug_abbrev  0x000000000000094a      0x22a build/obj/./driver/stm32f1/spl/src/stm32f10x_rcc.o
- .debug_abbrev  0x0000000000000b74      0x347 build/obj/./driver/stm32f1/spl/src/stm32f10x_tim.o
- .debug_abbrev  0x0000000000000ebb      0x262 build/obj/./driver/stm32f1/spl/src/stm32f10x_gpio.o
- .debug_abbrev  0x000000000000111d      0x204 build/obj/./driver/stm32f1/cmsis/device/system_stm32f10x.o
- .debug_abbrev  0x0000000000001321       0x12 build/obj/./src/startup/startup_stm32f1.os
- .debug_abbrev  0x0000000000001333      0x2fe build/obj/src/example/example-gpio.opp
+ .debug_abbrev  0x00000000000003a5      0x21c build/obj/./src/helpers.opp
+ .debug_abbrev  0x00000000000005c1      0x2e4 build/obj/./src/scheduling.opp
+ .debug_abbrev  0x00000000000008a5      0x2c1 build/obj/./src/gpio.opp
+ .debug_abbrev  0x0000000000000b66      0x22a build/obj/./driver/stm32f1/spl/src/stm32f10x_rcc.o
+ .debug_abbrev  0x0000000000000d90      0x347 build/obj/./driver/stm32f1/spl/src/stm32f10x_tim.o
+ .debug_abbrev  0x00000000000010d7      0x262 build/obj/./driver/stm32f1/spl/src/stm32f10x_gpio.o
+ .debug_abbrev  0x0000000000001339      0x204 build/obj/./driver/stm32f1/cmsis/device/system_stm32f10x.o
+ .debug_abbrev  0x000000000000153d       0x12 build/obj/./src/startup/startup_stm32f1.os
+ .debug_abbrev  0x000000000000154f      0x3b5 build/obj/src/example/example-pwm.opp
 
-.debug_aranges  0x0000000000000000      0x320
+.debug_aranges  0x0000000000000000      0x370
  .debug_aranges
                 0x0000000000000000      0x188 build/obj/./src/timer.opp
  .debug_aranges
-                0x0000000000000188       0x50 build/obj/./src/scheduling.opp
+                0x0000000000000188       0x38 build/obj/./src/helpers.opp
  .debug_aranges
-                0x00000000000001d8       0x60 build/obj/./src/gpio.opp
+                0x00000000000001c0       0x50 build/obj/./src/scheduling.opp
  .debug_aranges
-                0x0000000000000238       0x20 build/obj/./driver/stm32f1/spl/src/stm32f10x_rcc.o
+                0x0000000000000210       0x60 build/obj/./src/gpio.opp
  .debug_aranges
-                0x0000000000000258       0x20 build/obj/./driver/stm32f1/spl/src/stm32f10x_tim.o
+                0x0000000000000270       0x20 build/obj/./driver/stm32f1/spl/src/stm32f10x_rcc.o
  .debug_aranges
-                0x0000000000000278       0x20 build/obj/./driver/stm32f1/spl/src/stm32f10x_gpio.o
+                0x0000000000000290       0x20 build/obj/./driver/stm32f1/spl/src/stm32f10x_tim.o
  .debug_aranges
-                0x0000000000000298       0x20 build/obj/./driver/stm32f1/cmsis/device/system_stm32f10x.o
+                0x00000000000002b0       0x20 build/obj/./driver/stm32f1/spl/src/stm32f10x_gpio.o
  .debug_aranges
-                0x00000000000002b8       0x28 build/obj/./src/startup/startup_stm32f1.os
+                0x00000000000002d0       0x20 build/obj/./driver/stm32f1/cmsis/device/system_stm32f10x.o
  .debug_aranges
-                0x00000000000002e0       0x40 build/obj/src/example/example-gpio.opp
+                0x00000000000002f0       0x28 build/obj/./src/startup/startup_stm32f1.os
+ .debug_aranges
+                0x0000000000000318       0x58 build/obj/src/example/example-pwm.opp
 
-.debug_ranges   0x0000000000000000      0x2b8
+.debug_ranges   0x0000000000000000      0x2f8
  .debug_ranges  0x0000000000000000      0x178 build/obj/./src/timer.opp
- .debug_ranges  0x0000000000000178       0x40 build/obj/./src/scheduling.opp
- .debug_ranges  0x00000000000001b8       0x50 build/obj/./src/gpio.opp
- .debug_ranges  0x0000000000000208       0x48 build/obj/./driver/stm32f1/spl/src/stm32f10x_tim.o
- .debug_ranges  0x0000000000000250       0x18 build/obj/./driver/stm32f1/cmsis/device/system_stm32f10x.o
- .debug_ranges  0x0000000000000268       0x20 build/obj/./src/startup/startup_stm32f1.os
- .debug_ranges  0x0000000000000288       0x30 build/obj/src/example/example-gpio.opp
+ .debug_ranges  0x0000000000000178       0x28 build/obj/./src/helpers.opp
+ .debug_ranges  0x00000000000001a0       0x40 build/obj/./src/scheduling.opp
+ .debug_ranges  0x00000000000001e0       0x50 build/obj/./src/gpio.opp
+ .debug_ranges  0x0000000000000230       0x48 build/obj/./driver/stm32f1/spl/src/stm32f10x_tim.o
+ .debug_ranges  0x0000000000000278       0x18 build/obj/./driver/stm32f1/cmsis/device/system_stm32f10x.o
+ .debug_ranges  0x0000000000000290       0x20 build/obj/./src/startup/startup_stm32f1.os
+ .debug_ranges  0x00000000000002b0       0x48 build/obj/src/example/example-pwm.opp
 
-.debug_line     0x0000000000000000     0x3724
- .debug_line    0x0000000000000000      0xa25 build/obj/./src/timer.opp
- .debug_line    0x0000000000000a25      0x290 build/obj/./src/scheduling.opp
- .debug_line    0x0000000000000cb5      0x309 build/obj/./src/gpio.opp
- .debug_line    0x0000000000000fbe      0x683 build/obj/./driver/stm32f1/spl/src/stm32f10x_rcc.o
- .debug_line    0x0000000000001641     0x158f build/obj/./driver/stm32f1/spl/src/stm32f10x_tim.o
- .debug_line    0x0000000000002bd0      0x582 build/obj/./driver/stm32f1/spl/src/stm32f10x_gpio.o
- .debug_line    0x0000000000003152      0x2d1 build/obj/./driver/stm32f1/cmsis/device/system_stm32f10x.o
- .debug_line    0x0000000000003423       0x7a build/obj/./src/startup/startup_stm32f1.os
- .debug_line    0x000000000000349d      0x287 build/obj/src/example/example-gpio.opp
+.debug_line     0x0000000000000000     0x3994
+ .debug_line    0x0000000000000000      0xa26 build/obj/./src/timer.opp
+ .debug_line    0x0000000000000a26      0x1e3 build/obj/./src/helpers.opp
+ .debug_line    0x0000000000000c09      0x290 build/obj/./src/scheduling.opp
+ .debug_line    0x0000000000000e99      0x309 build/obj/./src/gpio.opp
+ .debug_line    0x00000000000011a2      0x683 build/obj/./driver/stm32f1/spl/src/stm32f10x_rcc.o
+ .debug_line    0x0000000000001825     0x158f build/obj/./driver/stm32f1/spl/src/stm32f10x_tim.o
+ .debug_line    0x0000000000002db4      0x582 build/obj/./driver/stm32f1/spl/src/stm32f10x_gpio.o
+ .debug_line    0x0000000000003336      0x2d1 build/obj/./driver/stm32f1/cmsis/device/system_stm32f10x.o
+ .debug_line    0x0000000000003607       0x7a build/obj/./src/startup/startup_stm32f1.os
+ .debug_line    0x0000000000003681      0x313 build/obj/src/example/example-pwm.opp
 
-.debug_str      0x0000000000000000     0x2b2b
- .debug_str     0x0000000000000000     0x12e9 build/obj/./src/timer.opp
+.debug_str      0x0000000000000000     0x2ca4
+ .debug_str     0x0000000000000000     0x12e1 build/obj/./src/timer.opp
                                        0x147c (size before relaxing)
- .debug_str     0x00000000000012e9      0x4f6 build/obj/./src/scheduling.opp
+ .debug_str     0x00000000000012e1      0x12e build/obj/./src/helpers.opp
+                                        0xbfa (size before relaxing)
+ .debug_str     0x000000000000140f      0x4f6 build/obj/./src/scheduling.opp
                                        0x1072 (size before relaxing)
- .debug_str     0x00000000000017df      0x2e6 build/obj/./src/gpio.opp
+ .debug_str     0x0000000000001905      0x2e6 build/obj/./src/gpio.opp
                                         0xe3f (size before relaxing)
- .debug_str     0x0000000000001ac5      0x456 build/obj/./driver/stm32f1/spl/src/stm32f10x_rcc.o
+ .debug_str     0x0000000000001beb      0x456 build/obj/./driver/stm32f1/spl/src/stm32f10x_rcc.o
                                         0x636 (size before relaxing)
- .debug_str     0x0000000000001f1b      0x8ed build/obj/./driver/stm32f1/spl/src/stm32f10x_tim.o
+ .debug_str     0x0000000000002041      0x8ed build/obj/./driver/stm32f1/spl/src/stm32f10x_tim.o
                                         0xe27 (size before relaxing)
- .debug_str     0x0000000000002808      0x224 build/obj/./driver/stm32f1/spl/src/stm32f10x_gpio.o
+ .debug_str     0x000000000000292e      0x224 build/obj/./driver/stm32f1/spl/src/stm32f10x_gpio.o
                                         0x54c (size before relaxing)
- .debug_str     0x0000000000002a2c       0x90 build/obj/./driver/stm32f1/cmsis/device/system_stm32f10x.o
+ .debug_str     0x0000000000002b52       0x90 build/obj/./driver/stm32f1/cmsis/device/system_stm32f10x.o
                                         0x2f1 (size before relaxing)
- .debug_str     0x0000000000002abc       0x2c build/obj/./src/startup/startup_stm32f1.os
+ .debug_str     0x0000000000002be2       0x2c build/obj/./src/startup/startup_stm32f1.os
                                          0x60 (size before relaxing)
- .debug_str     0x0000000000002ae8       0x43 build/obj/src/example/example-gpio.opp
-                                       0x1338 (size before relaxing)
+ .debug_str     0x0000000000002c0e       0x96 build/obj/src/example/example-pwm.opp
+                                       0x17d2 (size before relaxing)
 
 .comment        0x0000000000000000       0x1d
  .comment       0x0000000000000000       0x1d build/obj/./src/timer.opp
                                          0x1e (size before relaxing)
+ .comment       0x000000000000001d       0x1e build/obj/./src/helpers.opp
  .comment       0x000000000000001d       0x1e build/obj/./src/scheduling.opp
  .comment       0x000000000000001d       0x1e build/obj/./src/gpio.opp
  .comment       0x000000000000001d       0x1e build/obj/./driver/stm32f1/spl/src/stm32f10x_rcc.o
  .comment       0x000000000000001d       0x1e build/obj/./driver/stm32f1/spl/src/stm32f10x_tim.o
  .comment       0x000000000000001d       0x1e build/obj/./driver/stm32f1/spl/src/stm32f10x_gpio.o
  .comment       0x000000000000001d       0x1e build/obj/./driver/stm32f1/cmsis/device/system_stm32f10x.o
- .comment       0x000000000000001d       0x1e build/obj/src/example/example-gpio.opp
+ .comment       0x000000000000001d       0x1e build/obj/src/example/example-pwm.opp
 
-.debug_frame    0x0000000000000000     0x164c
- .debug_frame   0x0000000000000000      0x694 build/obj/./src/timer.opp
- .debug_frame   0x0000000000000694      0x110 build/obj/./src/scheduling.opp
- .debug_frame   0x00000000000007a4      0x160 build/obj/./src/gpio.opp
- .debug_frame   0x0000000000000904      0x220 build/obj/./driver/stm32f1/spl/src/stm32f10x_rcc.o
- .debug_frame   0x0000000000000b24      0x6b0 build/obj/./driver/stm32f1/spl/src/stm32f10x_tim.o
- .debug_frame   0x00000000000011d4      0x170 build/obj/./driver/stm32f1/spl/src/stm32f10x_gpio.o
- .debug_frame   0x0000000000001344       0x38 build/obj/./driver/stm32f1/cmsis/device/system_stm32f10x.o
- .debug_frame   0x000000000000137c       0xb8 build/obj/src/example/example-gpio.opp
- .debug_frame   0x0000000000001434       0x20 /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libstdc++_nano.a(atexit_arm.o)
- .debug_frame   0x0000000000001454       0x28 /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-cxa_atexit.o)
- .debug_frame   0x000000000000147c       0x2c /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-init.o)
- .debug_frame   0x00000000000014a8       0x30 /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-malloc.o)
- .debug_frame   0x00000000000014d8       0x30 /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-nano-mallocr.o)
- .debug_frame   0x0000000000001508       0x2c /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-sbrkr.o)
- .debug_frame   0x0000000000001534       0x30 /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-__atexit.o)
- .debug_frame   0x0000000000001564       0x3c /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-__call_atexit.o)
- .debug_frame   0x00000000000015a0       0x30 /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-mlock.o)
- .debug_frame   0x00000000000015d0       0x5c /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-reent.o)
- .debug_frame   0x000000000000162c       0x20 /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libnosys.a(sbrk.o)
+.debug_frame    0x0000000000000000     0x18d8
+ .debug_frame   0x0000000000000000      0x690 build/obj/./src/timer.opp
+ .debug_frame   0x0000000000000690       0xac build/obj/./src/helpers.opp
+ .debug_frame   0x000000000000073c      0x110 build/obj/./src/scheduling.opp
+ .debug_frame   0x000000000000084c      0x160 build/obj/./src/gpio.opp
+ .debug_frame   0x00000000000009ac      0x220 build/obj/./driver/stm32f1/spl/src/stm32f10x_rcc.o
+ .debug_frame   0x0000000000000bcc      0x6b0 build/obj/./driver/stm32f1/spl/src/stm32f10x_tim.o
+ .debug_frame   0x000000000000127c      0x170 build/obj/./driver/stm32f1/spl/src/stm32f10x_gpio.o
+ .debug_frame   0x00000000000013ec       0x38 build/obj/./driver/stm32f1/cmsis/device/system_stm32f10x.o
+ .debug_frame   0x0000000000001424      0x12c build/obj/src/example/example-pwm.opp
+ .debug_frame   0x0000000000001550       0x20 /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libstdc++_nano.a(atexit_arm.o)
+ .debug_frame   0x0000000000001570       0x28 /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-cxa_atexit.o)
+ .debug_frame   0x0000000000001598       0x2c /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-init.o)
+ .debug_frame   0x00000000000015c4       0x30 /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-malloc.o)
+ .debug_frame   0x00000000000015f4       0x30 /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-nano-mallocr.o)
+ .debug_frame   0x0000000000001624       0x2c /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-sbrkr.o)
+ .debug_frame   0x0000000000001650       0x30 /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-__atexit.o)
+ .debug_frame   0x0000000000001680       0x3c /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-__call_atexit.o)
+ .debug_frame   0x00000000000016bc       0x30 /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-mlock.o)
+ .debug_frame   0x00000000000016ec       0x5c /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-reent.o)
+ .debug_frame   0x0000000000001748       0x4c /usr/lib/gcc/arm-none-eabi/8.2.0/thumb/v7-m/nofp/libgcc.a(_arm_addsubsf3.o)
+ .debug_frame   0x0000000000001794       0x38 /usr/lib/gcc/arm-none-eabi/8.2.0/thumb/v7-m/nofp/libgcc.a(_arm_muldivsf3.o)
+ .debug_frame   0x00000000000017cc       0xc8 /usr/lib/gcc/arm-none-eabi/8.2.0/thumb/v7-m/nofp/libgcc.a(_arm_cmpsf2.o)
+ .debug_frame   0x0000000000001894       0x24 /usr/lib/gcc/arm-none-eabi/8.2.0/thumb/v7-m/nofp/libgcc.a(_arm_fixunssfsi.o)
+ .debug_frame   0x00000000000018b8       0x20 /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libnosys.a(sbrk.o)
 
 .debug_loc      0x0000000000000000     0x2d7e
  .debug_loc     0x0000000000000000      0x736 build/obj/./driver/stm32f1/spl/src/stm32f10x_rcc.o
@@ -1658,18 +1719,17 @@ GPIO_StructInit                                   build/obj/./driver/stm32f1/spl
 GPIO_Write                                        build/obj/./driver/stm32f1/spl/src/stm32f10x_gpio.o
 GPIO_WriteBit                                     build/obj/./driver/stm32f1/spl/src/stm32f10x_gpio.o
 Gpio::Gpio(GPIO_TypeDef*, unsigned short)         build/obj/./src/gpio.opp
-                                                  build/obj/src/example/example-gpio.opp
+                                                  build/obj/src/example/example-pwm.opp
 Gpio::Gpio(GPIO_TypeDef*, unsigned short)         build/obj/./src/gpio.opp
 Gpio::_clockEnable()                              build/obj/./src/gpio.opp
 Gpio::configRemap(unsigned long, FunctionalState) build/obj/./src/gpio.opp
 Gpio::init(GPIOMode_TypeDef, GPIOSpeed_TypeDef)   build/obj/./src/gpio.opp
-                                                  build/obj/src/example/example-gpio.opp
+                                                  build/obj/src/example/example-pwm.opp
 Gpio::readInput()                                 build/obj/./src/gpio.opp
 Gpio::readOutput()                                build/obj/./src/gpio.opp
 Gpio::reset()                                     build/obj/./src/gpio.opp
 Gpio::set(bool)                                   build/obj/./src/gpio.opp
 Gpio::toggle()                                    build/obj/./src/gpio.opp
-                                                  build/obj/src/example/example-gpio.opp
 HardFault_Handler                                 build/obj/./src/startup/startup_stm32f1.os
 I2C1_ER_IRQHandler                                build/obj/./src/startup/startup_stm32f1.os
 I2C1_EV_IRQHandler                                build/obj/./src/startup/startup_stm32f1.os
@@ -1772,7 +1832,7 @@ RCC_GetClocksFreq                                 build/obj/./driver/stm32f1/spl
                                                   build/obj/./driver/stm32f1/spl/src/stm32f10x_i2c.o
                                                   build/obj/./src/timer.opp
 RCC_GetFlagStatus                                 build/obj/./driver/stm32f1/spl/src/stm32f10x_rcc.o
-                                                  build/obj/src/example/example-gpio.opp
+                                                  build/obj/src/example/example-pwm.opp
 RCC_GetITStatus                                   build/obj/./driver/stm32f1/spl/src/stm32f10x_rcc.o
 RCC_GetSYSCLKSource                               build/obj/./driver/stm32f1/spl/src/stm32f10x_rcc.o
 RCC_HCLKConfig                                    build/obj/./driver/stm32f1/spl/src/stm32f10x_rcc.o
@@ -1786,13 +1846,13 @@ RCC_MCOConfig                                     build/obj/./driver/stm32f1/spl
 RCC_PCLK1Config                                   build/obj/./driver/stm32f1/spl/src/stm32f10x_rcc.o
 RCC_PCLK2Config                                   build/obj/./driver/stm32f1/spl/src/stm32f10x_rcc.o
 RCC_PLLCmd                                        build/obj/./driver/stm32f1/spl/src/stm32f10x_rcc.o
-                                                  build/obj/src/example/example-gpio.opp
+                                                  build/obj/src/example/example-pwm.opp
 RCC_PLLConfig                                     build/obj/./driver/stm32f1/spl/src/stm32f10x_rcc.o
-                                                  build/obj/src/example/example-gpio.opp
+                                                  build/obj/src/example/example-pwm.opp
 RCC_RTCCLKCmd                                     build/obj/./driver/stm32f1/spl/src/stm32f10x_rcc.o
 RCC_RTCCLKConfig                                  build/obj/./driver/stm32f1/spl/src/stm32f10x_rcc.o
 RCC_SYSCLKConfig                                  build/obj/./driver/stm32f1/spl/src/stm32f10x_rcc.o
-                                                  build/obj/src/example/example-gpio.opp
+                                                  build/obj/src/example/example-pwm.opp
 RCC_USBCLKConfig                                  build/obj/./driver/stm32f1/spl/src/stm32f10x_rcc.o
 RCC_WaitForHSEStartUp                             build/obj/./driver/stm32f1/spl/src/stm32f10x_rcc.o
 RTCAlarm_IRQHandler                               build/obj/./src/startup/startup_stm32f1.os
@@ -1870,13 +1930,13 @@ SVC_Handler                                       build/obj/./src/startup/startu
 SysTick_CLKSourceConfig                           build/obj/./driver/stm32f1/spl/src/misc.o
 SysTick_Handler                                   build/obj/./src/scheduling.opp
 SystemCoreClock                                   build/obj/./driver/stm32f1/cmsis/device/system_stm32f10x.o
-                                                  build/obj/src/example/example-gpio.opp
+                                                  build/obj/src/example/example-pwm.opp
                                                   build/obj/./src/scheduling.opp
 SystemCoreClockUpdate                             build/obj/./driver/stm32f1/cmsis/device/system_stm32f10x.o
-                                                  build/obj/src/example/example-gpio.opp
+                                                  build/obj/src/example/example-pwm.opp
                                                   build/obj/./src/scheduling.opp
 SystemInit                                        build/obj/./driver/stm32f1/cmsis/device/system_stm32f10x.o
-                                                  build/obj/src/example/example-gpio.opp
+                                                  build/obj/src/example/example-pwm.opp
                                                   build/obj/./src/startup/startup_stm32f1.os
                                                   build/obj/./src/scheduling.opp
 TAMPER_IRQHandler                                 build/obj/./src/startup/startup_stm32f1.os
@@ -1971,6 +2031,7 @@ TIM_OC4PolarityConfig                             build/obj/./driver/stm32f1/spl
 TIM_OC4PreloadConfig                              build/obj/./driver/stm32f1/spl/src/stm32f10x_tim.o
                                                   build/obj/./src/timer.opp
 TIM_OCStructInit                                  build/obj/./driver/stm32f1/spl/src/stm32f10x_tim.o
+                                                  build/obj/src/example/example-pwm.opp
 TIM_PWMIConfig                                    build/obj/./driver/stm32f1/spl/src/stm32f10x_tim.o
 TIM_PrescalerConfig                               build/obj/./driver/stm32f1/spl/src/stm32f10x_tim.o
                                                   build/obj/./src/timer.opp
@@ -2018,13 +2079,18 @@ Timer::_irqHandler()                              build/obj/./src/timer.opp
 Timer::addCallback(it_callback**, void (*)())     build/obj/./src/timer.opp
 Timer::getAutoreload()                            build/obj/./src/timer.opp
 Timer::init(unsigned short, unsigned long, unsigned short, unsigned short, unsigned char) build/obj/./src/timer.opp
+                                                  build/obj/src/example/example-pwm.opp
+Timer::initFreq(unsigned short)                   build/obj/src/example/example-pwm.opp
 Timer::interruptConfig(unsigned char, FunctionalState) build/obj/./src/timer.opp
 Timer::setAutoreload(unsigned long)               build/obj/./src/timer.opp
 Timer::setCCPreloadControl(FunctionalState)       build/obj/./src/timer.opp
 Timer::setClockEnabled(FunctionalState)           build/obj/./src/timer.opp
+                                                  build/obj/src/example/example-pwm.opp
 Timer::setEnabled(FunctionalState)                build/obj/./src/timer.opp
+                                                  build/obj/src/example/example-pwm.opp
 Timer::setFrequency(unsigned short)               build/obj/./src/timer.opp
 Timer::setFrequencyForce(unsigned short)          build/obj/./src/timer.opp
+                                                  build/obj/src/example/example-pwm.opp
 Timer::setPrescaler(unsigned short)               build/obj/./src/timer.opp
 Timer::setupCc1Callback(void (*)())               build/obj/./src/timer.opp
 Timer::setupCc2Callback(void (*)())               build/obj/./src/timer.opp
@@ -2033,6 +2099,8 @@ Timer::setupCc4Callback(void (*)())               build/obj/./src/timer.opp
 Timer::setupUpCallback(void (*)())                build/obj/./src/timer.opp
 Timer::~Timer()                                   build/obj/./src/timer.opp
 Timer::~Timer()                                   build/obj/./src/timer.opp
+TimerChannel::TimerChannel(TIM_TypeDef*, unsigned char) build/obj/src/example/example-pwm.opp
+TimerChannel::TimerChannel(TIM_TypeDef*, unsigned char) build/obj/src/example/example-pwm.opp
 TimerChannelInput::_init()                        build/obj/./src/timer.opp
 TimerChannelInput::init(unsigned short, unsigned short, unsigned short, unsigned short) build/obj/./src/timer.opp
 TimerChannelInput::setEnabled(FunctionalState)    build/obj/./src/timer.opp
@@ -2040,11 +2108,15 @@ TimerChannelInput::setICFilter(unsigned short)    build/obj/./src/timer.opp
 TimerChannelInput::setICPolarity(unsigned short)  build/obj/./src/timer.opp
 TimerChannelInput::setICPrescaler(unsigned short) build/obj/./src/timer.opp
 TimerChannelInput::setICSelection(unsigned short) build/obj/./src/timer.opp
+TimerChannelOutput::TimerChannelOutput(TIM_TypeDef*, unsigned char) build/obj/src/example/example-pwm.opp
+TimerChannelOutput::TimerChannelOutput(TIM_TypeDef*, unsigned char) build/obj/src/example/example-pwm.opp
 TimerChannelOutput::_init()                       build/obj/./src/timer.opp
 TimerChannelOutput::init(unsigned short, unsigned long, unsigned short, unsigned short, unsigned short, unsigned short, unsigned short, unsigned short) build/obj/./src/timer.opp
+                                                  build/obj/src/example/example-pwm.opp
 TimerChannelOutput::preloadConfig(FunctionalState) build/obj/./src/timer.opp
 TimerChannelOutput::setCompare(unsigned short)    build/obj/./src/timer.opp
 TimerChannelOutput::setDuty(unsigned short)       build/obj/./src/timer.opp
+                                                  build/obj/src/example/example-pwm.opp
 TimerChannelOutput::setEnabled(FunctionalState)   build/obj/./src/timer.opp
 TimerChannelOutput::setEnabledN(FunctionalState)  build/obj/./src/timer.opp
 TimerChannelOutput::setMode(unsigned short)       build/obj/./src/timer.opp
@@ -2248,13 +2320,13 @@ exit                                              /usr/lib/gcc/arm-none-eabi/8.2
                                                   /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/crt0.o
 free                                              /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-malloc.o)
 g_pfnVectors                                      build/obj/./src/startup/startup_stm32f1.os
-gpio_Led                                          build/obj/src/example/example-gpio.opp
+gpio_Led                                          build/obj/src/example/example-pwm.opp
 hardware_init_hook                                /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/crt0.o
 it_callback::it_callback()                        build/obj/./src/timer.opp
 it_callback::it_callback()                        build/obj/./src/timer.opp
 mDelay(unsigned long)                             build/obj/./src/scheduling.opp
-                                                  build/obj/src/example/example-gpio.opp
-main                                              build/obj/src/example/example-gpio.opp
+                                                  build/obj/src/example/example-pwm.opp
+main                                              build/obj/src/example/example-pwm.opp
                                                   build/obj/./src/startup/startup_stm32f1.os
                                                   /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/crt0.o
 malloc                                            /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(lib_a-malloc.o)
@@ -2276,6 +2348,9 @@ std::get_new_handler()                            /usr/lib/gcc/arm-none-eabi/8.2
 std::nothrow                                      /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libstdc++_nano.a(new_handler.o)
 std::set_new_handler(void (*)())                  /usr/lib/gcc/arm-none-eabi/8.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libstdc++_nano.a(new_handler.o)
 systick_frequency                                 build/obj/./src/scheduling.opp
-                                                  build/obj/src/example/example-gpio.opp
-timer3                                            build/obj/./src/timer.opp
+                                                  build/obj/src/example/example-pwm.opp
+tco                                               build/obj/src/example/example-pwm.opp
+timer                                             build/obj/src/example/example-pwm.opp
+timer1                                            build/obj/./src/timer.opp
+                                                  build/obj/src/example/example-pwm.opp
 uDelay(unsigned long)                             build/obj/./src/scheduling.opp

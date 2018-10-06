@@ -36,7 +36,7 @@ CFLAGS += -Os -g -Wa,--warn -x assembler-with-cpp -specs=nano.specs
 CFLAGS += $(INCLUDES)
 CXXFLAGS = -std=gnu++14 $(ARCH_FLAGS)
 CXXFLAGS += $(OPTIMIZE) -ffunction-sections -fdata-sections -fno-rtti -fno-exceptions -g -fstack-usage -Wall -fno-threadsafe-statics -specs=nano.specs
-CXXFLAGS += $(INCLUDES) -DUSE_TIM_3
+CXXFLAGS += $(INCLUDES) -DUSE_TIM_1
 ASFLAGS = $(ARCH_FLAGS)
 ASFLAGS +=  -g -Wa,--warn -x assembler-with-cpp -specs=nano.specs
 ASFLAGS += $(INCLUDES)

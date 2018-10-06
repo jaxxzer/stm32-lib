@@ -1,10 +1,5 @@
 #pragma once
 
-
-//#define USE_TIM_1
-//#define USE_TIM_2
-//#define USE_TIM_3
-//#define USE_TIM_4
 #ifdef STM32F0
 #include "stm32f0xx_conf.h"
 #elif STM32F1

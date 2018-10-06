@@ -1,19 +1,31 @@
-#define USE_TIM_3
-
-#include "stm32lib.h"
+#include "stm32lib-conf.h"
 
 // Timer update interrupt is used for 
 
-Gpio gpio_Led { GPIOB, 1 };
-TimerChannelOutput tco_4 { TIM3, TIM_Channel_4 };
+
+    #ifdef STM32F0
+    Timer& timer = timer3;
+    Gpio gpio_Led { GPIOB, 1 };
+    TimerChannelOutput tco { TIM3, TIM_Channel_4 };
+    #elif STM32F1
+    Timer& timer = timer1;
+    Gpio gpio_Led { GPIOB, 13 };
+    TimerChannelOutput tco { TIM1, TIM_Channel_1 };
+    #endif
 
 int main()
 {
+
+
 	SystemInit();
 
     // Set up 48 MHz Core Clock using HSI (4Mhz? - HSI_Div2) with PLL x 6
+    #ifdef STM32F0
     RCC_PLLConfig(RCC_PLLSource_HSI, RCC_PLLMul_12);
-    RCC_PLLCmd(ENABLE);
+    #elif STM32F1
+        RCC_PLLConfig(RCC_PLLSource_HSI_Div2, RCC_PLLMul_12);
+    #endif
+        RCC_PLLCmd(ENABLE);
 
     // Wait for PLLRDY after enabling PLL.
     while (RCC_GetFlagStatus(RCC_FLAG_PLLRDY) != SET) {  }
@@ -26,19 +38,29 @@ int main()
 	SysTick_Config(SystemCoreClock/1000);
 	systick_frequency = 1000; // todo fix this in hal somehow. this is needed when we are configured for internal clock?
 
+#ifdef STM32F0
     gpio_Led.init(GPIO_Mode_AF);
     gpio_Led.configAF(1);
+#elif STM32F1
+    gpio_Led.init(GPIO_Mode_AF_PP);
+    //gpio_Led.configRemap();
+#endif
 
-    timer3.setClockEnabled(ENABLE);
-    timer3.initFreq(1e4); // 10kHz pwm frequency
-    timer3.setEnabled(ENABLE);
+    timer.setClockEnabled(ENABLE);
+    timer.initFreq(1e4); // 10kHz pwm frequency
+    timer.setEnabled(ENABLE);
 
-    tco_4.init(TIM_OCMode_PWM1, 0, TIM_OutputState_Enable);
+
+#ifdef STM32F0
+    tco.init(TIM_OCMode_PWM1, 0, TIM_OutputState_Enable);
+#elif STM32F1
+    tco.init(TIM_OCMode_PWM1, 0, TIM_OutputState_Disable, TIM_OutputNState_Enable);
+#endif
     uint16_t duty = 0;
     int8_t inc = 75;
     while (1) { 
         mDelay(1);
-        tco_4.setDuty(duty);
+        tco.setDuty(duty);
         if ( (inc > 0 && inc > 65535 - duty) ||
              (inc < 0 && duty < -inc) )
         {

@@ -12,13 +12,6 @@
 #pragma once
 #include "stm32lib-conf.h"
 
-//#define USE_TIM_1
-//#define USE_TIM_2
-//#define USE_TIM_3
-//#define USE_TIM_6
-//#define USE_TIM_15
-//#define USE_TIM_16
-
 class TimerChannel
 {
 public:
