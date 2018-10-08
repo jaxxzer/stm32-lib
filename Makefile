@@ -27,7 +27,7 @@ STARTUP_SRC = $(STARTUP_DIR)/startup_$(TARGET_LINE).s
 LINK_SCRIPT = $(LINK_DIR)/stm32.ld
 SYSTEM_SRC = $(SYSTEM_DIR)/$(SYSTEM_FILE)
 
-INCLUDES = -I $(SYSTEM_DIR)
+INCLUDES += -I $(SYSTEM_DIR)
 INCLUDES += -I $(CMSIS_DIR)/core
 INCLUDES += -I $(STDPERIPH_DIR)/inc
 INCLUDES += -I $(STM32LIB_DIR)/src
@@ -36,7 +36,8 @@ OPTIMIZE = -O0
 CFLAGS = $(ARCH_FLAGS) 
 CFLAGS += -Os -g -Wa,--warn -x assembler-with-cpp -specs=nano.specs
 CFLAGS += $(INCLUDES)
-CXXFLAGS = -std=gnu++14 $(ARCH_FLAGS)
+CXXFLAGS ?=
+CXXFLAGS += -std=gnu++14 $(ARCH_FLAGS)
 CXXFLAGS += $(OPTIMIZE) -ffunction-sections -fdata-sections -fno-rtti -fno-exceptions -g -fstack-usage -Wall -fno-threadsafe-statics -specs=nano.specs
 CXXFLAGS += $(INCLUDES) -DUSE_TIM_1
 ASFLAGS = $(ARCH_FLAGS)
