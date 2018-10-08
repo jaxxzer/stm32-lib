@@ -83,4 +83,9 @@ MEMORY
   MEMORY_B1 (rx)  : ORIGIN = 0x60000000, LENGTH = 0K
 }""" % (hex(estack), flash, ram))
 
-print(productLdScript(product))
+from argparse import ArgumentParser
+parser = ArgumentParser(description=__doc__)
+parser.add_argument("-p", dest="product", required=True, help="STM32 product")
+args = parser.parse_args()
+
+print(productLdScript(args.product))
