@@ -1,5 +1,6 @@
 TARGET_MCU ?= stm32f1
 TARGET_FLASH ?= 16k
+TARGET_RAM ?= 4k
 
 ifeq ($(TARGET_MCU), stm32f0)
 ARCH_FLAGS += -DSTM32F0

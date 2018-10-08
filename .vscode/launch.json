@@ -1,0 +1,34 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Cortex Debug",
+            "cwd": "${workspaceRoot}",
+            "executable": "build/bin/example-pwm.elf",
+            "request": "launch",
+            "type": "cortex-debug",
+            "servertype": "openocd",
+            "configFiles": [
+                "openocd.cfg"
+            ],
+            "svdFile": "${workspaceRoot}/svd/stm32f1/STM32F103.svd",
+            "device": "STM32F030"
+        },
+        {
+            "name": "example-pwm",
+            "cwd": "${workspaceRoot}",
+            "executable": "build/bin/example-pwm.elf",
+            "request": "launch",
+            "type": "cortex-debug",
+            "servertype": "openocd",
+            "configFiles": [
+                "openocd/openocd.cfg"
+            ],
+            "svdFile": "${workspaceRoot}/svd/stm32f1/STM32F103.svd",
+            "device": "STM32F103"
+        }
+    ]
+}

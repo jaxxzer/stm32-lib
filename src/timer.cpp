@@ -327,9 +327,9 @@ bool Timer::setFrequencyForce(uint16_t f)
 	// ex 50 hz:
 	// 0x
 	#ifdef STM32F0
-	uint32_t pclk_f = RCC_ClocksStruct.PCLK_Frequency / _config.TIM_Prescaler;
+	uint32_t pclk_f = RCC_ClocksStruct.PCLK_Frequency / (_config.TIM_Prescaler + 1);
 #elif STM32F1
-	uint32_t pclk_f = RCC_ClocksStruct.PCLK1_Frequency / _config.TIM_Prescaler;
+	uint32_t pclk_f = RCC_ClocksStruct.PCLK2_Frequency / (_config.TIM_Prescaler + 1);
 #endif
 
 	uint32_t PSC = pclk_f / (f * 0xFFFF);

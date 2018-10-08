@@ -38,6 +38,8 @@ int main()
 	SysTick_Config(SystemCoreClock/1000);
 	systick_frequency = 1000; // todo fix this in hal somehow. this is needed when we are configured for internal clock?
 
+  RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOB |
+                         RCC_APB2Periph_GPIOC | RCC_APB2Periph_AFIO, ENABLE);
 #ifdef STM32F0
     gpio_Led.init(GPIO_Mode_AF);
     gpio_Led.configAF(1);
@@ -54,7 +56,7 @@ int main()
 #ifdef STM32F0
     tco.init(TIM_OCMode_PWM1, 0, TIM_OutputState_Enable);
 #elif STM32F1
-    tco.init(TIM_OCMode_PWM1, 0, TIM_OutputState_Disable, TIM_OutputNState_Enable);
+    tco.init(TIM_OCMode_PWM1, 0, TIM_OutputState_Enable, TIM_OutputNState_Enable);
 #endif
     uint16_t duty = 0;
     int8_t inc = 75;
