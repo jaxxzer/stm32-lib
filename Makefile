@@ -73,7 +73,7 @@ $(OBJ_DIR)/%.o: %.c
 example-%: $(TARGET_OBJS) $(OBJ_DIR)/src/example/example-%.opp
 	@echo "deps: $^"
 	mkdir -p $(BIN_DIR)
-	arm-none-eabi-g++ -o $(BIN_DIR)/$@.elf $^ -T $(LD_SRC) $(LD_FLAGS)
+	arm-none-eabi-g++ -o $(BIN_DIR)/$@.elf $^ -T src/link/stm32-mem.ld -T $(LD_SRC) $(LD_FLAGS)
 	arm-none-eabi-size $(BIN_DIR)/$@.elf
 	arm-none-eabi-objcopy -O ihex $(BIN_DIR)/$@.elf $(BIN_DIR)/$@.hex
 	arm-none-eabi-objcopy -O binary $(BIN_DIR)/$@.elf $(BIN_DIR)/$@.bin
