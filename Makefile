@@ -1,4 +1,4 @@
-TARGET_MCU ?= STM32F103R8
+TARGET_MCU ?= STM32F103RC
 
 ifneq (,$(findstring STM32F0, $(TARGET_MCU)))
 TARGET_LINE = stm32f0
@@ -39,7 +39,7 @@ CFLAGS += $(INCLUDES)
 CXXFLAGS ?=
 CXXFLAGS += -std=gnu++14 $(ARCH_FLAGS)
 CXXFLAGS += $(OPTIMIZE) -ffunction-sections -fdata-sections -fno-rtti -fno-exceptions -g -fstack-usage -Wall -fno-threadsafe-statics -specs=nano.specs
-CXXFLAGS += $(INCLUDES) -DUSE_TIM_1
+CXXFLAGS += $(INCLUDES) -DUSE_TIM_1 -DUSE_TIM_3
 ASFLAGS = $(ARCH_FLAGS)
 ASFLAGS +=  -g -Wa,--warn -x assembler-with-cpp -specs=nano.specs
 ASFLAGS += $(INCLUDES)
