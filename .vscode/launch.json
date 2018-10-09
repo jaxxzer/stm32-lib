@@ -5,22 +5,22 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Cortex Debug",
+            "name": "F030",
             "cwd": "${workspaceRoot}",
-            "executable": "build/bin/example-pwm.elf",
+            "executable": "build/bin/debug.elf",
             "request": "launch",
             "type": "cortex-debug",
             "servertype": "openocd",
             "configFiles": [
                 "openocd.cfg"
             ],
-            "svdFile": "${workspaceRoot}/svd/stm32f1/STM32F103.svd",
+            "svdFile": "${workspaceRoot}/svd/stm32f0/STM32F0x0.svd",
             "device": "STM32F030"
         },
         {
-            "name": "example-pwm",
+            "name": "F103",
             "cwd": "${workspaceRoot}",
-            "executable": "build/bin/example-pwm.elf",
+            "executable": "build/bin/debug.elf",
             "request": "launch",
             "type": "cortex-debug",
             "servertype": "openocd",

@@ -80,7 +80,6 @@ example-%: $(TARGET_OBJS) $(OBJ_DIR)/src/example/example-%.opp
 	arm-none-eabi-size $(BIN_DIR)/$@.elf
 	arm-none-eabi-objcopy -O ihex $(BIN_DIR)/$@.elf $(BIN_DIR)/$@.hex
 	arm-none-eabi-objcopy -O binary $(BIN_DIR)/$@.elf $(BIN_DIR)/$@.bin
-
 	
 $(OBJ_DIR)/%.opp: %.cpp
 	@echo "dir $(dir $@)"
@@ -94,6 +93,7 @@ $(OBJ_DIR)/%.os: %.s
 
 %-flash: %
 	openocd -f interface/stlink-v2.cfg -f $(OPENOCD_TARGET) -c "program build/bin/$<.hex verify reset exit"
+	ln -s $(BIN_DIR)/$<.elf debug.elf
 
 .PHONY: clean
 

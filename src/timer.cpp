@@ -457,11 +457,19 @@ it_callback_t* Timer::setupCc4Callback(void (*cc4CallbackFn)(void))
 /// Interrupts
 extern "C" {
 
+#ifdef STM32F0
 void TIM1_BRK_UP_TRG_COM_IRQHandler(void) {
 #ifdef USE_TIM_1
     timer1._irqHandler();
 #endif
 }
+#elif STM32F1
+void TIM1_UP_IRQHandler(void) {
+#ifdef USE_TIM_1
+    timer1._irqHandler();
+#endif
+}
+#endif
 
 void TIM1_CC_IRQHandler(void) {
 #ifdef USE_TIM_1
