@@ -32,7 +32,7 @@ INCLUDES += -I $(CMSIS_DIR)/core
 INCLUDES += -I $(STDPERIPH_DIR)/inc
 INCLUDES += -I $(STM32LIB_DIR)/src
 
-OPTIMIZE = -O0
+OPTIMIZE = -Os
 CFLAGS = $(ARCH_FLAGS) 
 CFLAGS += $(OPTIMIZE) -g -Wa,--warn -x assembler-with-cpp -specs=nano.specs
 CFLAGS += $(INCLUDES)
