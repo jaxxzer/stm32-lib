@@ -12,10 +12,20 @@ TARGET_LINE = stm32f1
 OPENOCD_TARGET = target/stm32f1x.cfg
 ARCH_FLAGS += -DSTM32F1
 SYSTEM_FILE = system_stm32f10x.c
-ARCH_FLAGS += -DSTM32F10X_HD
 ARCH_FLAGS += -mcpu=cortex-m3 -mthumb -mno-thumb-interwork -mfpu=vfp -msoft-float -mfix-cortex-m3-ldrd
 endif
 
+ifneq (,$(findstring F103, $(TARGET_MCU)))
+ifneq (,$(filter %4 %6, $(TARGET_MCU)))
+ARCH_FLAGS += -DSTM32F10X_LD
+endif
+ifneq (,$(filter %8 %B, $(TARGET_MCU)))
+ARCH_FLAGS += -DSTM32F10X_MD
+endif
+ifneq (,$(filter %C %D %E, $(TARGET_MCU)))
+ARCH_FLAGS += -DSTM32F10X_HD
+endif
+endif
 STM32LIB_DIR = .
 CMSIS_DIR = $(STM32LIB_DIR)/driver/$(TARGET_LINE)/cmsis
 SYSTEM_DIR = $(CMSIS_DIR)/device
@@ -40,19 +50,17 @@ CXXFLAGS ?=
 CXXFLAGS += -std=gnu++14 $(ARCH_FLAGS)
 CXXFLAGS += $(OPTIMIZE) -ffunction-sections -fdata-sections -fno-rtti -fno-exceptions -g -fstack-usage -Wall -fno-threadsafe-statics -specs=nano.specs
 CXXFLAGS += $(INCLUDES) -DUSE_TIM_1 -DUSE_TIM_3
-ASFLAGS = $(ARCH_FLAGS)
-ASFLAGS +=  -g -Wa,--warn -x assembler-with-cpp -specs=nano.specs
-ASFLAGS += $(INCLUDES)
+
 CXX_SRC += $(wildcard $(STM32LIB_DIR)/src/*.cpp)
 
- 
 C_SRC += $(wildcard $(STDPERIPH_DIR)/src/*.c)
 C_SRC += $(SYSTEM_SRC)
+
 S_SRC += $(STARTUP_SRC)
+
 LD_SRC += $(LINK_SCRIPT)
 LD_FLAGS = -mthumb -specs=nosys.specs -static -Wl,-cref,-u,Reset_Handler -Wl,-Map=$(BUILD_DIR)/build.map -Wl,--gc-sections -Wl,--defsym=malloc_getpagesize_P=0x1000 -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group -specs=nano.specs 
 LD_FLAGS += $(ARCH_FLAGS)
-
 
 CC = arm-none-eabi-gcc
 CXX = arm-none-eabi-g++

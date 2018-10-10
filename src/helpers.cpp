@@ -20,6 +20,7 @@ void nvic_config(const uint8_t irq, const uint8_t priority, const uint8_t subpri
 	NVIC_Init(&NVIC_InitStructure);
 }
 #endif
+
 // map float from input range to output range
 float map(float in, float in_min, float in_max, float out_min, float out_max)
 {

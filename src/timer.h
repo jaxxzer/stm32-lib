@@ -1,15 +1,5 @@
-/*
- * timer.h
- *
- *  Created on: Feb 7, 2018
- *      Author: jack
- */
-
-// What do we need for a timer?
-/*
-* - A timer peripheral
-*/
 #pragma once
+
 #include "stm32lib-conf.h"
 
 class TimerChannel
@@ -104,6 +94,7 @@ public:
     	setClockEnabled(ENABLE);
     	TIM_TimeBaseStructInit(&_config);
     };
+	
     ~Timer() {
     	// delete callbacks
     	_deleteCallbacks();
@@ -215,10 +206,3 @@ extern Timer timer16; // 16 bit Advanced control
 #ifdef USE_TIM_17
 extern Timer timer17; // 16 bit Advanced control
 #endif
-
-/// ~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@
-/// Interrupts
-extern "C" {
-void TIM1_CC_IRQHandler(void);
-void TIM2_IRQHandler(void);
-}

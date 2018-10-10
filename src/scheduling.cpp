@@ -2,6 +2,7 @@
 
 volatile uint32_t microseconds = 0;
 uint32_t systick_frequency;
+
 void configureClocks(uint32_t frequency)
 {
 	SystemInit();

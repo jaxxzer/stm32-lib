@@ -21,7 +21,6 @@ int main()
     gpio_Led.init(GPIO_Mode_AF_PP);
 #endif
 
-    timer.setClockEnabled(ENABLE);
     timer.initFreq(1e4); // 10kHz pwm frequency
     timer.setEnabled(ENABLE);
     timer.setMOE(ENABLE);
