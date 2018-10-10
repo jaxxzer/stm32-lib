@@ -43,11 +43,11 @@ int main()
     gpio_Led.init(GPIO_Mode_AF);
     gpio_Led.configAF(1);
 #elif STM32F1
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOB |
-                         RCC_APB2Periph_GPIOC | RCC_APB2Periph_AFIO, ENABLE);
+    //RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOB |
+    //                     RCC_APB2Periph_GPIOC | RCC_APB2Periph_AFIO, ENABLE);
 
     gpio_Led.init(GPIO_Mode_AF_PP);
-    GPIO_PinRemapConfig(GPIO_FullRemap_TIM1, ENABLE);	
+    //GPIO_PinRemapConfig(GPIO_FullRemap_TIM1, ENABLE);	
 
     //gpio_Led.configRemap();
 #endif
@@ -55,6 +55,7 @@ int main()
     timer.setClockEnabled(ENABLE);
     timer.initFreq(1e4); // 10kHz pwm frequency
     timer.setEnabled(ENABLE);
+    TIM_CtrlPWMOutputs(TIM1, ENABLE);
 
     tco.init(TIM_OCMode_PWM1, 0, TIM_OutputState_Enable, TIM_OutputNState_Enable);
 
