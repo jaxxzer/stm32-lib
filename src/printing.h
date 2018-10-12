@@ -1,5 +1,8 @@
 #pragma once
 
+#include <cstddef>
+#include <stdio.h>
+#include "stm32lib-conf.h"
 #include "uart.h"
 
 enum {

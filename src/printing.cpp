@@ -45,7 +45,7 @@ void print_clocks()
 	RCC_GetClocksFreq(&RCC_ClocksStruct);
 
 	printf("\n\r\t***Current Clock Configuration***");
-
+#ifdef STM32F0
 	printf("\n\r\t- SYSCLK: %u", RCC_ClocksStruct.SYSCLK_Frequency);
 	printf("\n\r\t- HCLK: %u", RCC_ClocksStruct.HCLK_Frequency);
 	printf("\n\r\t- PCLK: %u", RCC_ClocksStruct.PCLK_Frequency);
@@ -56,6 +56,7 @@ void print_clocks()
 	printf("\n\r\t- USART2CLK: %u", RCC_ClocksStruct.USART2CLK_Frequency);
 	printf("\n\r\t- USART3CLK: %u", RCC_ClocksStruct.USART3CLK_Frequency);
 	printf("\n\r\t- USBCLK: %u", RCC_ClocksStruct.USBCLK_Frequency);
+#endif
 }
 
 

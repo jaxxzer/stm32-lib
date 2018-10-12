@@ -1,9 +1,6 @@
 #pragma once
-#ifdef STM32F0
-#include "stm32f0xx_conf.h"
-#elif STM32F1
-#include "stm32f10x_conf.h"
-#endif
+
+#include "stm32lib-conf.h"
 
 #include <stdio.h>
 
@@ -49,11 +46,12 @@ public:
 
 	// Start auto baud rate detection
 	// Requires the next byte received to start with a 1
+#ifdef STM32F0
 	void startAutoBaud() {
 		USART_AutoBaudRateConfig(_peripheral, USART_AutoBaudRate_StartBit);
 		USART_AutoBaudRateCmd(_peripheral, ENABLE);
 	}
-
+#endif
 
 	void setEnabled(FunctionalState enabled) {
 		USART_Cmd(_peripheral, enabled);
@@ -77,10 +75,9 @@ public:
 
 	USART_TypeDef* _peripheral;
 };
-#define USE_USART_1
-extern Uart uart1;
 
 #ifdef USE_USART_1
+extern Uart uart1;
 #endif
 //Uart uart2 { USART2 };
 //Uart uart3 { USART3 };
