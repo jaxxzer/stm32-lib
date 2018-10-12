@@ -1,5 +1,7 @@
 #pragma once
 
+#include "stm32lib-conf.h"
+
 class Dma {
 	public:
 	Dma(DMA_Channel_TypeDef* peripheral) : _peripheral(peripheral) {

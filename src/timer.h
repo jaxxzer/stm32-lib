@@ -11,7 +11,6 @@ public:
 	{};
 	TIM_TypeDef* _peripheral;
 	uint8_t _channel;
-
 };
 
 class TimerChannelInput : public TimerChannel
@@ -94,7 +93,7 @@ public:
     	setClockEnabled(ENABLE);
     	TIM_TimeBaseStructInit(&_config);
     };
-	
+
     ~Timer() {
     	// delete callbacks
     	_deleteCallbacks();

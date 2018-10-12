@@ -9,14 +9,14 @@
 typedef struct it_callback
 {
 	void (*callback)(void);
-	it_callback* next = 0x0;
+	it_callback* next = nullptr;
 } it_callback_t;
 
 #include "helpers.h"
 #include "timer.h"
 //#include "uart.h"
 #include "scheduling.h"
-//#include "dma.h"
+//#nclude "dma.h"
 #include "gpio.h"
 //#include "adc.h"
 //#include "crc.h"

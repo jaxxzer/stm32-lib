@@ -1,5 +1,6 @@
 #pragma once
 
+#include "stm32lib-conf.h"
 #include "gpio.h"
 #include "dma.h"
 
@@ -128,4 +129,3 @@ private:
 	// Set up the dma buffer, adc requests, and dma channel
 	void _dmaConfig(void);
 };
-
