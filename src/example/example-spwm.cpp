@@ -1,4 +1,5 @@
 #include "stm32lib-conf.h"
+#include "lookup.h"
 #include <math.h>
 
 #define PI 3.141593f
@@ -22,14 +23,16 @@
     TimerChannelOutput tco4 { TIM3, TIM_Channel_4 };
 #endif
 
-float _field_angle = 0;
-uint16_t _duty = 8000;
+uint16_t _field_angle = 0;
+uint16_t _duty = 12000;
 
 bool setFieldAngle(float angle)
 {
-   	while (angle > 2 * PI) {
-   		angle -= 2 * PI;
+   	while (angle > 2 * M_PI) {
+   		angle -= 2 * M_PI;
+        if (angle < 0) angle = 0;
    	}
+    
 
    	_field_angle = angle;
 
@@ -38,36 +41,38 @@ bool setFieldAngle(float angle)
 
 void updateSPWM(void)
 {
-	float pwmA = (sinf(_field_angle) + 1) / 2;
-	float pwmB = (sinf(_field_angle + 2.094394667f) + 1) / 2;
-	float pwmC = (sinf(_field_angle + 4.188789333f) + 1) / 2;
-
-	tco1.setDuty(65535 - pwmA * _duty);
-	tco2.setDuty(pwmA * _duty);
-	tco3.setDuty(pwmB * _duty);
-	tco4.setDuty(pwmC * _duty);
+    _field_angle += 1;
+    _field_angle = _field_angle % 4098;
+	tco1.setDuty(65535 - lookup[_field_angle]);
+	tco2.setDuty(lookup[_field_angle]);
+	tco3.setDuty(lookup[(_field_angle + 1366)%4098]);
+	tco4.setDuty(lookup[(_field_angle + 2372)%4098]);
 }
 
 int main()
 {
-    configureClocks(1000);
+    configureClocks(10);
 
 #ifdef STM32F0
     gpio_Led.init(GPIO_Mode_AF);
     gpio_Led.configAF(1);
 #elif STM32F1
+    nvic_config(TIM1_UP_IRQn, 0, 0, ENABLE);
+
     gpio_Led.init(GPIO_Mode_AF_PP);
     gpio_m2.init(GPIO_Mode_AF_PP);
     gpio_m3.init(GPIO_Mode_AF_PP);
     gpio_m4.init(GPIO_Mode_AF_PP);
 #endif
 
-    timer1.initFreq(1e4); // 10kHz pwm frequency
+    timer1.initFreq(500); // 10kHz pwm frequency
     timer1.setEnabled(ENABLE);
     timer1.setMOE(ENABLE);
+    timer1.setupUpCallback(&updateSPWM);
+    timer1.interruptConfig(TIM_IT_Update, ENABLE);
 
 
-    timer.initFreq(1e4); // 10kHz pwm frequency
+    timer.initFreq(24e4); // 10kHz pwm frequency
     timer.setEnabled(ENABLE);
     timer.setMOE(ENABLE);
 
@@ -76,13 +81,7 @@ int main()
     tco3.init(TIM_OCMode_PWM1, 0, TIM_OutputState_Enable);
     tco4.init(TIM_OCMode_PWM1, 0, TIM_OutputState_Enable);
 
-    // breath
-    uint16_t duty = 0;
-    int8_t inc = 75;
-    while (1) { 
-        mDelay(10);
-        setFieldAngle(_field_angle + 0.1f);
-        updateSPWM();
+    while (1) {
     }
 
     return 0;
