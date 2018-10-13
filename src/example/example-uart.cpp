@@ -59,7 +59,8 @@ int main()
     timer1.setEnabled(ENABLE);
     timer1.interruptConfig(TIM_IT_Update, ENABLE);
 
-    while (1) {  }
+    while (1) { 	printf("\n\rInitializing Wraith32");
+ }
 
     return 0;
 }
