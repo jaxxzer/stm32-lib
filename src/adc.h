@@ -73,16 +73,24 @@ public:
 		// Configuration
 		ADC_InitTypeDef _config;
 		_config.ADC_ContinuousConvMode = continuousConvMode;
+#ifdef STM32F1
+		_config.ADC_Mode = ADC_Mode_Independent;
+		_config.ADC_ScanConvMode = DISABLE;
+#endif
 		_config.ADC_Resolution = resolution;
+#ifdef STM32F0
 		_config.ADC_ExternalTrigConvEdge = extTrigConvEdge;
+		_config.ADC_ScanDirection = scanDirection;
+#endif
 		_config.ADC_ExternalTrigConv = extTrigConv;
 		_config.ADC_DataAlign = dataAlign;
-		_config.ADC_ScanDirection = scanDirection;
+
 		ADC_Init(_peripheral, &_config);
 	}
 
 	// Enable the ADC
 	void enable();
+	void waitReady();
 
 	// Add another channel to the conversion sequence
 	// This configures GPIO for you

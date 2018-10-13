@@ -36,7 +36,11 @@ AdcChannel* Adc::addChannel(uint32_t channel)
 	// TODO configure only the added channel
 	// Configure all channels
 	while (tmp) {
+#ifdef STM32F0
 		ADC_ChannelConfig(ADC1, tmp->channel, ADC_SampleTime_239_5Cycles);
+#elif STM32F1
+		ADC_ChannelConfig(ADC1, tmp->channel, _numChannels, ADC_SampleTime_239_5Cycles);
+#endif
 		tmp = tmp->next;
 	}
 
@@ -45,8 +49,9 @@ AdcChannel* Adc::addChannel(uint32_t channel)
 
 void Adc::_enableClock(void)
 {
-	ADC_ClockModeConfig(ADC1, ADC_ClockMode_SynClkDiv2);
-
+#ifdef STM32F0
+	ADC_ClockModeConfig(_peripheral, ADC_ClockMode_SynClkDiv2);
+#endif
 	switch((uint32_t)_peripheral) {
 	case ADC1_BASE:
 		RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1, ENABLE);
@@ -61,7 +66,15 @@ void Adc::enable(void)
 	_calibrate();
 	ADC_Cmd(ADC1, ENABLE);
 	_dmaConfig();
+}
+
+void Adc::waitReady(void)
+{
+#ifdef STM32F0
 	while(!ADC_GetFlagStatus(ADC1, ADC_FLAG_ADRDY)); // wait ready
+#elif STM32F1
+	mDelay(10);
+#endif
 }
 
 void Adc::waitConversion(void)
@@ -73,12 +86,28 @@ void Adc::waitConversion(void)
 
 void Adc::startConversion(void)
 {
+#ifdef STM32F0
 	ADC_StartOfConversion(ADC1);
+#elif STM32F1
+	ADC_StartConversion(ADC1);
+#endif
 }
 
 void Adc::_calibrate(void)
 {
+#ifdef STM32F0
 	ADC_GetCalibrationFactor(ADC1); // blocking on F0
+#elif STM32F1
+  /* Enable ADC1 reset calibration register */   
+  ADC_ResetCalibration(ADC1);
+  /* Check the end of ADC1 reset calibration register */
+  while(ADC_GetResetCalibrationStatus(ADC1));
+
+  /* Start ADC1 calibration */
+  ADC_StartCalibration(ADC1);
+  /* Check the end of ADC1 calibration */
+  while(ADC_GetCalibrationStatus(ADC1));
+#endif
 }
 
 void Adc::_dmaConfig(void)
@@ -104,7 +133,9 @@ void Adc::_dmaConfig(void)
 
 	dma1c1.setEnabled(ENABLE);
 
+#ifdef STM32F0
 	ADC_DMARequestModeConfig(ADC1, ADC_DMAMode_Circular); // use oneshot mode for non-continuous conversion
+#endif
 	ADC_DMACmd(ADC1, ENABLE);
 }
 
