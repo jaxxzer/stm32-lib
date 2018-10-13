@@ -32,13 +32,15 @@ void initUart(void)
 #elif STM32F1
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
     GPIO_PinRemapConfig(GPIO_PartialRemap_USART3, ENABLE);
-	gpio_uart_rx.init(GPIO_Mode_AF_OD);
+	gpio_uart_rx.init(GPIO_Mode_IN_FLOATING);
     gpio_uart_tx.init(GPIO_Mode_AF_PP);
-    nvic_config(USART1_IRQn, 0, 0, ENABLE);
+      /* Configure the NVIC Preemption Priority Bits */  
+    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_0);
+    nvic_config(USART3_IRQn, 0, 0, ENABLE);
 #endif
 
-    uart3.ITConfig(USART_IT_RXNE, ENABLE);
     uart3.init(115200);
+    uart3.ITConfig(USART_IT_RXNE, ENABLE);
     uart3.setEnabled(ENABLE);
     uart3.cls();
     //uart1.startAutoBaud(); // uncomment for autobauding
@@ -60,9 +62,9 @@ int main()
     timer1.setupUpCallback(&tim1UpdateCallback);
     timer1.setEnabled(ENABLE);
     timer1.interruptConfig(TIM_IT_Update, ENABLE);
-    fprintf((FILE*)FD_USART3, "\n\rInitializing Wraith32");
-
+    //RCC->APB2ENR = RCC_APB2Periph_TIM1 | RCC_APB2Periph_AFIO | RCC_APB2Periph_GPIOB;
     while (1) {
+        uart3.write("\n\rInitializing Wraith32");
         mDelay(100); 
     }
 

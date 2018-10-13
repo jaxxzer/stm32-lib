@@ -7,10 +7,10 @@ void Uart::setClockEnabled(FunctionalState enabled)
 	    RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, enabled);
 		break;
 	case USART2_BASE:
-	    RCC_APB2PeriphClockCmd(RCC_APB1Periph_USART2, enabled);
+	    RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, enabled);
 		break;
 	case USART3_BASE:
-	    RCC_APB2PeriphClockCmd(RCC_APB1Periph_USART3, enabled);
+	    RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART3, enabled);
 		break;
 	default:
 		break;
@@ -169,5 +169,3 @@ Uart uart2 { USART2 };
 #ifdef USE_USART_3
 Uart uart3 { USART3 };
 #endif
-//Uart uart2 { USART2 };
-//Uart uart3 { USART3 };

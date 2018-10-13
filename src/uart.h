@@ -9,7 +9,6 @@ class Uart
 public:
 	Uart(USART_TypeDef* usartx) : _peripheral(usartx) {
 		setClockEnabled(ENABLE);
-		//USART_StructInit(&_config);
 	}
 
 	void write(const char* p, uint16_t len);
@@ -32,7 +31,7 @@ public:
 				uint32_t flowcontrol = USART_HardwareFlowControl_None)
 	{
 		USART_InitTypeDef _config;
-
+		USART_StructInit(&_config);
 		_config.USART_BaudRate = baudrate;
 		_config.USART_StopBits = stopbits;
 		_config.USART_WordLength = wordlength;

@@ -13,8 +13,8 @@ typedef struct it_callback
 } it_callback_t;
 #define USE_USART_1
 #define USE_USART_3
-#define USE_TIMER_1
-#define USE_TIMER_3
+#define USE_TIM_1
+#define USE_TIM_3
 #include "helpers.h"
 #include "timer.h"
 #include "uart.h"
