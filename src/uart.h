@@ -74,10 +74,19 @@ public:
 	uint8_t txOverruns;
 
 	USART_TypeDef* _peripheral;
+
+	void _irqHandler(void);
 };
 
 #ifdef USE_USART_1
 extern Uart uart1;
 #endif
+#ifdef USE_USART_2
+extern Uart uart2;
+#endif
+#ifdef USE_USART_3
+extern Uart uart3;
+#endif
+
 //Uart uart2 { USART2 };
 //Uart uart3 { USART3 };

@@ -63,30 +63,19 @@ public:
 	// Initialize peripheral with common/default config
 	// More commonly used arguments are listed first
 	// Default arguments are the same as performed by ADC_StructInit()
-	void init(	FunctionalState continuousConvMode,
+#ifdef STM32F0
+	void init(FunctionalState continuousConvMode,
 			uint32_t resolution = ADC_Resolution_12b,
 			uint32_t extTrigConvEdge = ADC_ExternalTrigConvEdge_None,
 			uint32_t extTrigConv = ADC_ExternalTrigConv_T1_TRGO,
 			uint32_t dataAlign = ADC_DataAlign_Right,
-			uint32_t scanDirection = ADC_ScanDirection_Upward)
-	{
-		// Configuration
-		ADC_InitTypeDef _config;
-		_config.ADC_ContinuousConvMode = continuousConvMode;
-#ifdef STM32F1
-		_config.ADC_Mode = ADC_Mode_Independent;
-		_config.ADC_ScanConvMode = DISABLE;
+			uint32_t scanDirection = ADC_ScanDirection_Upward);
+#elif STM32F1
+	void init(FunctionalState continuousConvMode,
+			uint32_t extTrigConv = ADC_ExternalTrigConv_T1_CC1,
+			uint32_t dataAlign = ADC_DataAlign_Right);
 #endif
-		_config.ADC_Resolution = resolution;
-#ifdef STM32F0
-		_config.ADC_ExternalTrigConvEdge = extTrigConvEdge;
-		_config.ADC_ScanDirection = scanDirection;
-#endif
-		_config.ADC_ExternalTrigConv = extTrigConv;
-		_config.ADC_DataAlign = dataAlign;
 
-		ADC_Init(_peripheral, &_config);
-	}
 
 	// Enable the ADC
 	void enable();
@@ -112,7 +101,18 @@ public:
 	{
 		//_numSamples = samples;
 	}
-
+#ifdef STM32F1
+#define SQR1_CLEAR_Mask ((uint32_t)0xFF0FFFFF)
+	void setSeqNumChannels(uint8_t chans)
+	{
+		/* Get the ADCx SQR1 value */
+		uint32_t tmpreg1 = _peripheral->SQR1;
+		/* Clear L bits */
+		tmpreg1 &= SQR1_CLEAR_Mask;
+		tmpreg1 |= (chans - 1) << 20;
+		_peripheral->SQR1 = tmpreg1;
+	}
+#endif
 private:
 	ADC_TypeDef* _peripheral; // Eg. ADC1, ADC2...
 	AdcChannel* _head; // First channel in sequence

@@ -12,6 +12,9 @@ extern "C" {
 			USART_SendData(USART1, *ch);
 			while (USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET); // blocking!! can prevent code to run
 			break;
+		case FD_USART3: // For example
+			uart3.write((char*)ch);
+			break;
 		case FD_ITM_CH0...FD_ITM_CH31: // For example
 	#ifdef STM32F10X_MD
 		ITM_SendCharPort(*ch, file - FD_ITM_CH0);
@@ -36,6 +39,13 @@ extern "C" {
 	{
 		return __io_putchar((uint8_t*)&ch, f->_file);
 	}
+
+	int fputs(const char* str, FILE* stream) {
+		while (str) {
+			fputc(*(str++), stream);
+		}
+	}
+
 }
 
 void print_clocks()

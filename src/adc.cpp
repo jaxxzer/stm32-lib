@@ -16,7 +16,11 @@ AdcChannel* Adc::addChannel(uint32_t channel)
 	// TODO we should insert here instead of counting on them being added in order
 
 	Gpio gpio(gpiox, pinx);
+#ifdef STM32F0
 	gpio.init(GPIO_Mode_AN);
+#elif STM32F1
+	gpio.init(GPIO_Mode_AIN);
+#endif
 
 	AdcChannel* chanx = new AdcChannel(channel, _numSamples);
 
@@ -39,7 +43,8 @@ AdcChannel* Adc::addChannel(uint32_t channel)
 #ifdef STM32F0
 		ADC_ChannelConfig(ADC1, tmp->channel, ADC_SampleTime_239_5Cycles);
 #elif STM32F1
-		ADC_ChannelConfig(ADC1, tmp->channel, _numChannels, ADC_SampleTime_239_5Cycles);
+		ADC_RegularChannelConfig(ADC1, tmp->channel, _numChannels, ADC_SampleTime_239Cycles5);
+		setSeqNumChannels(_numChannels);
 #endif
 		tmp = tmp->next;
 	}
@@ -47,6 +52,41 @@ AdcChannel* Adc::addChannel(uint32_t channel)
 	return chanx;
 }
 
+#ifdef STM32F0
+void Adc::init(FunctionalState continuousConvMode,
+			uint32_t resolution,
+			uint32_t extTrigConvEdge,
+			uint32_t extTrigConv,
+			uint32_t dataAlign,
+			uint32_t scanDirection)
+	{
+		// Configuration
+		ADC_InitTypeDef _config;
+		_config.ADC_ContinuousConvMode = continuousConvMode;
+		_config.ADC_Resolution = resolution;
+		_config.ADC_ExternalTrigConvEdge = extTrigConvEdge;
+		_config.ADC_ScanDirection = scanDirection;
+		_config.ADC_ExternalTrigConv = extTrigConv;
+		_config.ADC_DataAlign = dataAlign;
+		ADC_Init(_peripheral, &_config);
+	}
+#elif STM32F1
+void Adc::init(FunctionalState continuousConvMode,
+			uint32_t extTrigConv,
+			uint32_t dataAlign)
+	{
+		// Configuration
+		ADC_InitTypeDef _config;
+		_config.ADC_Mode = ADC_Mode_Independent;
+		_config.ADC_ScanConvMode = DISABLE;
+		_config.ADC_ContinuousConvMode = continuousConvMode;
+		_config.ADC_ExternalTrigConv = extTrigConv;
+		_config.ADC_DataAlign = dataAlign;
+		_config.ADC_NbrOfChannel = 0;
+		ADC_Init(_peripheral, &_config);
+	}
+
+#endif
 void Adc::_enableClock(void)
 {
 #ifdef STM32F0
@@ -89,7 +129,7 @@ void Adc::startConversion(void)
 #ifdef STM32F0
 	ADC_StartOfConversion(ADC1);
 #elif STM32F1
-	ADC_StartConversion(ADC1);
+	ADC_SoftwareStartConvCmd(ADC1, ENABLE);
 #endif
 }
 

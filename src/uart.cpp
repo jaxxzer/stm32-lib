@@ -6,6 +6,12 @@ void Uart::setClockEnabled(FunctionalState enabled)
 	case USART1_BASE:
 	    RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, enabled);
 		break;
+	case USART2_BASE:
+	    RCC_APB2PeriphClockCmd(RCC_APB1Periph_USART2, enabled);
+		break;
+	case USART3_BASE:
+	    RCC_APB2PeriphClockCmd(RCC_APB1Periph_USART3, enabled);
+		break;
 	default:
 		break;
 	}
@@ -68,9 +74,11 @@ void Uart::cls(void)
 {
 	static const uint8_t esc = 27;
 	write((char*)(&esc));       // ESC command
-	printf("[2J");    // clear screen command
+	write("[2J");
+	//printf("[2J");    // clear screen command
 	write((char*)(&esc));
-	printf("[H"); // goto home
+	write("[H");
+	//printf("[H"); // goto home
 }
 
 void Uart::bkspc(void)
@@ -79,6 +87,36 @@ void Uart::bkspc(void)
 	write((char*)(&bkspc));       // ESC command
 }
 
+void Uart::_irqHandler(void)
+{
+	if (USART_GetITStatus(_peripheral, USART_IT_RXNE) != RESET) {
+		char rxdata = USART_ReceiveData(_peripheral); // reading the data clears the flag
+
+		rxBuf[rxTail++] = rxdata;
+		rxTail = rxTail % bufSize;
+
+		if (rxHead == rxTail) { // overwrite waiting buffer
+			rxOverruns++;
+			rxHead++;
+			rxHead = rxHead % bufSize;
+
+			//uart.rxTail++;
+		}
+	}
+
+	if (USART_GetITStatus(_peripheral, USART_IT_TXE) != RESET) {
+		if (txHead != txTail) { // if there is data in the buffer, send the first byte
+			USART_SendData(_peripheral, txBuf[txHead++]);
+			txHead = txHead % bufSize;
+		} else {
+			_peripheral->CR1 &= ~USART_CR1_TXEIE; // diable interrupt when buffer is empty
+		}
+	}
+
+	if (USART_GetFlagStatus(_peripheral, USART_IT_ORE) != RESET) {
+		USART_ClearITPendingBit(_peripheral, USART_IT_ORE);
+	}
+}
 
 extern "C" {
     /**********************************************************
@@ -115,10 +153,21 @@ extern "C" {
             USART_ClearITPendingBit(USART1, USART_IT_ORE);
         }
     }
+	void USART3_IRQHandler(void)
+	{
+		uart3._irqHandler();
+	}
+
 }
 
 #ifdef USE_USART_1
 Uart uart1 { USART1 };
+#endif
+#ifdef USE_USART_2
+Uart uart2 { USART2 };
+#endif
+#ifdef USE_USART_3
+Uart uart3 { USART3 };
 #endif
 //Uart uart2 { USART2 };
 //Uart uart3 { USART3 };

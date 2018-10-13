@@ -14,11 +14,11 @@ void tim1UpdateCallback(void)
 
 void initUart(void)
 {
-#define GPIO_UART_TX      GPIOA
-#define PIN_UART_TX       9
+#define GPIO_UART_TX      GPIOC
+#define PIN_UART_TX       10
 
-#define GPIO_UART_RX      GPIOA
-#define PIN_UART_RX       10
+#define GPIO_UART_RX      GPIOC
+#define PIN_UART_RX       11
 
 	Gpio gpio_uart_tx         { GPIO_UART_TX, PIN_UART_TX };
 	Gpio gpio_uart_rx         { GPIO_UART_RX, PIN_UART_RX };
@@ -30,15 +30,17 @@ void initUart(void)
     gpio_uart_tx.configAF(0);
     nvic_config(USART1_IRQn, 0, ENABLE);
 #elif STM32F1
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
+    GPIO_PinRemapConfig(GPIO_PartialRemap_USART3, ENABLE);
 	gpio_uart_rx.init(GPIO_Mode_AF_OD);
     gpio_uart_tx.init(GPIO_Mode_AF_PP);
     nvic_config(USART1_IRQn, 0, 0, ENABLE);
 #endif
 
-    uart1.ITConfig(USART_IT_RXNE, ENABLE);
-    uart1.init(115200);
-    uart1.setEnabled(ENABLE);
-    uart1.cls();
+    uart3.ITConfig(USART_IT_RXNE, ENABLE);
+    uart3.init(115200);
+    uart3.setEnabled(ENABLE);
+    uart3.cls();
     //uart1.startAutoBaud(); // uncomment for autobauding
 }
 int main()
@@ -58,9 +60,11 @@ int main()
     timer1.setupUpCallback(&tim1UpdateCallback);
     timer1.setEnabled(ENABLE);
     timer1.interruptConfig(TIM_IT_Update, ENABLE);
+    fprintf((FILE*)FD_USART3, "\n\rInitializing Wraith32");
 
-    while (1) { 	printf("\n\rInitializing Wraith32");
- }
+    while (1) {
+        mDelay(100); 
+    }
 
     return 0;
 }
