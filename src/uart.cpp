@@ -119,45 +119,24 @@ void Uart::_irqHandler(void)
 }
 
 extern "C" {
-    /**********************************************************
-     * USART1 interrupt request handler
-     *********************************************************/
-
     void USART1_IRQHandler(void)
     {
-        if (USART_GetITStatus(USART1, USART_IT_RXNE) != RESET) {
-            char rxdata = USART_ReceiveData(USART1); // reading the data clears the flag
-
-            uart1.rxBuf[uart1.rxTail++] = rxdata;
-            uart1.rxTail = uart1.rxTail % uart1.bufSize;
-
-            if (uart1.rxHead == uart1.rxTail) { // overwrite waiting buffer
-            	uart1.rxOverruns++;
-            	uart1.rxHead++;
-            	uart1.rxHead = uart1.rxHead % uart1.bufSize;
-
-                //uart.rxTail++;
-            }
-        }
-
-        if (USART_GetITStatus(USART1, USART_IT_TXE) != RESET) {
-            if (uart1.txHead != uart1.txTail) { // if there is data in the buffer, send the first byte
-                USART_SendData(USART1, uart1.txBuf[uart1.txHead++]);
-                uart1.txHead = uart1.txHead % uart1.bufSize;
-            } else {
-            	uart1._peripheral->CR1 &= ~USART_CR1_TXEIE; // diable interrupt when buffer is empty
-            }
-        }
-
-        if (USART_GetFlagStatus(USART1, USART_IT_ORE) != RESET) {
-            USART_ClearITPendingBit(USART1, USART_IT_ORE);
-        }
+#ifdef USE_USART_1
+		uart1._irqHandler();
+#endif
+    }
+	void USART2_IRQHandler(void)
+    {
+#ifdef USE_USART_2
+		uart2._irqHandler();
+#endif
     }
 	void USART3_IRQHandler(void)
 	{
+#ifdef USE_USART_3
 		uart3._irqHandler();
+#endif
 	}
-
 }
 
 #ifdef USE_USART_1

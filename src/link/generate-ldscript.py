@@ -60,9 +60,8 @@ def productRam(product):
     ramsizes = productRamsizes[productFamily(product)]
     return ramsizes[product[-1]]
 
-def productLdScript(product):
-    flash = productFlash(product)
-    ram = productRam(product)
+def ldScript(ram, flash):
+
     estack = 0x20000000 | (int(ram) * 1024)
     return ("""
 /* Entry Point */
@@ -86,6 +85,18 @@ MEMORY
 from argparse import ArgumentParser
 parser = ArgumentParser(description=__doc__)
 parser.add_argument("-p", dest="product", required=True, help="STM32 product")
+parser.add_argument("-o", dest="override", required=False, help="override flash size, k")
 args = parser.parse_args()
 
-print(productLdScript(args.product))
+
+product = args.product
+flash = 0
+
+if args.override:
+    flash = args.override
+else:
+    flash = productFlash(product)
+
+ram = productRam(product)
+
+print(ldScript(ram, flash))
