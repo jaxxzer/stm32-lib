@@ -93,7 +93,7 @@ int main()
 #endif
 
     while (1) {
-        printf("Initializing Wraith32");
+        printf("Initializing Wraith32\n");
         uart1.write("hello", 5);
 #ifdef STM32F1
         printf("Initializing Wraith32");
