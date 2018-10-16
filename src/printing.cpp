@@ -1,13 +1,12 @@
 #include "printing.h"
 
+
 extern "C" {
 	// This is used by printf, which calls _write in syscalls.c
 	int16_t __io_putchar(uint8_t* ch, uint32_t file) {
 		switch(file) {
 		case FD_STDOUT: // TODO find an easy way to map this (function pointer?) without modifying library
-#ifdef STDOUT_USART
 			uart1.write((char*)ch);
-#endif
 			break;
 		case FD_STDERR:
 		case FD_USART1: // For example
@@ -32,23 +31,27 @@ extern "C" {
 		{}
 		return *ch;
 	}
-
+	int _write(int file, char *data, int len)	{
+		while (len-- && *data) {
+			uart1.write((char*)data++);
+		}
+	}
 	int __io_getchar(void) {
 		// Code to read a character from the UART
 		return 0;
 	}
 
-	// This is used by fprintf when only one character is printed, or no formating is used
+	//This is used by fprintf when only one character is printed, or no formating is used
 	int fputc(int ch, FILE *f)
 	{
 		return __io_putchar((uint8_t*)&ch, f->_file);
 	}
 
-	int fputs(const char* str, FILE* stream) {
-		while (str) {
-			fputc(*(str++), stream);
-		}
-	}
+	// int fputs(const char* str, FILE* stream) {
+	// 	while (str) {
+	// 		fputc(*(str++), stream);
+	// 	}
+	// }
 
 }
 

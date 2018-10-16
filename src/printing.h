@@ -53,7 +53,7 @@ extern "C" {
 	int16_t __io_putchar(uint8_t* ch, uint32_t file);
 
 	int __io_getchar(void);
-
+int _write(int file, char *data, int len);
 	// This is used by fprintf when only one character is printed, or no formating is used
 	int fputc(int ch, FILE *f);
 }

@@ -1,6 +1,7 @@
 {
     "cortex-debug.openocdPath": "",
     "files.associations": {
-        "cstdio": "cpp"
+        "cstdio": "cpp",
+        "stm32072b_eval.h": "c"
     }
 }

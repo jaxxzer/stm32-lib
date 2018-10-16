@@ -93,9 +93,12 @@ int main()
 #endif
 
     while (1) {
-        uart1.write("Initializing Wraith32");
+        printf("Initializing Wraith32");
+        uart1.write("hello", 5);
 #ifdef STM32F1
-        uart3.write("\n\rInitializing Wraith32");
+        printf("Initializing Wraith32");
+        uart1.write("hello", 5);
+        uart3.write("hello", 5);
 #endif
         mDelay(100);
         gpioLed.toggle();
