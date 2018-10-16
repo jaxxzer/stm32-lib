@@ -1,5 +1,7 @@
 TARGET_MCU ?= STM32F103RC
 
+FLASH_OVERRIDE ?=
+
 ifneq (,$(findstring STM32F0, $(TARGET_MCU)))
 TARGET_LINE = stm32f0
 OPENOCD_TARGET = target/stm32f0x.cfg
@@ -84,7 +86,7 @@ example-%: $(TARGET_OBJS) $(OBJ_DIR)/src/example/example-%.opp
 	@echo "deps: $^"
 	mkdir -p $(BIN_DIR)
 
-	python src/link/generate-ldscript.py -p $(TARGET_MCU) -o $(OVERRIDE_FLASH) > src/link/stm32-mem.ld
+	python src/link/generate-ldscript.py -p $(TARGET_MCU) $(FLASH_OVERRIDE) > src/link/stm32-mem.ld
 	arm-none-eabi-g++ -o $(BIN_DIR)/$@.elf $^ -T src/link/stm32-mem.ld -T $(LD_SRC) $(LD_FLAGS)
 	arm-none-eabi-size $(BIN_DIR)/$@.elf
 	cp $(BIN_DIR)/$@.elf $(BIN_DIR)/debug.elf

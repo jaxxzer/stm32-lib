@@ -2,7 +2,7 @@
 
 Gpio gpio_Led { GPIOB, 1 };
 
-static const int delay_ms = 100;
+static const int delay_ms = 50;
 
 int main(void)
 {

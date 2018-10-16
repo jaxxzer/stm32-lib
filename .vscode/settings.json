@@ -1,3 +1,6 @@
 {
-    "cortex-debug.openocdPath": ""
+    "cortex-debug.openocdPath": "",
+    "files.associations": {
+        "cstdio": "cpp"
+    }
 }

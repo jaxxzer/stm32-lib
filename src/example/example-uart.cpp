@@ -34,10 +34,10 @@ Gpio gpioUsart3Rx         { GPIO_USART3_RX, PIN_USART3_RX };
 void initUsart1(void)
 {
 #ifdef STM32F0
-	gpioUsart1Rx.init(GPIO_Mode_AF, GPIO_PuPd_UP);
-    gpioUsart1Tx.init(GPIO_Mode_AF, GPIO_PuPd_UP);
-    gpioUsart1Rx.configAF(0);
-    gpioUsart1Tx.configAF(0);
+	gpioUsart1Rx.init(GPIO_Mode_AF);
+    gpioUsart1Tx.init(GPIO_Mode_AF);
+    gpioUsart1Rx.configAF(1);
+    gpioUsart1Tx.configAF(1);
     nvic_config(USART1_IRQn, 0, ENABLE);
 #elif STM32F1
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
@@ -65,11 +65,12 @@ void initUsart3(void)
 
     NVIC_PriorityGroupConfig(NVIC_PriorityGroup_0);
     nvic_config(USART3_IRQn, 0, 0, ENABLE);
-#endif
+    
     uart3.init(115200);
     uart3.ITConfig(USART_IT_RXNE, ENABLE);
     uart3.setEnabled(ENABLE);
     uart3.cls();
+#endif
 }
 
 void initGpioLed(void)
@@ -86,14 +87,13 @@ int main()
     configureClocks(1000);
 
     initGpioLed();
-    initTimer1();
     initUsart1();
 #ifdef STM32F1
     initUsart3();
 #endif
 
     while (1) {
-        uart1.write("\n\rInitializing Wraith32");
+        uart1.write("Initializing Wraith32");
 #ifdef STM32F1
         uart3.write("\n\rInitializing Wraith32");
 #endif

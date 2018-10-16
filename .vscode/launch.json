@@ -12,7 +12,7 @@
             "type": "cortex-debug",
             "servertype": "openocd",
             "configFiles": [
-                "openocd.cfg"
+                "openocd/openocd.cfg"
             ],
             "svdFile": "${workspaceRoot}/svd/stm32f0/STM32F0x0.svd",
             "device": "STM32F030"
