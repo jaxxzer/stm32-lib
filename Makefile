@@ -1,10 +1,14 @@
 TARGET_MCU ?= STM32F103RC
 
 FLASH_OVERRIDE ?=
+ifneq (,$(FLASH_OVERRIDE))
+FLASH_HEX = $(shell python -c "print(hex($(FLASH_OVERRIDE) * 1024))")
+endif
 
 ifneq (,$(findstring STM32F0, $(TARGET_MCU)))
 TARGET_LINE = stm32f0
 OPENOCD_TARGET = target/stm32f0x.cfg
+OPENOCD_FLASH_DRIVER = stm32f1x
 ARCH_FLAGS += -DSTM32F0
 SYSTEM_FILE = system_stm32f0xx.c
 ARCH_FLAGS += -DSTM32F030
@@ -12,6 +16,7 @@ ARCH_FLAGS += -mcpu=cortex-m0 -mthumb
 else
 TARGET_LINE = stm32f1
 OPENOCD_TARGET = target/stm32f1x.cfg
+OPENOCD_FLASH_DRIVER = stm32f1x
 ARCH_FLAGS += -DSTM32F1
 SYSTEM_FILE = system_stm32f10x.c
 ARCH_FLAGS += -mcpu=cortex-m3 -mthumb -mno-thumb-interwork -mfpu=vfp -msoft-float -mfix-cortex-m3-ldrd
@@ -85,8 +90,11 @@ $(OBJ_DIR)/%.o: %.c
 example-%: $(TARGET_OBJS) $(OBJ_DIR)/src/example/example-%.opp
 	@echo "deps: $^"
 	mkdir -p $(BIN_DIR)
-
-	python src/link/generate-ldscript.py -p $(TARGET_MCU) $(FLASH_OVERRIDE) > src/link/stm32-mem.ld
+ifneq (,$(FLASH_OVERRIDE))
+	python src/link/generate-ldscript.py -p $(TARGET_MCU) -o$(FLASH_OVERRIDE) > src/link/stm32-mem.ld
+else
+	python src/link/generate-ldscript.py -p $(TARGET_MCU) > src/link/stm32-mem.ld
+endif
 	arm-none-eabi-g++ -o $(BIN_DIR)/$@.elf $^ -T src/link/stm32-mem.ld -T $(LD_SRC) $(LD_FLAGS)
 	arm-none-eabi-size $(BIN_DIR)/$@.elf
 	cp $(BIN_DIR)/$@.elf $(BIN_DIR)/debug.elf
@@ -105,9 +113,20 @@ $(OBJ_DIR)/%.os: %.s
 	$(CC) -c $(ASFLAGS) -o $@ $<
 
 %-flash: %
+ifneq (,$(FLASH_OVERRIDE))
+	echo $(FLASH_HEX)
+	openocd \
+	-f interface/stlink-v2.cfg \
+	-f $(OPENOCD_TARGET) \
+	-c "flash bank override $(OPENOCD_FLASH_DRIVER) 0x08000000 $(FLASH_HEX) 0 0 \$$_TARGETNAME" \
+	-c "program build/bin/$<.hex verify reset exit"
+	python -c "print(hex($(FLASH_OVERRIDE) * 1024))"
+else
 	openocd -f interface/stlink-v2.cfg -f $(OPENOCD_TARGET) -c "program build/bin/$<.hex verify reset exit"
+endif
 
 .PHONY: clean
 
 clean:
 	rm -rf $(OBJ_DIR)
+

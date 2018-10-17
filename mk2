@@ -1,0 +1,10 @@
+FLASH_OVERRIDE ?=
+ifneq (,$(FLASH_OVERRIDE))
+FLASH_HEX = $(shell python -c "print(hex($(FLASH_OVERRIDE) * 1024))")
+else
+FLASH_HEX = 7
+endif
+
+all:
+	python -c "print(hex($(FLASH_OVERRIDE) * 1024))"
+	echo $(FLASH_HEX)
