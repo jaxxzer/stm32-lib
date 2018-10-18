@@ -103,8 +103,8 @@ void Adc::_enableClock(void)
 
 void Adc::enable(void)
 {
-	_calibrate();
 	ADC_Cmd(ADC1, ENABLE);
+	_calibrate();
 	_dmaConfig();
 }
 

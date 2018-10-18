@@ -1,51 +1,118 @@
-#define USE_TIM_3
+#include "stm32lib-conf.h"
 
-#include "stm32lib.h"
 
-// Timer update interrupt is used for 
+#define GPIO_USART1_TX      GPIOA
+#define PIN_USART1_TX       9
 
-Gpio gpio_Led { GPIOB, 1 };
-TimerChannelOutput tco_4 { TIM3, TIM_Channel_4 };
+#define GPIO_USART1_RX      GPIOA
+#define PIN_USART1_RX       10
+
+#ifdef STM32F0
+#define GPIO_LED_PORT       GPIOB
+#define GPIO_LED_PIN        1
+#elif STM32F1
+#define GPIO_LED_PORT       GPIOB
+#define GPIO_LED_PIN        13
+#endif
+
+Gpio gpioLed { GPIO_LED_PORT, GPIO_LED_PIN };
+
+Gpio gpioUsart1Tx         { GPIO_USART1_TX, PIN_USART1_TX };
+Gpio gpioUsart1Rx         { GPIO_USART1_RX, PIN_USART1_RX };
+
+#ifdef STM32F1
+#define GPIO_USART3_TX      GPIOB
+#define PIN_USART3_TX       10
+
+#define GPIO_USART3_RX      GPIOB
+#define PIN_USART3_RX       11
+
+Gpio gpioUsart3Tx         { GPIO_USART3_TX, PIN_USART3_TX };
+Gpio gpioUsart3Rx         { GPIO_USART3_RX, PIN_USART3_RX };
+#endif
+
+void initUsart1(void)
+{
+#ifdef STM32F0
+	gpioUsart1Rx.init(GPIO_Mode_AF);
+    gpioUsart1Tx.init(GPIO_Mode_AF);
+    gpioUsart1Rx.configAF(1);
+    gpioUsart1Tx.configAF(1);
+    nvic_config(USART1_IRQn, 0, ENABLE);
+#elif STM32F1
+	gpioUsart1Rx.init(GPIO_Mode_IN_FLOATING, GPIO_Speed_50MHz);
+    gpioUsart1Tx.init(GPIO_Mode_AF_PP, GPIO_Speed_50MHz);
+    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_0);
+    nvic_config(USART1_IRQn, 0, 0, ENABLE);
+#endif
+    uart1.init(115200);
+    uart1.ITConfig(USART_IT_RXNE, ENABLE);
+    uart1.setEnabled(ENABLE);
+    uart1.cls();
+}
+
+void initUsart3(void)
+{
+#ifdef STM32F1
+    // TODO move to gpio class
+    //RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
+    //mDelay(10);
+    //GPIO_PinRemapConfig(GPIO_PartialRemap_USART3, ENABLE);
+	gpioUsart3Rx.init(GPIO_Mode_IN_FLOATING, GPIO_Speed_50MHz);
+    gpioUsart3Tx.init(GPIO_Mode_AF_PP, GPIO_Speed_50MHz);
+    //GPIO_PinRemapConfig(GPIO_PartialRemap_USART3, ENABLE);
+
+    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_0);
+    nvic_config(USART3_IRQn, 0, 0, ENABLE);
+    
+    uart3.init(115200);
+    uart3.ITConfig(USART_IT_RXNE, ENABLE);
+    uart3.setEnabled(ENABLE);
+    uart3.cls();
+#endif
+}
+
+void initGpioLed(void)
+{
+#ifdef STM32F0
+    gpioLed.init(GPIO_Mode_OUT);
+#elif STM32F1
+    gpioLed.init(GPIO_Mode_Out_PP);
+#endif
+}
 
 int main()
 {
-	SystemInit();
+    configureClocks(1000);
 
-    // Set up 48 MHz Core Clock using HSI (4Mhz? - HSI_Div2) with PLL x 6
-    RCC_PLLConfig(RCC_PLLSource_HSI, RCC_PLLMul_12);
-    RCC_PLLCmd(ENABLE);
+    initGpioLed();
+    initUsart1();
+#ifdef STM32F1
+    initUsart3();
+#endif
 
-    // Wait for PLLRDY after enabling PLL.
-    while (RCC_GetFlagStatus(RCC_FLAG_PLLRDY) != SET) {  }
+    Adc adc1 { ADC1 };
+    AdcChannel* adcChan1;
+    adcChan1 = adc1.addChannel( ADC_Channel_1 );
+	adc1.init(ENABLE);
+	adc1.enable();
+	adc1.startConversion();
 
-    RCC_SYSCLKConfig(RCC_SYSCLKSource_PLLCLK);  // Select the PLL as clock source.
 
-	SystemCoreClockUpdate();
 
-	// 1millisecond system interrupt
-	SysTick_Config(SystemCoreClock/1000);
-	systick_frequency = 1000; // todo fix this in hal somehow. this is needed when we are configured for internal clock?
 
-    gpio_Led.init(GPIO_Mode_AF);
-    gpio_Led.configAF(1);
-
-    timer3.setClockEnabled(ENABLE);
-    timer3.initFreq(1e4); // 10kHz pwm frequency
-    timer3.setEnabled(ENABLE);
-
-    tco_4.init(TIM_OCMode_PWM1, 0, TIM_OutputState_Enable);
-    uint16_t duty = 0;
-    int8_t inc = 75;
-    while (1) { 
-        mDelay(1);
-        tco_4.setDuty(duty);
-        if ( (inc > 0 && inc > 65535 - duty) ||
-             (inc < 0 && duty < -inc) )
-        {
-            inc = -inc;
-        }       
-        duty += inc;
-     }
+    while (1) {
+        //adc1.waitConversion();
+        printf("adc1: %d\r\n", adcChan1->average);
+        //uart1.write("hello", 5);
+#ifdef STM32F1
+        //printf("Initializing Wraith32");
+        //uart1.write("hello", 5);
+        //uart3.write("hello", 5);
+#endif
+        mDelay(100);
+        gpioLed.toggle();
+    }
 
     return 0;
 }

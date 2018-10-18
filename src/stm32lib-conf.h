@@ -20,9 +20,9 @@ typedef struct it_callback
 #include "uart.h"
 #include "printing.h"
 #include "scheduling.h"
-//#nclude "dma.h"
+#include "dma.h"
 #include "gpio.h"
-//#include "adc.h"
+#include "adc.h"
 //#include "crc.h"
 //#include "flash.h"
 
