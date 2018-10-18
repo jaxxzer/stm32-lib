@@ -114,13 +114,11 @@ $(OBJ_DIR)/%.os: %.s
 
 %-flash: %
 ifneq (,$(FLASH_OVERRIDE))
-	echo $(FLASH_HEX)
 	openocd \
 	-f interface/stlink-v2.cfg \
 	-f $(OPENOCD_TARGET) \
 	-c "flash bank override $(OPENOCD_FLASH_DRIVER) 0x08000000 $(FLASH_HEX) 0 0 \$$_TARGETNAME" \
 	-c "program build/bin/$<.hex verify reset exit"
-	python -c "print(hex($(FLASH_OVERRIDE) * 1024))"
 else
 	openocd -f interface/stlink-v2.cfg -f $(OPENOCD_TARGET) -c "program build/bin/$<.hex verify reset exit"
 endif

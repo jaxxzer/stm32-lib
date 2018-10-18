@@ -21,10 +21,10 @@ Gpio gpioUsart1Tx         { GPIO_USART1_TX, PIN_USART1_TX };
 Gpio gpioUsart1Rx         { GPIO_USART1_RX, PIN_USART1_RX };
 
 #ifdef STM32F1
-#define GPIO_USART3_TX      GPIOC
+#define GPIO_USART3_TX      GPIOB
 #define PIN_USART3_TX       10
 
-#define GPIO_USART3_RX      GPIOC
+#define GPIO_USART3_RX      GPIOB
 #define PIN_USART3_RX       11
 
 Gpio gpioUsart3Tx         { GPIO_USART3_TX, PIN_USART3_TX };
@@ -40,8 +40,6 @@ void initUsart1(void)
     gpioUsart1Tx.configAF(1);
     nvic_config(USART1_IRQn, 0, ENABLE);
 #elif STM32F1
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
-    mDelay(10);
 	gpioUsart1Rx.init(GPIO_Mode_IN_FLOATING, GPIO_Speed_50MHz);
     gpioUsart1Tx.init(GPIO_Mode_AF_PP, GPIO_Speed_50MHz);
     NVIC_PriorityGroupConfig(NVIC_PriorityGroup_0);
@@ -57,11 +55,12 @@ void initUsart3(void)
 {
 #ifdef STM32F1
     // TODO move to gpio class
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
-    mDelay(10);
-    GPIO_PinRemapConfig(GPIO_PartialRemap_USART3, ENABLE);
+    //RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
+    //mDelay(10);
+    //GPIO_PinRemapConfig(GPIO_PartialRemap_USART3, ENABLE);
 	gpioUsart3Rx.init(GPIO_Mode_IN_FLOATING, GPIO_Speed_50MHz);
     gpioUsart3Tx.init(GPIO_Mode_AF_PP, GPIO_Speed_50MHz);
+    //GPIO_PinRemapConfig(GPIO_PartialRemap_USART3, ENABLE);
 
     NVIC_PriorityGroupConfig(NVIC_PriorityGroup_0);
     nvic_config(USART3_IRQn, 0, 0, ENABLE);
