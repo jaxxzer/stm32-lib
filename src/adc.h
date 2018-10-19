@@ -118,7 +118,7 @@ private:
 	AdcChannel* _head; // First channel in sequence
 
 	// Number of channels we are currently sequencing
-	uint8_t _numChannels;
+	uint8_t _numChannels = 0;
 
 	// Number of samples to be averaged for each channel update
 	uint16_t _numSamples = 50;
