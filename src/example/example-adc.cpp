@@ -93,7 +93,7 @@ int main()
 
     Adc adc1 { ADC1 };
     AdcChannel* adcChan1;
-    adcChan1 = adc1.addChannel( ADC_Channel_1 );
+    adcChan1 = adc1.addChannel( ADC_Channel_10 );
 	adc1.init();
 	adc1.enable();
 	adc1.startConversion();

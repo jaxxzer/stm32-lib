@@ -9,6 +9,10 @@ AdcChannel* Adc::addChannel(uint32_t channel)
 	gpiox = GPIOA;
 	pinx = 0 + (channel - ADC_Channel_0);
 	break;
+	case ADC_Channel_10...ADC_Channel_15:
+		gpiox = GPIOC;
+		pinx = 0 + (channel - ADC_Channel_10);
+		break;
 	default:
 		return nullptr;
 	}
