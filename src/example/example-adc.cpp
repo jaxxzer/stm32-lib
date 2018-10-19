@@ -94,15 +94,12 @@ int main()
     Adc adc1 { ADC1 };
     AdcChannel* adcChan1;
     adcChan1 = adc1.addChannel( ADC_Channel_1 );
-	adc1.init(ENABLE);
+	adc1.init();
 	adc1.enable();
 	adc1.startConversion();
 
-
-
-
     while (1) {
-        //adc1.waitConversion();
+        adc1.waitConversion();
         printf("adc1: %d\r\n", adcChan1->average);
         //uart1.write("hello", 5);
 #ifdef STM32F1

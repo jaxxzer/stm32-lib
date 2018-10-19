@@ -78,7 +78,7 @@ void Adc::init(FunctionalState continuousConvMode,
 		// Configuration
 		ADC_InitTypeDef _config;
 		_config.ADC_Mode = ADC_Mode_Independent;
-		_config.ADC_ScanConvMode = DISABLE;
+		_config.ADC_ScanConvMode = ENABLE; // not reset value!?
 		_config.ADC_ContinuousConvMode = continuousConvMode;
 		_config.ADC_ExternalTrigConv = extTrigConv;
 		_config.ADC_DataAlign = dataAlign;
@@ -91,6 +91,8 @@ void Adc::_enableClock(void)
 {
 #ifdef STM32F0
 	ADC_ClockModeConfig(_peripheral, ADC_ClockMode_SynClkDiv2);
+#elif STM32F1
+  RCC_ADCCLKConfig(RCC_PCLK2_Div4); 
 #endif
 	switch((uint32_t)_peripheral) {
 	case ADC1_BASE:

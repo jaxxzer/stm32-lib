@@ -71,8 +71,8 @@ public:
 			uint32_t dataAlign = ADC_DataAlign_Right,
 			uint32_t scanDirection = ADC_ScanDirection_Upward);
 #elif STM32F1
-	void init(FunctionalState continuousConvMode,
-			uint32_t extTrigConv = ADC_ExternalTrigConv_T1_CC1,
+	void init(FunctionalState continuousConvMode = ENABLE,
+			uint32_t extTrigConv = ADC_ExternalTrigConv_None, // reset value?
 			uint32_t dataAlign = ADC_DataAlign_Right);
 #endif
 
