@@ -10,9 +10,11 @@
 #ifdef STM32F0
 #define GPIO_LED_PORT       GPIOB
 #define GPIO_LED_PIN        1
+#define ADC_CHAN            ADC_Channel_0
 #elif STM32F1
 #define GPIO_LED_PORT       GPIOB
 #define GPIO_LED_PIN        13
+#define ADC_CHAN            ADC_Channel_10
 #endif
 
 Gpio gpioLed { GPIO_LED_PORT, GPIO_LED_PIN };
@@ -93,7 +95,7 @@ int main()
 
     Adc adc1 { ADC1 };
     AdcChannel* adcChan1;
-    adcChan1 = adc1.addChannel( ADC_Channel_0 );
+    adcChan1 = adc1.addChannel( ADC_CHAN );
 	adc1.init();
 	adc1.enable();
 	adc1.startConversion();

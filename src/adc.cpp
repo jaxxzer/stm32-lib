@@ -109,9 +109,15 @@ void Adc::_enableClock(void)
 
 void Adc::enable(void)
 {
+#ifdef STM32F0
 	_calibrate();
 	_dmaConfig();
 	ADC_Cmd(ADC1, ENABLE);
+#elif STM32F1
+	_dmaConfig();
+	ADC_Cmd(ADC1, ENABLE);
+	_calibrate();
+#endif
 	waitReady();
 }
 
