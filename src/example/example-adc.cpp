@@ -45,7 +45,7 @@ void initUsart1(void)
     NVIC_PriorityGroupConfig(NVIC_PriorityGroup_0);
     nvic_config(USART1_IRQn, 0, 0, ENABLE);
 #endif
-    uart1.init(2000000);
+    uart1.init(3000000);
     uart1.ITConfig(USART_IT_RXNE, ENABLE);
     uart1.setEnabled(ENABLE);
     uart1.cls();
@@ -107,7 +107,7 @@ int main()
         //uart1.write("hello", 5);
         //uart3.write("hello", 5);
 #endif
-        mDelay(100);
+        //mDelay(100);
         gpioLed.toggle();
     }
 
