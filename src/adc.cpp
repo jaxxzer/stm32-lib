@@ -112,6 +112,7 @@ void Adc::enable(void)
 	_calibrate();
 	_dmaConfig();
 	ADC_Cmd(ADC1, ENABLE);
+	waitReady();
 }
 
 void Adc::waitReady(void)

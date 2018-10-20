@@ -45,7 +45,7 @@ void initUsart1(void)
     NVIC_PriorityGroupConfig(NVIC_PriorityGroup_0);
     nvic_config(USART1_IRQn, 0, 0, ENABLE);
 #endif
-    uart1.init(115200);
+    uart1.init(2000000);
     uart1.ITConfig(USART_IT_RXNE, ENABLE);
     uart1.setEnabled(ENABLE);
     uart1.cls();

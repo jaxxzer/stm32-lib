@@ -121,7 +121,7 @@ private:
 	uint8_t _numChannels = 0;
 
 	// Number of samples to be averaged for each channel update
-	uint16_t _numSamples = 3;
+	uint16_t _numSamples = 25;
 
 	// Buffer to dump conversion results
 	volatile uint16_t* _dmaBuf;
