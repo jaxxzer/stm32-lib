@@ -21,7 +21,7 @@ AdcChannel* Adc::addChannel(uint32_t channel)
 
 	Gpio gpio(gpiox, pinx);
 #ifdef STM32F0
-	gpio.init(GPIO_Mode_AN);
+	gpio.init(GPIO_Mode_AN, GPIO_PuPd_NOPULL);
 #elif STM32F1
 	gpio.init(GPIO_Mode_AIN);
 #endif
@@ -96,7 +96,7 @@ void Adc::_enableClock(void)
 #ifdef STM32F0
 	ADC_ClockModeConfig(_peripheral, ADC_ClockMode_SynClkDiv2);
 #elif STM32F1
-  RCC_ADCCLKConfig(RCC_PCLK2_Div4); 
+	RCC_ADCCLKConfig(RCC_PCLK2_Div4); 
 #endif
 	switch((uint32_t)_peripheral) {
 	case ADC1_BASE:
@@ -109,9 +109,9 @@ void Adc::_enableClock(void)
 
 void Adc::enable(void)
 {
-	ADC_Cmd(ADC1, ENABLE);
 	_calibrate();
 	_dmaConfig();
+	ADC_Cmd(ADC1, ENABLE);
 }
 
 void Adc::waitReady(void)

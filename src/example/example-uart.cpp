@@ -34,8 +34,8 @@ Gpio gpioUsart3Rx         { GPIO_USART3_RX, PIN_USART3_RX };
 void initUsart1(void)
 {
 #ifdef STM32F0
-	gpioUsart1Rx.init(GPIO_Mode_AF);
-    gpioUsart1Tx.init(GPIO_Mode_AF);
+	gpioUsart1Rx.init(GPIO_Mode_AF, GPIO_PuPd_UP);
+    gpioUsart1Tx.init(GPIO_Mode_AF, GPIO_PuPd_UP);
     gpioUsart1Rx.configAF(1);
     gpioUsart1Tx.configAF(1);
     nvic_config(USART1_IRQn, 0, ENABLE);

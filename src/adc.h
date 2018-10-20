@@ -64,7 +64,7 @@ public:
 	// More commonly used arguments are listed first
 	// Default arguments are the same as performed by ADC_StructInit()
 #ifdef STM32F0
-	void init(FunctionalState continuousConvMode,
+	void init(FunctionalState continuousConvMode = ENABLE,
 			uint32_t resolution = ADC_Resolution_12b,
 			uint32_t extTrigConvEdge = ADC_ExternalTrigConvEdge_None,
 			uint32_t extTrigConv = ADC_ExternalTrigConv_T1_TRGO,
