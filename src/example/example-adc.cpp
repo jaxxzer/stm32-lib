@@ -67,7 +67,7 @@ void initUsart3(void)
     NVIC_PriorityGroupConfig(NVIC_PriorityGroup_0);
     nvic_config(USART3_IRQn, 0, 0, ENABLE);
     
-    uart3.init(115200);
+    uart3.init(980000);
     uart3.ITConfig(USART_IT_RXNE, ENABLE);
     uart3.setEnabled(ENABLE);
     uart3.cls();

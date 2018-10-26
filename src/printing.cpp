@@ -19,9 +19,7 @@ extern "C" {
 #endif
 			break;
 		case FD_ITM_CH0...FD_ITM_CH31: // For example
-	#ifdef STM32F10X_MD
-		ITM_SendCharPort(*ch, file - FD_ITM_CH0);
-	#endif
+		//ITM_SendCharPort(*ch, file - FD_ITM_CH0);
 		break;
 		case FD_NULL:
 		default:

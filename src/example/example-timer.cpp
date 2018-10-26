@@ -3,7 +3,7 @@
 #ifdef STM32F0
     Gpio gpio_Led { GPIOB, 1 };
 #elif STM32F1
-    Gpio gpio_Led { GPIOB, 13 };
+    Gpio gpio_Led { GPIOC, 13 };
 #endif
 
 // Callback to run on UPDATE interrupt event

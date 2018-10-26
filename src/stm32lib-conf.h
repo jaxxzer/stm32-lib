@@ -4,6 +4,8 @@
 #include "stm32f0xx_conf.h"
 #elif STM32F1
 #include "stm32f10x_conf.h"
+#elif STM32F3
+#include "stm32f30x_conf.h"
 #endif
 
 typedef struct it_callback

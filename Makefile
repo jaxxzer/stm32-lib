@@ -1,4 +1,4 @@
-TARGET_MCU ?= STM32F103RC
+TARGET_MCU ?= STM32F303CE
 
 FLASH_OVERRIDE ?=
 ifneq (,$(FLASH_OVERRIDE))
@@ -13,13 +13,22 @@ ARCH_FLAGS += -DSTM32F0
 SYSTEM_FILE = system_stm32f0xx.c
 ARCH_FLAGS += -DSTM32F030
 ARCH_FLAGS += -mcpu=cortex-m0 -mthumb
-else
+endif
+ifneq (,$(findstring STM32F1, $(TARGET_MCU)))
 TARGET_LINE = stm32f1
 OPENOCD_TARGET = target/stm32f1x.cfg
 OPENOCD_FLASH_DRIVER = stm32f1x
 ARCH_FLAGS += -DSTM32F1
 SYSTEM_FILE = system_stm32f10x.c
 ARCH_FLAGS += -mcpu=cortex-m3 -mthumb -mno-thumb-interwork -mfpu=vfp -msoft-float -mfix-cortex-m3-ldrd
+endif
+ifneq (,$(findstring STM32F3, $(TARGET_MCU)))
+TARGET_LINE = stm32f3
+OPENOCD_TARGET = target/stm32f3x.cfg
+OPENOCD_FLASH_DRIVER = stm32f3x
+ARCH_FLAGS += -DSTM32F3
+SYSTEM_FILE = system_stm32f30x.c
+ARCH_FLAGS += -mcpu=cortex-m4 -mthumb -mno-thumb-interwork -mfpu=vfp -msoft-float
 endif
 
 ifneq (,$(findstring F103, $(TARGET_MCU)))
@@ -33,6 +42,14 @@ ifneq (,$(filter %C %D %E, $(TARGET_MCU)))
 ARCH_FLAGS += -DSTM32F10X_HD
 endif
 endif
+
+ifneq (,$(findstring stm32f3, $(TARGET_LINE)))
+STM32F303xE_PARTS = STM32F303CE STM32F303CD STM32F303RE STM32F303RD STM32F303VE STM32F303VD STM32F303ZE STM32F303ZD STM32F302CE STM32F302CD STM32F302RE STM32F302RD STM32F302VE STM32F302ZE STM32F302ZD STM32F398VE
+ifneq (,$(filter $(STM32F303xE_PARTS), $(TARGET_MCU)))
+ARCH_FLAGS += -DSTM32F303xE
+endif
+endif
+
 STM32LIB_DIR = .
 CMSIS_DIR = $(STM32LIB_DIR)/driver/$(TARGET_LINE)/cmsis
 SYSTEM_DIR = $(CMSIS_DIR)/device
@@ -86,7 +103,18 @@ $(OBJ_DIR)/%.o: %.c
 	mkdir -p $(dir $@)
 	$(CC) -c -o $@ $< $(CFLAGS)
 
+$(OBJ_DIR)/%.opp: %.cpp
+	@echo "dir $(dir $@)"
+	mkdir -p $(dir $@)
+	$(CXX) -c $(CXXFLAGS) -o $@ $<
 
+debug: $(TARGET_OBJS)
+	@echo $(TARGET_OBJS)
+	@echo $(OBJ_DIR)
+	@echo $(ARCH_FLAGS)
+
+#arm-none-eabi-g++ -c  -std=gnu++14 -DSTM32F1 -mcpu=cortex-m3 -mthumb -mno-thumb-interwork -mfpu=vfp -msoft-float -mfix-cortex-m3-ldrd -DSTM32F10X_MD -O0 -ffunction-sections -fdata-sections -fno-rtti -fno-exceptions -g -fstack-usage -Wall -fno-threadsafe-statics -specs=nano.specs-I ./driver/stm32f1/cmsis/device -I ./driver/stm32f1/cmsis/core -I ./driver/stm32f1/spl/inc -I ./src -o build/obj/./src/timer.opp src/timer.cpp
+#arm-none-eabi-g++ -c  -std=gnu++14 -DSTM32F303xE -O0 -ffunction-sections -fdata-sections -fno-rtti -fno-exceptions -g -fstack-usage -Wall -fno-threadsafe-statics -specs=nano.specs -I ./driver/stm32f3/cmsis/device -I ./driver/stm32f3/cmsis/core -I ./driver/stm32f3/spl/inc -I ./src -o build/obj/./src/timer.opp src/timer.cpp
 example-%: $(TARGET_OBJS) $(OBJ_DIR)/src/example/example-%.opp
 	@echo "deps: $^"
 	mkdir -p $(BIN_DIR)
@@ -102,10 +130,7 @@ endif
 	cp $(BIN_DIR)/$@.hex $(BIN_DIR)/debug.hex
 	arm-none-eabi-objcopy -O binary $(BIN_DIR)/$@.elf $(BIN_DIR)/$@.bin
 	
-$(OBJ_DIR)/%.opp: %.cpp
-	@echo "dir $(dir $@)"
-	mkdir -p $(dir $@)
-	$(CXX) -c $(CXXFLAGS) -o $@ $<
+
 
 $(OBJ_DIR)/%.os: %.s
 	@echo "dir $(dir $@)"
