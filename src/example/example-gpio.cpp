@@ -1,6 +1,6 @@
 #include "stm32lib-conf.h"
 
-Gpio gpio_Led { GPIOB, 1 };
+Gpio gpio_Led { GPIOC, 13 };
 
 static const int delay_ms = 50;
 
@@ -12,7 +12,7 @@ int main(void)
 #ifdef STM32F0
     RCC_PLLConfig(RCC_PLLSource_HSI, RCC_PLLMul_12);
 #elif STM32F1
-    RCC_PLLConfig(RCC_PLLSource_HSI_Div2, RCC_PLLMul_12);
+    RCC_PLLConfig(RCC_PLLSource_HSE_Div1, RCC_PLLMul_16);
 #endif
 
     RCC_PLLCmd(ENABLE);
