@@ -2,6 +2,8 @@
     "cortex-debug.openocdPath": "",
     "files.associations": {
         "cstdio": "cpp",
-        "stm32072b_eval.h": "c"
+        "stm32072b_eval.h": "c",
+        "stm32f30x_hrtim.h": "c",
+        "stm32f30x.h": "c"
     }
 }

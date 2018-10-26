@@ -36,7 +36,6 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f30x.h"
-#error fuck
 /** @addtogroup STM32F30x_StdPeriph_Driver
   * @{
   */

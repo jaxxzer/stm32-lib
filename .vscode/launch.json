@@ -4,6 +4,7 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
+
         {
             "name": "F030",
             "cwd": "${workspaceRoot}",
@@ -29,6 +30,17 @@
             ],
             "svdFile": "${workspaceRoot}/svd/stm32f1/STM32F103.svd",
             "device": "STM32F103"
+        },
+        {
+            "name": "F303",
+            "cwd": "${workspaceRoot}",
+            "executable": "build/bin/debug.elf",
+            "request": "launch",
+            "type": "cortex-debug",
+            "servertype": "openocd",
+            "configFiles": [
+                "openocd/f3.cfg"
+            ]
         }
     ]
 }

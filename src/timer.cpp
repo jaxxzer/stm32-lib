@@ -249,9 +249,11 @@ void Timer::setClockEnabled(FunctionalState enabled)
     case TIM6_BASE:
         RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM6, enabled);
         break;
+#ifdef TIM14
     case TIM14_BASE:
         RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM14, enabled);
         break;
+#endif
 //    case TIM15_BASE:
 //        RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM15, ENABLE);
 //        break;
@@ -299,11 +301,14 @@ bool Timer::setFrequency(uint16_t f) // Hz
 	RCC_ClocksTypeDef RCC_ClocksStruct;
 	RCC_GetClocksFreq(&RCC_ClocksStruct);
 
-#ifdef STM32F0
+#if defined(STM32F0)
 	uint32_t clk_f = RCC_ClocksStruct.PCLK_Frequency / _config.TIM_Prescaler;
-#elif STM32F1
+#elif defined(STM32F1)
+	uint32_t clk_f = RCC_ClocksStruct.PCLK1_Frequency / _config.TIM_Prescaler;
+#elif defined(STM32F3)
 	uint32_t clk_f = RCC_ClocksStruct.PCLK1_Frequency / _config.TIM_Prescaler;
 #endif
+
 	if (f > clk_f) {
 		return false;
 	} else {
@@ -326,9 +331,11 @@ bool Timer::setFrequencyForce(uint16_t f)
 	RCC_GetClocksFreq(&RCC_ClocksStruct);
 	// ex 50 hz:
 	// 0x
-	#ifdef STM32F0
+#if defined(STM32F0)
 	uint32_t pclk_f = RCC_ClocksStruct.PCLK_Frequency / (_config.TIM_Prescaler + 1);
-#elif STM32F1
+#elif defined(STM32F1)
+	uint32_t pclk_f = RCC_ClocksStruct.PCLK2_Frequency / (_config.TIM_Prescaler + 1);
+#elif defined(STM32F3)
 	uint32_t pclk_f = RCC_ClocksStruct.PCLK2_Frequency / (_config.TIM_Prescaler + 1);
 #endif
 

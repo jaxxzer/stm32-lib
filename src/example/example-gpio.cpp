@@ -1,6 +1,8 @@
 #include "stm32lib-conf.h"
 
-Gpio gpio_Led { GPIOC, 13 };
+// Blue Pill
+// Gpio gpio_Led { GPIOC, 13 }; // Blue Pill
+Gpio gpio_Led { GPIOC, 9 }; // Ping
 
 static const int delay_ms = 50;
 

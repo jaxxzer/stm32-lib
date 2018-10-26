@@ -5,9 +5,15 @@ AdcChannel* Adc::addChannel(uint32_t channel)
 	uint8_t pinx;
 	switch (channel)
 	{
-	case ADC_Channel_0...ADC_Channel_7:
+#ifdef ADC_Channel_0
+	case ADC_Channel_0:
 	gpiox = GPIOA;
-	pinx = 0 + (channel - ADC_Channel_0);
+	pinx = 0;
+	break;
+#endif
+	case ADC_Channel_1...ADC_Channel_7:
+	gpiox = GPIOA;
+	pinx = 0 + (channel - ADC_Channel_1);
 	break;
 	case ADC_Channel_10...ADC_Channel_15:
 		gpiox = GPIOC;
@@ -100,7 +106,11 @@ void Adc::_enableClock(void)
 #endif
 	switch((uint32_t)_peripheral) {
 	case ADC1_BASE:
+	#if defined(RCC_APB2Periph_ADC1)
 		RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1, ENABLE);
+	#elif defined(RCC_AHBPeriph_ADC12)
+		RCC_AHBPeriphClockCmd(RCC_AHBPeriph_ADC12, ENABLE);
+	#endif
 		break;
 	default:
 		break;
