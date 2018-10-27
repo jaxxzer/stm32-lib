@@ -28,7 +28,7 @@ OPENOCD_TARGET = target/stm32f3x.cfg
 OPENOCD_FLASH_DRIVER = stm32f3x
 ARCH_FLAGS += -DSTM32F3
 SYSTEM_FILE = system_stm32f30x.c
-ARCH_FLAGS += -mcpu=cortex-m4 -mthumb -mno-thumb-interwork -mfpu=vfp -msoft-float
+ARCH_FLAGS += -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16
 endif
 
 ifneq (,$(findstring F103, $(TARGET_MCU)))
@@ -83,7 +83,7 @@ C_SRC += $(SYSTEM_SRC)
 S_SRC += $(STARTUP_SRC)
 
 LD_SRC += $(LINK_SCRIPT)
-LD_FLAGS = -mthumb -specs=nosys.specs -static -Wl,-cref,-u,Reset_Handler -Wl,-Map=$(BUILD_DIR)/build.map -Wl,--gc-sections -Wl,--defsym=malloc_getpagesize_P=0x1000 -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group -specs=nano.specs 
+LD_FLAGS = -mthumb -specs=nosys.specs -static -Wl,-cref,-u,Reset_Handler -Wl,-Map=$(BUILD_DIR)/build.map -Wl,--gc-sections -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group -specs=nano.specs 
 LD_FLAGS += $(ARCH_FLAGS)
 
 CC = arm-none-eabi-gcc
