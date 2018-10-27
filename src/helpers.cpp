@@ -1,6 +1,6 @@
 #include "helpers.h"
 
-#ifdef STM32F0
+#if defined(STM32F0)
 void nvic_config(const uint8_t irq, const uint8_t priority, const FunctionalState enabled)
 {
 	NVIC_InitTypeDef NVIC_InitStructure;
@@ -9,7 +9,7 @@ void nvic_config(const uint8_t irq, const uint8_t priority, const FunctionalStat
 	NVIC_InitStructure.NVIC_IRQChannelCmd = enabled;
 	NVIC_Init(&NVIC_InitStructure);
 }
-#elif STM32F1
+#elif defined(STM32F1) || defined(STM32F3)
 void nvic_config(const uint8_t irq, const uint8_t priority, const uint8_t subpriority, const FunctionalState enabled)
 {
 	NVIC_InitTypeDef NVIC_InitStructure;
@@ -19,6 +19,8 @@ void nvic_config(const uint8_t irq, const uint8_t priority, const uint8_t subpri
 	NVIC_InitStructure.NVIC_IRQChannelCmd = enabled;
 	NVIC_Init(&NVIC_InitStructure);
 }
+#else
+#error
 #endif
 
 // map float from input range to output range

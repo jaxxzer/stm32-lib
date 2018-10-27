@@ -8,10 +8,12 @@ void configureClocks(uint32_t frequency)
 	SystemInit();
 
     // Set up 48 MHz Core Clock using HSI (4Mhz? - HSI_Div2) with PLL x 6
-#ifdef STM32F0
+#if defined(STM32F0) || defined(STM32F3)
     RCC_PLLConfig(RCC_PLLSource_HSI, RCC_PLLMul_12);
-#elif STM32F1
+#elif defined(STM32F1)
     RCC_PLLConfig(RCC_PLLSource_HSE_Div1, RCC_PLLMul_12);
+#else
+#error
 #endif
 
     RCC_PLLCmd(ENABLE);

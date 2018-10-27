@@ -11,17 +11,19 @@ public:
 
 
 
-#ifdef STM32F0
+#if defined(STM32F0) || defined(STM32F3)
 	// Initialization and configuration
 	void configAF(uint8_t af);
 	void init(GPIOMode_TypeDef mode
 			, GPIOPuPd_TypeDef pupd = GPIO_PuPd_NOPULL
 			, GPIOOType_TypeDef otype = GPIO_OType_PP
 			, GPIOSpeed_TypeDef speed = GPIO_Speed_Level_2);
-#elif STM32F1
+#elif defined(STM32F1)
 	void configRemap(uint32_t remap, FunctionalState newstate);
 	void init(GPIOMode_TypeDef mode
 			, GPIOSpeed_TypeDef speed = GPIO_Speed_50MHz);
+#else
+#error
 #endif
 	void init(void);
 

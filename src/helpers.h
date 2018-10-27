@@ -6,10 +6,12 @@
 #define UINT16MAX ( (1U << 16) - 1 )
 // This file has some random helper and system functions
 // printf goes to __io_putchar here
-#ifdef STM32F0
+#if defined(STM32F0) 
 void nvic_config(const uint8_t irq, const uint8_t priority, const FunctionalState enabled);
-#elif STM32F1
+#elif defined(STM32F1) || defined(STM32F3)
 void nvic_config(const uint8_t irq, const uint8_t priority, const uint8_t subpriority, const FunctionalState enabled);
+#else
+#error
 #endif
 
 // map float from input range to output range

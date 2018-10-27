@@ -6,7 +6,9 @@ extern "C" {
 	int16_t __io_putchar(uint8_t* ch, uint32_t file) {
 		switch(file) {
 		case FD_STDOUT: // TODO find an easy way to map this (function pointer?) without modifying library
+		#ifdef USE_USART1
 			uart1.write((char*)ch);
+			#endif
 			break;
 		case FD_STDERR:
 		case FD_USART1: // For example
@@ -31,7 +33,10 @@ extern "C" {
 	}
 	int _write(int file, char *data, int len)	{
 		while (len-- && *data) {
+			#ifdef USE_USART3
+
 			uart3.write((char*)data++);
+			#endif
 		}
 	}
 	int __io_getchar(void) {

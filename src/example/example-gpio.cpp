@@ -1,8 +1,8 @@
 #include "stm32lib-conf.h"
 
 // Blue Pill
-// Gpio gpio_Led { GPIOC, 13 }; // Blue Pill
-Gpio gpio_Led { GPIOC, 9 }; // Ping
+Gpio gpio_Led { GPIOC, 13 }; // Blue Pill
+//Gpio gpio_Led { GPIOC, 9 }; // Ping
 
 static const int delay_ms = 50;
 
@@ -11,10 +11,10 @@ int main(void)
 	SystemInit();
 
     // Set up 48 MHz Core Clock using HSI (4Mhz? - HSI_Div2) with PLL x 6
-#ifdef STM32F0
+#ifdef defined(STM32F0) || defined(STM32F3)
     RCC_PLLConfig(RCC_PLLSource_HSI, RCC_PLLMul_12);
-#elif STM32F1
-    RCC_PLLConfig(RCC_PLLSource_HSE_Div1, RCC_PLLMul_16);
+#elif defined(STM32F1) 
+    RCC_PLLConfig(RCC_PLLSource_HSE_Div1, RCC_PLLMul_12);
 #endif
 
     RCC_PLLCmd(ENABLE);
@@ -31,10 +31,12 @@ int main(void)
 	SysTick_Config(SystemCoreClock/1000);
 	systick_frequency = 1000; // todo fix this in hal somehow. this is needed when we are configured for internal clock?
 
-#ifdef STM32F0
+#if defined(STM32F0) || defined(STM32F3)
     gpio_Led.init(GPIO_Mode_OUT);
-#elif STM32F1
+#elif defined(STM32F1)
     gpio_Led.init(GPIO_Mode_Out_PP);
+#else
+#error
 #endif
 
     while (1) {

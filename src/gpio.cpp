@@ -1,6 +1,6 @@
 #include "gpio.h"
 
-#ifdef STM32F0
+#if defined(STM32F0) || defined(STM32F3)
 void Gpio::init(GPIOMode_TypeDef mode // GPIO_Mode_IN, GPIO_Mode_OUT, GPIO_Mode_AF, GPIO_Mode_AN
 			, GPIOPuPd_TypeDef pupd
 			, GPIOOType_TypeDef otype
@@ -15,7 +15,7 @@ void Gpio::init(GPIOMode_TypeDef mode // GPIO_Mode_IN, GPIO_Mode_OUT, GPIO_Mode_
 	GPIO_Init(_port, &_config);
 	reset();
 }
-#elif STM32F1
+#elif defined(STM32F1)
 void Gpio::init(GPIOMode_TypeDef mode // GPIO_Mode_IN, GPIO_Mode_OUT, GPIO_Mode_AF, GPIO_Mode_AN
 			, GPIOSpeed_TypeDef speed)
 {
@@ -26,6 +26,8 @@ void Gpio::init(GPIOMode_TypeDef mode // GPIO_Mode_IN, GPIO_Mode_OUT, GPIO_Mode_
 	GPIO_Init(_port, &_config);
 	reset();
 }
+#else
+#error
 #endif
 
 Gpio::Gpio(GPIO_TypeDef* port, uint16_t pin)
@@ -40,7 +42,7 @@ Gpio::Gpio(GPIO_TypeDef* port, uint16_t pin)
 void Gpio::_clockEnable(void)
 {
 	switch ((uint32_t)_port) {
-#if defined STM32F0
+#if defined(STM32F0) || defined(STM32F3)
 	case GPIOA_BASE:
 		RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA, ENABLE);
 	    break;
@@ -53,7 +55,7 @@ void Gpio::_clockEnable(void)
 	case GPIOD_BASE:
 		RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOD, ENABLE);
 		break;
-#elif STM32F1
+#elif defined(STM32F1)
 	case GPIOA_BASE:
 		RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
 	    break;
@@ -66,6 +68,8 @@ void Gpio::_clockEnable(void)
 	case GPIOD_BASE:
 		RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOD, ENABLE);
 		break;
+#else
+#error
 #endif
 
 	default:

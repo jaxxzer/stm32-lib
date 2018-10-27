@@ -1,11 +1,13 @@
 #pragma once
 
-#ifdef STM32F0
+#if defined(STM32F0)
 #include "stm32f0xx_conf.h"
-#elif STM32F1
+#elif defined(STM32F1)
 #include "stm32f10x_conf.h"
-#elif STM32F3
+#elif defined(STM32F3)
 #include "stm32f30x_conf.h"
+#else
+#error
 #endif
 
 typedef struct it_callback
@@ -13,14 +15,14 @@ typedef struct it_callback
 	void (*callback)(void);
 	it_callback* next = nullptr;
 } it_callback_t;
-#define USE_USART_1
-#define USE_USART_3
-#define USE_TIM_1
-#define USE_TIM_3
+//#define USE_USART_1
+//#define USE_USART_3
+//#define USE_TIM_1
+//#define USE_TIM_3
 #include "helpers.h"
 #include "timer.h"
 #include "uart.h"
-#include "printing.h"
+//#include "printing.h"
 #include "scheduling.h"
 #include "dma.h"
 #include "gpio.h"
