@@ -28,7 +28,7 @@ OPENOCD_TARGET = target/stm32f3x.cfg
 OPENOCD_FLASH_DRIVER = stm32f3x
 ARCH_FLAGS += -DSTM32F3
 SYSTEM_FILE = system_stm32f30x.c
-ARCH_FLAGS += -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16
+ARCH_FLAGS += -std=c99 -ggdb3 -mthumb -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -Wextra -Wshadow -Wimplicit-function-declaration -Wredundant-decls -Wmissing-prototypes -Wstrict-prototypes -fno-common -ffunction-sections -fdata-sections  -MD -Wall -Wundef
 endif
 
 ifneq (,$(findstring F103, $(TARGET_MCU)))
@@ -82,9 +82,10 @@ C_SRC += $(SYSTEM_SRC)
 
 S_SRC += $(STARTUP_SRC)
 
+
 LD_SRC += $(LINK_SCRIPT)
-LD_FLAGS = -mthumb -specs=nosys.specs -static -Wl,-cref,-u,Reset_Handler -Wl,-Map=$(BUILD_DIR)/build.map -Wl,--gc-sections -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group -specs=nano.specs 
-LD_FLAGS += $(ARCH_FLAGS)
+LD_FLAGS =  -specs=nano.specs -specs=nosys.specs --static -mthumb -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -ggdb3 -Wl,--cref -Wl,--gc-sections -Wl,--start-group -lc -lgcc -lnosys -Wl,--end-group 
+#LD_FLAGS += $(ARCH_FLAGS)
 
 CC = arm-none-eabi-gcc
 CXX = arm-none-eabi-g++
