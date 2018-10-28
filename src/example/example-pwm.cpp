@@ -1,24 +1,31 @@
 #include "stm32lib-conf.h"
 
-#ifdef STM32F0
+#if defined(STM32F0)
     Timer& timer = timer3;
     Gpio gpio_Led { GPIOB, 1 };
     TimerChannelOutput tco { TIM3, TIM_Channel_4 };
-#elif STM32F1
+#elif defined(STM32F1)
     Timer& timer = timer1;
     Gpio gpio_Led { GPIOB, 13 };
     TimerChannelOutput tco { TIM1, TIM_Channel_1 };
+#elif defined(STM32F3)
+
+#else
+#error
 #endif
 
 int main()
 {
     configureClocks(1000);
 
-#ifdef STM32F0
+#if defined(STM32F0)
     gpio_Led.init(GPIO_Mode_AF);
     gpio_Led.configAF(1);
-#elif STM32F1
+#elif defined(STM32F1)
     gpio_Led.init(GPIO_Mode_AF_PP);
+#elif defined(STM32F3)
+#else
+#error
 #endif
 
     timer.initFreq(1e4); // 10kHz pwm frequency

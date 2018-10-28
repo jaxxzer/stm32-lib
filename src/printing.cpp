@@ -33,10 +33,7 @@ extern "C" {
 	}
 	int _write(int file, char *data, int len)	{
 		while (len-- && *data) {
-			#ifdef USE_USART3
-
-			uart3.write((char*)data++);
-			#endif
+			uart1.write((char*)data++);
 		}
 	}
 	int __io_getchar(void) {

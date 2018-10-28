@@ -7,10 +7,10 @@
 #define GPIO_USART1_RX      GPIOA
 #define PIN_USART1_RX       10
 
-#ifdef STM32F0
+#if defined(STM32F0) || defined(STM32F3)
 #define GPIO_LED_PORT       GPIOB
 #define GPIO_LED_PIN        1
-#elif STM32F1
+#elif defined(STM32F1)
 #define GPIO_LED_PORT       GPIOB
 #define GPIO_LED_PIN        13
 #endif
@@ -20,7 +20,7 @@ Gpio gpioLed { GPIO_LED_PORT, GPIO_LED_PIN };
 Gpio gpioUsart1Tx         { GPIO_USART1_TX, PIN_USART1_TX };
 Gpio gpioUsart1Rx         { GPIO_USART1_RX, PIN_USART1_RX };
 
-#ifdef STM32F1
+#if defined(STM32F1) || defined(STM32F3)
 #define GPIO_USART3_TX      GPIOB
 #define PIN_USART3_TX       10
 
@@ -33,17 +33,19 @@ Gpio gpioUsart3Rx         { GPIO_USART3_RX, PIN_USART3_RX };
 
 void initUsart1(void)
 {
-#ifdef STM32F0
+#if defined(STM32F0) || defined(STM32F3)
 	gpioUsart1Rx.init(GPIO_Mode_AF, GPIO_PuPd_UP);
     gpioUsart1Tx.init(GPIO_Mode_AF, GPIO_PuPd_UP);
-    gpioUsart1Rx.configAF(1);
-    gpioUsart1Tx.configAF(1);
-    nvic_config(USART1_IRQn, 0, ENABLE);
-#elif STM32F1
+    gpioUsart1Rx.configAF(7);
+    gpioUsart1Tx.configAF(7);
+    nvic_config(USART1_IRQn, 0, 0, ENABLE);
+#elif defined(STM32F1)
 	gpioUsart1Rx.init(GPIO_Mode_IN_FLOATING, GPIO_Speed_50MHz);
     gpioUsart1Tx.init(GPIO_Mode_AF_PP, GPIO_Speed_50MHz);
     NVIC_PriorityGroupConfig(NVIC_PriorityGroup_0);
     nvic_config(USART1_IRQn, 0, 0, ENABLE);
+#else
+#error
 #endif
     uart1.init(115200);
     uart1.ITConfig(USART_IT_RXNE, ENABLE);
@@ -53,7 +55,7 @@ void initUsart1(void)
 
 void initUsart3(void)
 {
-#ifdef STM32F1
+#if defined(STM32F1)
     // TODO move to gpio class
     //RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
     //mDelay(10);
@@ -74,7 +76,7 @@ void initUsart3(void)
 
 void initGpioLed(void)
 {
-#ifdef STM32F0
+#if defined(STM32F0) || defined(STM32F3)
     gpioLed.init(GPIO_Mode_OUT);
 #elif STM32F1
     gpioLed.init(GPIO_Mode_Out_PP);
@@ -87,14 +89,14 @@ int main()
 
     initGpioLed();
     initUsart1();
-#ifdef STM32F1
+#if defined(STM32F1)
     initUsart3();
 #endif
 
     while (1) {
         printf("Initializing Wraith32\n");
         uart1.write("hello", 5);
-#ifdef STM32F1
+#if defined(STM32F1)
         printf("Initializing Wraith32");
         uart1.write("hello", 5);
         uart3.write("hello", 5);

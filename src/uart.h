@@ -87,5 +87,8 @@ extern Uart uart2;
 extern Uart uart3;
 #endif
 
+#ifdef USART_STDOUT
+extern Uart* uartStdout;
+#endif
 //Uart uart2 { USART2 };
 //Uart uart3 { USART3 };

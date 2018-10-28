@@ -37,7 +37,7 @@ productRamsizes = {
         "B": 40,
         "C": 40,
         "D": 40,
-        "E": 40,
+        "E": 64,
     }
 }
 # Stm32f051cX

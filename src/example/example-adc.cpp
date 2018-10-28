@@ -89,7 +89,7 @@ int main()
 
     initGpioLed();
     initUsart1();
-#ifdef STM32F1
+#if defined(USE_USART_3)
     initUsart3();
 #endif
 

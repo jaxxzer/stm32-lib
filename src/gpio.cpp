@@ -90,15 +90,17 @@ void Gpio::_clockEnable(void)
 
 // alternate function config
 // See datasheet section 4 'Pinouts and pin descriptions'
-#ifdef STM32F0
+#if defined(STM32F0) || defined(STM32F3)
 void Gpio::configAF(uint8_t af) {
     GPIO_PinAFConfig(_port, _pinSource, af);
 }
-#elif STM32F1
+#elif defined(STM32F1)
 void Gpio::configRemap(uint32_t remap, FunctionalState newstate)
 {
 	GPIO_PinRemapConfig(remap, newstate);
 }
+#else
+#error
 #endif
 
 void Gpio::set(bool set)
