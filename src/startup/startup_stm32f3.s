@@ -104,8 +104,7 @@ LoopFillZerobss:
 /* Call the application's entry point.*/
 	bl	main
 
-LoopForever:
-    b LoopForever
+
     
 .size	Reset_Handler, .-Reset_Handler
 

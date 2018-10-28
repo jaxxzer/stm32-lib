@@ -35,9 +35,9 @@ productRamsizes = {
         "6": 16,
         "8": 16,
         "B": 40,
-        "C": 48,
-        "D": 80,
-        "E": 80,
+        "C": 40,
+        "D": 40,
+        "E": 40,
     }
 }
 # Stm32f051cX
@@ -80,7 +80,7 @@ _estack = %s;    /* end of RAM */
 
 /* Generate a link error if heap and stack don't fit into RAM */
 _Min_Heap_Size = 0;      /* required amount of heap  */
-_Min_Stack_Size = 0x80; /* required amount of stack */
+_Min_Stack_Size = 0x800; /* required amount of stack */
 
 /* Specify the memory areas */
 MEMORY
