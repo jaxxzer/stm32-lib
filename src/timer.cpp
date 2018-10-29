@@ -514,6 +514,16 @@ void TIM3_IRQHandler(void) {
 #endif
 }
 
+#if defined(STM32F3)
+void TIM1_UP_TIM16_IRQHandler(void) {
+#ifdef USE_TIM_1
+	timer1._irqHandler();
+#endif
+#ifdef USE_TIM_16
+	timer16._irqHandler();
+#endif
+}
+#endif
 
 	/// ~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!
 	/// CC2: Handler for Hall sensor input capture

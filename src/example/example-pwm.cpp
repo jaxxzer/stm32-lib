@@ -9,7 +9,9 @@
     Gpio gpio_Led { GPIOB, 13 };
     TimerChannelOutput tco { TIM1, TIM_Channel_1 };
 #elif defined(STM32F3)
-
+    Timer& timer = timer3;
+    Gpio gpio_Led { GPIOC, 9 };
+    TimerChannelOutput tco { TIM3, TIM_Channel_4 };
 #else
 #error
 #endif
@@ -24,6 +26,8 @@ int main()
 #elif defined(STM32F1)
     gpio_Led.init(GPIO_Mode_AF_PP);
 #elif defined(STM32F3)
+    gpio_Led.init(GPIO_Mode_AF);
+    gpio_Led.configAF(2);
 #else
 #error
 #endif
