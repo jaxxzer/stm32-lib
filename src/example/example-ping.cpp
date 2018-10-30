@@ -48,15 +48,16 @@ static volatile uint16_t bitpos = 1;
 void startPing()
 {
     uart1.write("s");
-        if (bitpos) {
+        if (transferbyte & (1 << bitpos)) {
             //uart1.write("35\r\n", 4);
-        tcoPingDuration.setDuty(35000);
+        tcoPingDuration.setDuty(40000);
     } else {
                     //uart1.write("1\r\n", 3);
 
-        tcoPingDuration.setDuty(1000);
+        tcoPingDuration.setDuty(10000);
     }
-    bitpos = !bitpos;
+    bitpos++;
+    bitpos = bitpos % 16;
     tcoPingDrive.setEnabled(ENABLE);
     tcoLed.setEnabled(ENABLE);
 }
@@ -113,7 +114,7 @@ void initTimers()
     timer1.setupUpCallback(&startPing);
     timer1.setupCc1Callback(&endPing);
 
-    timer1.initFreq(1); // 115kHz pwm frequency
+    timer1.initFreq(1000); // 115kHz pwm frequency
     timer1.setEnabled(ENABLE);
     timer1.setMOE(ENABLE);
 
