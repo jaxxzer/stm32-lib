@@ -1,1 +1,1 @@
-[{"node":"TIM1","expanded":false,"format":2},{"node":"TIM1.CCR1","expanded":true,"format":0},{"node":"TIM3.ARR","expanded":true,"format":0}]
+[{"node":"DBGMCU","expanded":true,"format":0},{"node":"DBGMCU.APB2_FZ","expanded":true,"format":0},{"node":"TIM1","expanded":true,"format":2},{"node":"TIM1.CCR1","expanded":true,"format":0},{"node":"TIM3.ARR","expanded":true,"format":0}]

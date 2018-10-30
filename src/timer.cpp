@@ -379,11 +379,13 @@ void Timer::_irqHandler(void)
 	// Note TIM_GetITStatus checks flag status as well as that interrupt is enabled
 	// TIM_GetFlagStatus only checks the flag status, and you can pass a bitmask
    if (TIM_GetITStatus(_peripheral, TIM_IT_Update)) {
+	   uart1.write("U");
 		_executeCallbacks(upCallbacks);
 		_peripheral->SR &= (uint16_t)~(TIM_IT_Update);
 	}
 
 	if (IS_TIM_LIST4_PERIPH(_peripheral) && TIM_GetITStatus(_peripheral, TIM_IT_CC1)) {
+		uart1.write("C");
 		_executeCallbacks(cc1Callbacks);
 		_peripheral->SR  &=  (uint16_t)~(TIM_IT_CC1);
 	}
@@ -469,6 +471,7 @@ extern "C" {
 #ifdef STM32F0
 void TIM1_BRK_UP_TRG_COM_IRQHandler(void) {
 #ifdef USE_TIM_1
+	uart1.write("u");
     timer1._irqHandler();
 #endif
 }
@@ -482,23 +485,8 @@ void TIM1_UP_IRQHandler(void) {
 
 void TIM1_CC_IRQHandler(void) {
 #ifdef USE_TIM_1
+	uart1.write("c");
     timer1._irqHandler();
-	//printf("\n\r%d", TIM1->SR);
-//	if (TIM_GetITStatus(TIM1, TIM_IT_CC2)) {
-//		TIM_SelectOCxM(TIM1, TIM_Channel_2, TIM_ForcedAction_InActive);
-//		TIM1->SR = (uint16_t)~TIM_IT_CC2;
-//	} else if (TIM_GetITStatus(TIM1, TIM_IT_CC3)){
-//		TIM_SelectOCxM(TIM1, TIM_Channel_3, TIM_ForcedAction_InActive);
-//		flip = !flip;
-//		TIM1->SR = (uint16_t)~TIM_IT_CC3;
-//	} else if (TIM_GetITStatus(TIM1, TIM_IT_CC4)) {
-//		if (flip) {
-//			TIM_SelectOCxM(TIM1, TIM_Channel_3, TIM_OCMode_PWM1);
-//		} else {
-//			TIM_SelectOCxM(TIM1, TIM_Channel_2, TIM_OCMode_PWM1);
-//		}
-//		TIM1->SR = (uint16_t)~TIM_IT_CC4;
-//	}
 #endif
 }
 
