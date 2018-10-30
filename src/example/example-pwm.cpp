@@ -32,7 +32,7 @@ int main()
 #error
 #endif
 
-    timer.initFreq(1e4); // 10kHz pwm frequency
+    timer.initFreq(10e4); // 10kHz pwm frequency
     timer.setEnabled(ENABLE);
     timer.setMOE(ENABLE);
 

@@ -7,7 +7,7 @@
 #elif defined(STM32F3)
 #include "stm32f30x_conf.h"
 #else
-#error
+ #error
 #endif
 
 typedef struct it_callback
@@ -15,11 +15,12 @@ typedef struct it_callback
 	void (*callback)(void);
 	it_callback* next = nullptr;
 } it_callback_t;
+
 #define USE_USART_1
 #define USE_USART_3
 #define USE_TIM_1
 #define USE_TIM_3
-#define USART_STDOUT usart1
+
 #include "helpers.h"
 #include "timer.h"
 #include "uart.h"

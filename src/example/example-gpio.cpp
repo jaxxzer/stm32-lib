@@ -2,7 +2,7 @@
 
 // Blue Pill
 //Gpio gpio_Led { GPIOC, 13 }; // Blue Pill
-Gpio gpio_Led { GPIOC, 9 }; // Ping
+//Gpio gpio_Led { GPIOC, 9 }; // Ping
 
 static const int delay_ms = 50;
 
@@ -32,15 +32,15 @@ int main(void)
 	systick_frequency = 1000; // todo fix this in hal somehow. this is needed when we are configured for internal clock?
 
 #if defined(STM32F0) || defined(STM32F3)
-    gpio_Led.init(GPIO_Mode_OUT);
+    //gpio_Led.init(GPIO_Mode_OUT);
 #elif defined(STM32F1)
-    gpio_Led.init(GPIO_Mode_Out_PP);
+    //gpio_Led.init(GPIO_Mode_Out_PP);
 #else
 #error
 #endif
 
     while (1) {
-        gpio_Led.toggle();
+        //gpio_Led.toggle();
         mDelay(delay_ms);
     }
 

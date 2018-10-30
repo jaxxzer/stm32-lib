@@ -94,7 +94,7 @@ int main()
 #endif
 
     while (1) {
-        printf("Initializing Wraith32\n");
+        printf("Initializing Wraith32\r\n");
         uart1.write("hello", 5);
 #if defined(STM32F1)
         printf("Initializing Wraith32");

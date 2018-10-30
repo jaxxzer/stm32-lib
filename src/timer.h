@@ -53,10 +53,7 @@ public:
 	};
 
 	void setMode(uint16_t mode);
-
-	void enableInterrupt(void);
-	void disableInterrupt(void);
-
+	
 	void setDuty(uint16_t duty); // 0 ~ UINT16MAX
 	void setCompare(uint16_t ccr);
 

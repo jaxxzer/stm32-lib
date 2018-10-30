@@ -29,7 +29,7 @@ OPENOCD_TARGET = target/stm32f3x.cfg
 OPENOCD_FLASH_DRIVER = stm32f3x
 ARCH_FLAGS += -DSTM32F3
 SYSTEM_FILE = system_stm32f30x.c
-ARCH_FLAGS += -mcpu=cortex-m4 -mthumb -mfpu=vfp -msoft-float -march=armv7e-m
+ARCH_FLAGS += -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -msoft-float -march=armv7e-m
 LD_FLAGS =  -specs=nano.specs -specs=nosys.specs --static -mthumb -march=armv7e-m -mcpu=cortex-m4 -mfpu=vfp -ggdb3 -Wl,--cref -Wl,--gc-sections -Wl,--start-group -lc -lgcc -lnosys -Wl,--end-group 
 endif
 
