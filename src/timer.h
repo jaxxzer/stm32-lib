@@ -53,7 +53,7 @@ public:
 	};
 
 	void setMode(uint16_t mode);
-	
+
 	void setDuty(uint16_t duty); // 0 ~ UINT16MAX
 	void setCompare(uint16_t ccr);
 
@@ -122,7 +122,7 @@ public:
 			uint16_t clockDivision = TIM_CKD_DIV1,
 			uint8_t repetitionCounter = 0x0000);
 	
-	void initFreq(uint16_t frequency)
+	void initFreq(uint32_t frequency)
 	{
 		init();
 		setFrequencyForce(frequency);
@@ -134,8 +134,8 @@ public:
     void preloadConfig(FunctionalState enabled);
     void setCCPreloadControl(FunctionalState enabled);
     uint32_t getAutoreload(void);
-    bool setFrequency(uint16_t f);
-    bool setFrequencyForce(uint16_t f);
+    bool setFrequency(uint32_t f);
+    bool setFrequencyForce(uint32_t f);
 //	void setPeriod(uint32_t microseconds);
 //    uint16_t getPeriod(void);
 

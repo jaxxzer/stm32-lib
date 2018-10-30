@@ -66,7 +66,7 @@ void initGpio()
 
 void initTimers()
 {
-    timerPingDrive.initFreq(50e3); // 115kHz pwm frequency
+    timerPingDrive.initFreq(115e3); // 115kHz pwm frequency
     timerPingDrive.setEnabled(ENABLE);
     timerPingDrive.setMOE(ENABLE);
 

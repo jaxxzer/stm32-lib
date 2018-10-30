@@ -296,7 +296,7 @@ void Timer::setPrescaler(uint16_t prescaler)
 }
 
 // Sets timer frequency within bounds of current clock frequency and prescaler configuration
-bool Timer::setFrequency(uint16_t f) // Hz
+bool Timer::setFrequency(uint32_t f) // Hz
 {
 	RCC_ClocksTypeDef RCC_ClocksStruct;
 	RCC_GetClocksFreq(&RCC_ClocksStruct);
@@ -324,7 +324,7 @@ bool Timer::setFrequency(uint16_t f) // Hz
 	return true;
 }
 
-bool Timer::setFrequencyForce(uint16_t f)
+bool Timer::setFrequencyForce(uint32_t f)
 {
 	
 	// f = f_PCLCK / (PSC * ARR)
@@ -334,11 +334,11 @@ bool Timer::setFrequencyForce(uint16_t f)
 	// ex 50 hz:
 	// 0x
 #if defined(STM32F0)
-	uint32_t pclk_f = RCC_ClocksStruct.PCLK_Frequency / (_config.TIM_Prescaler + 1);
+	uint32_t pclk_f = RCC_ClocksStruct.PCLK_Frequency;
 #elif defined(STM32F1)
-	uint32_t pclk_f = RCC_ClocksStruct.PCLK2_Frequency / (_config.TIM_Prescaler + 1);
+	uint32_t pclk_f = RCC_ClocksStruct.PCLK2_Frequency;
 #elif defined(STM32F3)
-	uint32_t pclk_f = RCC_ClocksStruct.PCLK2_Frequency / (_config.TIM_Prescaler + 1);
+	uint32_t pclk_f = RCC_ClocksStruct.PCLK2_Frequency;
 #endif
 
 	uint32_t PSC = pclk_f / (f * 0xFFFF);
@@ -349,7 +349,7 @@ bool Timer::setFrequencyForce(uint16_t f)
 
 	uint32_t ARR = pclk_f / (PSC * f);
 
-	setPrescaler(PSC);
+	setPrescaler(PSC - 1);
 	setAutoreload(ARR);
 	return true;
 }
