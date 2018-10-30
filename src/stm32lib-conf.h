@@ -24,7 +24,7 @@ typedef struct it_callback
 #include "helpers.h"
 #include "timer.h"
 #include "uart.h"
-#include "printing.h"
+//#include "printing.h"
 #include "scheduling.h"
 #include "dma.h"
 #include "gpio.h"

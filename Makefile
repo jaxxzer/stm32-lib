@@ -13,6 +13,7 @@ ARCH_FLAGS += -DSTM32F0
 SYSTEM_FILE = system_stm32f0xx.c
 ARCH_FLAGS += -DSTM32F030
 ARCH_FLAGS += -mcpu=cortex-m0 -mthumb
+LD_FLAGS =  -specs=nano.specs -specs=nosys.specs --static -mthumb -mcpu=cortex-m0 -mfpu=vfp -ggdb3 -Wl,--cref -Wl,--gc-sections -Wl,--start-group -lc -lgcc -lnosys -Wl,--end-group 
 endif
 ifneq (,$(findstring STM32F1, $(TARGET_MCU)))
 TARGET_LINE = stm32f1
