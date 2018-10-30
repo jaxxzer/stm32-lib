@@ -10,14 +10,15 @@ Gpio gpioUsart1Tx         { GPIO_USART1_TX, PIN_USART1_TX };
 Gpio gpioUsart1Rx         { GPIO_USART1_RX, PIN_USART1_RX };
 
 #if defined(STM32F0)
+#define GPIO_PING_AF 1
 #define GPIO_LED_AF 1
 
     Timer& timerPingDrive = timer3;
     Gpio gpioLed { GPIOB, 1 };
-    Gpio gpioPingDrive { GPIOC, 6 };
+    Gpio gpioPingDrive { GPIOA, 7 };
 
     TimerChannelOutput tcoLed { TIM3, TIM_Channel_4 };
-    TimerChannelOutput tcoPingDrive { TIM3, TIM_Channel_1 };
+    TimerChannelOutput tcoPingDrive { TIM3, TIM_Channel_2 };
 
     Timer& timerPingInterval = timer1;
     TimerChannelOutput tcoPingDuration { TIM1, TIM_Channel_1 };
@@ -26,6 +27,7 @@ Gpio gpioUsart1Rx         { GPIO_USART1_RX, PIN_USART1_RX };
     Gpio gpioLed { GPIOB, 13 };
     TimerChannelOutput tco { TIM1, TIM_Channel_1 };
 #elif defined(STM32F3)
+#define GPIO_PING_AF 2
 #define GPIO_LED_AF 2
     Timer& timerPingDrive = timer3;
     Gpio gpioLed { GPIOC, 9 };
@@ -59,7 +61,7 @@ void initGpio()
     gpioLed.configAF(GPIO_LED_AF);
 
     gpioPingDrive.init(GPIO_Mode_AF);
-    gpioPingDrive.configAF(2);
+    gpioPingDrive.configAF(GPIO_PING_AF);
 }
 
 void initTimers()
@@ -94,8 +96,8 @@ void initTimers()
     timerPingInterval.setEnabled(ENABLE);
     timerPingInterval.setMOE(ENABLE);
 
-    tcoPingDuration.setDuty(20000);
     tcoPingDuration.init(TIM_OCMode_PWM1);
+    tcoPingDuration.setCompare(100);
 }
 
 
