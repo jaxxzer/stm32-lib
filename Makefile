@@ -1,3 +1,5 @@
+include src/board/f0dev.mk
+
 TARGET_MCU ?= STM32F303RE
 
 FLASH_OVERRIDE ?=
@@ -77,6 +79,7 @@ CXXFLAGS ?=
 CXXFLAGS += -std=gnu++14 $(ARCH_FLAGS)
 CXXFLAGS += $(OPTIMIZE) -ffunction-sections -fdata-sections -fno-rtti -fno-exceptions -g -fstack-usage -Wall -fno-threadsafe-statics -specs=nano.specs
 CXXFLAGS += $(INCLUDES)
+CXXFLAGS += $(BOARD_DEFINES)
 
 CXX_SRC += $(wildcard $(STM32LIB_DIR)/src/*.cpp)
 

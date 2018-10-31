@@ -1,44 +1,31 @@
 #include "stm32lib-conf.h"
 
+Gpio gpioLed { GPIO_LED1_PORT, GPIO_LED1_PIN };
 
-#define GPIO_USART1_TX      GPIOA
-#define PIN_USART1_TX       9
-
-#define GPIO_USART1_RX      GPIOA
-#define PIN_USART1_RX       10
-
-#if defined(STM32F0) || defined(STM32F3)
-#define GPIO_LED_PORT       GPIOB
-#define GPIO_LED_PIN        1
-#elif defined(STM32F1)
-#define GPIO_LED_PORT       GPIOB
-#define GPIO_LED_PIN        13
-#endif
-
-Gpio gpioLed { GPIO_LED_PORT, GPIO_LED_PIN };
-
-Gpio gpioUsart1Tx         { GPIO_USART1_TX, PIN_USART1_TX };
-Gpio gpioUsart1Rx         { GPIO_USART1_RX, PIN_USART1_RX };
+Gpio gpioUsart1Tx         { GPIO_USART1_TX_PORT, GPIO_USART1_TX_PIN };
+Gpio gpioUsart1Rx         { GPIO_USART1_RX_PORT, GPIO_USART1_RX_PIN };
 
 #if defined(STM32F1) || defined(STM32F3)
-#define GPIO_USART3_TX      GPIOB
-#define PIN_USART3_TX       10
-
-#define GPIO_USART3_RX      GPIOB
-#define PIN_USART3_RX       11
-
 Gpio gpioUsart3Tx         { GPIO_USART3_TX, PIN_USART3_TX };
 Gpio gpioUsart3Rx         { GPIO_USART3_RX, PIN_USART3_RX };
 #endif
 
 void initUsart1(void)
 {
-#if defined(STM32F0) || defined(STM32F3)
-	gpioUsart1Rx.init(GPIO_Mode_AF, GPIO_PuPd_UP);
-    gpioUsart1Tx.init(GPIO_Mode_AF, GPIO_PuPd_UP);
-    gpioUsart1Rx.configAF(7);
-    gpioUsart1Tx.configAF(7);
+#if defined(STM32F0)
+    nvic_config(USART1_IRQn, 0, ENABLE);
+#elif defined(STM32F1) || defined(STM32F3)
     nvic_config(USART1_IRQn, 0, 0, ENABLE);
+#else
+ #error
+#endif
+
+#if defined(STM32F0) || defined(STM32F3)
+	gpioUsart1Rx.init(GPIO_USART1_RX_MODE);
+    gpioUsart1Tx.init(GPIO_USART1_TX_MODE);
+    gpioUsart1Rx.configAF(GPIO_USART1_RX_AF);
+    gpioUsart1Tx.configAF(GPIO_USART1_TX_AF);
+    nvic_config(USART1_IRQn, 0, ENABLE);
 #elif defined(STM32F1)
 	gpioUsart1Rx.init(GPIO_Mode_IN_FLOATING, GPIO_Speed_50MHz);
     gpioUsart1Tx.init(GPIO_Mode_AF_PP, GPIO_Speed_50MHz);
@@ -47,7 +34,7 @@ void initUsart1(void)
 #else
 #error
 #endif
-    uart1.init(115200);
+    uart1.init(3000000);
     uart1.ITConfig(USART_IT_RXNE, ENABLE);
     uart1.setEnabled(ENABLE);
     uart1.cls();
@@ -74,20 +61,11 @@ void initUsart3(void)
 #endif
 }
 
-void initGpioLed(void)
-{
-#if defined(STM32F0) || defined(STM32F3)
-    gpioLed.init(GPIO_Mode_OUT);
-#elif STM32F1
-    gpioLed.init(GPIO_Mode_Out_PP);
-#endif
-}
-
 int main()
 {
     configureClocks(1000);
 
-    initGpioLed();
+    gpioLed.init(GPIO_LED1_MODE);
     initUsart1();
 #if defined(STM32F1)
     initUsart3();
@@ -101,7 +79,7 @@ int main()
         uart1.write("hello", 5);
         uart3.write("hello", 5);
 #endif
-        mDelay(100);
+        //mDelay(100);
         gpioLed.toggle();
     }
 

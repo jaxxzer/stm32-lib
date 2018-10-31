@@ -23,12 +23,10 @@ static volatile uint16_t bitpos = 1;
     TimerChannelOutput tcoLed { TIM3, TIM_Channel_4 };
     TimerChannelOutput tcoPingDrive { TIM3, TIM_Channel_2 };
 
-//Timer& timer1 = timer1;
+    Timer& timerPingInterval = timer1;
     TimerChannelOutput tcoPingDuration { TIM1, TIM_Channel_1 };
 #elif defined(STM32F1)
-    Timer& timer = timer1;
-    Gpio gpioLed { GPIOB, 13 };
-    TimerChannelOutput tco { TIM1, TIM_Channel_1 };
+
 #elif defined(STM32F3)
 #define GPIO_PING_AF 2
 #define GPIO_LED_AF 2
@@ -39,7 +37,7 @@ static volatile uint16_t bitpos = 1;
     TimerChannelOutput tcoLed { TIM3, TIM_Channel_4 };
     TimerChannelOutput tcoPingDrive { TIM3, TIM_Channel_1 };
 
-    Timer& timer1 = timer1;
+    Timer& timerPingInterval = timer1;
     TimerChannelOutput tcoPingDuration { TIM1, TIM_Channel_1 };
 #else
 #error
@@ -47,34 +45,22 @@ static volatile uint16_t bitpos = 1;
 
 void startPing()
 {
-    uart1.write("s");
-        if (transferbyte & (1 << bitpos)) {
-            //uart1.write("35\r\n", 4);
+    if (transferbyte & (1 << bitpos)) {
         tcoPingDuration.setDuty(40000);
     } else {
-                    //uart1.write("1\r\n", 3);
-
         tcoPingDuration.setDuty(10000);
     }
     bitpos++;
     bitpos = bitpos % 16;
+    printf("%d\n", bitpos);
     tcoPingDrive.setEnabled(ENABLE);
     tcoLed.setEnabled(ENABLE);
 }
 
 void endPing()
 {
-    uart1.write("e");
     tcoPingDrive.setEnabled(DISABLE);
     tcoLed.setEnabled(DISABLE);
-    // tcoPingDuration.setDuty(bitpos & transferbyte ? 65000 : 1500);
-
-    // bitpos << 1;
-    // if (!bitpos) {
-    //     bitpos = 1;
-    // }
-
-    //uart1.write("Ping\r\n", 6);
 }
 
 void initGpio()
@@ -108,15 +94,15 @@ void initTimers()
  #error
 #endif
 
-    timer1.interruptConfig(TIM_IT_Update, ENABLE);
-    timer1.interruptConfig(TIM_IT_CC1, ENABLE);
+    timerPingInterval.interruptConfig(TIM_IT_Update, ENABLE);
+    timerPingInterval.interruptConfig(TIM_IT_CC1, ENABLE);
 
-    timer1.setupUpCallback(&startPing);
-    timer1.setupCc1Callback(&endPing);
+    timerPingInterval.setupUpCallback(&startPing);
+    timerPingInterval.setupCc1Callback(&endPing);
 
-    timer1.initFreq(1000); // 115kHz pwm frequency
-    timer1.setEnabled(ENABLE);
-    timer1.setMOE(ENABLE);
+    timerPingInterval.initFreq(1000); // 115kHz pwm frequency
+    timerPingInterval.setEnabled(ENABLE);
+    timerPingInterval.setMOE(ENABLE);
 
     tcoPingDuration.init(TIM_OCMode_PWM1);
     tcoPingDuration.setDuty(35000);
@@ -145,7 +131,7 @@ void initUsart1(void)
 #else
  #error
 #endif
-    uart1.init(1000000);
+    uart1.init(3000000);
     uart1.ITConfig(USART_IT_RXNE, ENABLE);
     uart1.setEnabled(ENABLE);
     uart1.cls();
