@@ -196,10 +196,6 @@ void TimerChannelOutput::_init(void)
     }
 }
 
-
-// TIMER
-
-
 void Timer::init(uint16_t prescaler,
 			uint32_t period,
     		uint16_t counterMode,
@@ -213,10 +209,6 @@ void Timer::init(uint16_t prescaler,
 	_config.TIM_CounterMode = counterMode;
 	_initTimeBase();
 }
-// Input: period (ticks), tick frequency (Hz)
-// - Enable the peripheral clock
-// - Configure the peripheral
-// Fails if: SystemCoreClock is not divisible by input frequency
 
 void Timer::interruptConfig(const uint8_t interrupts, const FunctionalState newState)
 {
@@ -228,6 +220,7 @@ void Timer::setAutoreload(uint32_t arr)
 	_config.TIM_Period = arr;
 	TIM_SetAutoreload(_peripheral, arr);
 }
+
 uint32_t Timer::getAutoreload(void)
 {
 	return _config.TIM_Period;
@@ -237,18 +230,26 @@ void Timer::setClockEnabled(FunctionalState enabled)
 {
     switch((uint32_t)_peripheral)
     {
+#ifdef TIM1
     case TIM1_BASE:
     	RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM1, enabled);
         break;
+#endif
+#ifdef TIM2
     case TIM2_BASE:
     	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, enabled);
         break;
+#endif
+#ifdef TIM3
     case TIM3_BASE:
         RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, enabled);
         break;
+#endif
+#ifdef TIM6
     case TIM6_BASE:
         RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM6, enabled);
         break;
+#endif
 #ifdef TIM14
     case TIM14_BASE:
         RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM14, enabled);

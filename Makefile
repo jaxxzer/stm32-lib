@@ -1,4 +1,4 @@
-include src/board/f0dev.mk
+include src/board/storm32.mk
 
 TARGET_MCU ?= STM32F303RE
 
@@ -6,6 +6,8 @@ FLASH_OVERRIDE ?=
 ifneq (,$(FLASH_OVERRIDE))
 FLASH_HEX = $(shell python -c "print(hex($(FLASH_OVERRIDE) * 1024))")
 endif
+
+FLASH_RESERVE_PAGES ?= 0
 
 ifneq (,$(findstring STM32F0, $(TARGET_MCU)))
 TARGET_LINE = stm32f0
@@ -15,7 +17,7 @@ ARCH_FLAGS += -DSTM32F0
 SYSTEM_FILE = system_stm32f0xx.c
 ARCH_FLAGS += -DSTM32F030
 ARCH_FLAGS += -mcpu=cortex-m0 -mthumb
-LD_FLAGS =  -specs=nano.specs -specs=nosys.specs --static -mthumb -mcpu=cortex-m0 -mfpu=vfp -ggdb3 -Wl,--cref -Wl,--gc-sections -Wl,--start-group -lc -lgcc -lnosys -Wl,--end-group 
+LD_FLAGS = -specs=nano.specs -specs=nosys.specs --static -mthumb -mcpu=cortex-m0 -mfpu=vfp -ggdb3 -Wl,--cref -Wl,--gc-sections -Wl,--start-group -lc -lgcc -lnosys -Wl,--end-group 
 endif
 ifneq (,$(findstring STM32F1, $(TARGET_MCU)))
 TARGET_LINE = stm32f1

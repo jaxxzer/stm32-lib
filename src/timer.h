@@ -2,85 +2,6 @@
 
 #include "stm32lib-conf.h"
 
-class TimerChannel
-{
-public:
-	TimerChannel(TIM_TypeDef* timx, uint8_t channel)
-		: _peripheral(timx)
-        ,_channel(channel)
-	{};
-	TIM_TypeDef* _peripheral;
-	uint8_t _channel;
-};
-
-class TimerChannelInput : public TimerChannel
-{
-public:
-	TimerChannelInput(TIM_TypeDef* timx, uint8_t channel)
-		: TimerChannel(timx, channel)
-	{
-		TIM_ICStructInit(&_config);
-	};
-
-	void setEnabled(FunctionalState enabled);
-	void setICPolarity(uint16_t polarity);
-	void setICSelection(uint16_t selection);
-	void setICPrescaler(uint16_t prescaler);
-	void setICFilter(uint16_t filter);
-
-
-	// Defaults
-	void init(uint16_t polarity = TIM_ICPolarity_Rising,
-			uint16_t filter = 0x00,
-			uint16_t prescaler = TIM_ICPSC_DIV1,
-			uint16_t selection = TIM_ICSelection_DirectTI);
-
-	// Current config
-	void _init(void);
-
-	FunctionalState _enabled; // TODO: extend TIM_ICInitTypeDef to support this too
-
-	TIM_ICInitTypeDef _config;
-};
-
-class TimerChannelOutput : public TimerChannel
-{
-public:
-	TimerChannelOutput(TIM_TypeDef* timx, uint8_t channel)
-		: TimerChannel(timx, channel)
-	{
-		TIM_OCStructInit(&_config);
-	};
-
-	void setMode(uint16_t mode);
-
-	void setDuty(uint16_t duty); // 0 ~ UINT16MAX
-	void setCompare(uint16_t ccr);
-
-	void preloadConfig(FunctionalState enabled);
-	void setEnabled(FunctionalState enabled);
-	void setEnabledN(FunctionalState enabled);
-
-	void setPolarity(FunctionalState high);
-	void setPolarityN(FunctionalState high);
-
-	void setIdleState(FunctionalState high);
-	void setIdleStateN(FunctionalState high);
-
-	// Current config
-	void init(uint16_t ocMode = TIM_OCMode_Timing
-			, uint32_t pulse = 0x0000000 // aka CCR
-			, uint16_t outputState = TIM_OutputState_Disable
-			, uint16_t outputNState = TIM_OutputNState_Disable
-			, uint16_t ocpolarity = TIM_OCPolarity_High
-			, uint16_t ocNpolarity = TIM_OCNPolarity_High
-			, uint16_t ocIdleState = TIM_OCIdleState_Reset
-			, uint16_t ocNIdleState = TIM_OCNIdleState_Reset);
-	void _init(void);
-
-	TIM_OCInitTypeDef _config;
-};
-
 class Timer
 {
 public:
@@ -175,6 +96,86 @@ private:
 		TIM_BreakPolarity_Low, //TIM_BreakPolarity = 0;
 		TIM_AutomaticOutput_Disable //TIM_AutomaticOutput = 0;
 	};
+};
+
+
+class TimerChannel
+{
+public:
+	TimerChannel(Timer* timer, uint8_t channel)
+		: _peripheral(timer->peripheral())
+        ,_channel(channel)
+	{};
+	TIM_TypeDef* _peripheral;
+	uint8_t _channel;
+};
+
+class TimerChannelInput : public TimerChannel
+{
+public:
+	TimerChannelInput(Timer* timer, uint8_t channel)
+		: TimerChannel(timer, channel)
+	{
+		TIM_ICStructInit(&_config);
+	};
+
+	void setEnabled(FunctionalState enabled);
+	void setICPolarity(uint16_t polarity);
+	void setICSelection(uint16_t selection);
+	void setICPrescaler(uint16_t prescaler);
+	void setICFilter(uint16_t filter);
+
+
+	// Defaults
+	void init(uint16_t polarity = TIM_ICPolarity_Rising,
+			uint16_t filter = 0x00,
+			uint16_t prescaler = TIM_ICPSC_DIV1,
+			uint16_t selection = TIM_ICSelection_DirectTI);
+
+	// Current config
+	void _init(void);
+
+	FunctionalState _enabled; // TODO: extend TIM_ICInitTypeDef to support this too
+
+	TIM_ICInitTypeDef _config;
+};
+
+class TimerChannelOutput : public TimerChannel
+{
+public:
+	TimerChannelOutput(Timer* timer, uint8_t channel)
+		: TimerChannel(timer, channel)
+	{
+		TIM_OCStructInit(&_config);
+	};
+
+	void setMode(uint16_t mode);
+
+	void setDuty(uint16_t duty); // 0 ~ UINT16MAX
+	void setCompare(uint16_t ccr);
+
+	void preloadConfig(FunctionalState enabled);
+	void setEnabled(FunctionalState enabled);
+	void setEnabledN(FunctionalState enabled);
+
+	void setPolarity(FunctionalState high);
+	void setPolarityN(FunctionalState high);
+
+	void setIdleState(FunctionalState high);
+	void setIdleStateN(FunctionalState high);
+
+	// Current config
+	void init(uint16_t ocMode = TIM_OCMode_Timing
+			, uint32_t pulse = 0x0000000 // aka CCR
+			, uint16_t outputState = TIM_OutputState_Disable
+			, uint16_t outputNState = TIM_OutputNState_Disable
+			, uint16_t ocpolarity = TIM_OCPolarity_High
+			, uint16_t ocNpolarity = TIM_OCNPolarity_High
+			, uint16_t ocIdleState = TIM_OCIdleState_Reset
+			, uint16_t ocNIdleState = TIM_OCNIdleState_Reset);
+	void _init(void);
+
+	TIM_OCInitTypeDef _config;
 };
 
 // see stm32f05x datasheet 3.14 Timers and watchdogs

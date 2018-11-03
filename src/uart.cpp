@@ -74,10 +74,10 @@ void Uart::cls(void)
 {
 	static const uint8_t esc = 27;
 	write((char*)(&esc));       // ESC command
-	write("[2J");
+	write("[2J", 3);
 	//printf("[2J");    // clear screen command
 	write((char*)(&esc));
-	write("[H");
+	write("[H", 2);
 	//printf("[H"); // goto home
 }
 

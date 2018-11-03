@@ -97,10 +97,15 @@ void Gpio::configAF(uint8_t af) {
 #elif defined(STM32F1)
 void Gpio::configRemap(uint32_t remap, FunctionalState newstate)
 {
-	GPIO_PinRemapConfig(remap, newstate);
+	// All valid remaps are non-zero
+	// Zero here indicates no remap
+	if(remap) {
+		RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
+		GPIO_PinRemapConfig(remap, newstate);
+	}
 }
 #else
-#error
+ #error
 #endif
 
 void Gpio::set(bool set)

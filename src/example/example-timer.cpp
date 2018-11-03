@@ -1,33 +1,30 @@
 #include "stm32lib-conf.h"
 
-#if  defined(STM32F0)
-    Gpio gpio_Led { GPIOB, 1 };
-#elif defined(STM32F1)
-    Gpio gpio_Led { GPIOC, 13 };
-#elif defined(STM32F3)
-    Gpio gpio_Led { GPIOC, 9 };
-#else
-#error
-#endif
+Gpio gpioLed { GPIO_LED1_PORT, GPIO_LED1_PIN };
 
 // Callback to run on UPDATE interrupt event
 void tim1UpdateCallback(void)
 {
-    gpio_Led.toggle();
+    gpioLed.toggle();
 }
 
 int main()
 {
     configureClocks(1000);
 
-#if defined(STM32F0)
-    gpio_Led.init(GPIO_Mode_OUT);
-    nvic_config(TIM1_BRK_UP_TRG_COM_IRQn, 0, 0, ENABLE);
+#if defined(STM32F0) || defined(STM32F3)
+    gpioLed.init(GPIO_Mode_OUT);
 #elif defined(STM32F1)
-    gpio_Led.init(GPIO_Mode_Out_PP);
+    gpioLed.init(GPIO_Mode_Out_PP);
+#else
+ #error
+#endif
+
+#if defined(STM32F0)
+    nvic_config(TIM1_BRK_UP_TRG_COM_IRQn, 0, ENABLE);
+#elif defined(STM32F1)
     nvic_config(TIM1_UP_IRQn, 0, 0, ENABLE);
 #elif defined(STM32F3)
-    gpio_Led.init(GPIO_Mode_OUT);
     nvic_config(TIM1_UP_TIM16_IRQn, 0, 0, ENABLE);
 #endif
 

@@ -1,18 +1,22 @@
 #include "stm32lib-conf.h"
 
-Gpio gpio_Led { GPIO_LED1_PORT, GPIO_LED1_PIN };
-
-static const int delay_ms = 50;
+Gpio gpioLed { GPIO_LED1_PORT, GPIO_LED1_PIN };
 
 int main(void)
 {
 	configureClocks(1000);
 
-    gpio_Led.init(GPIO_LED1_MODE);
+#if defined(STM32F0) || defined(STM32F3)
+    gpioLed.init(GPIO_Mode_OUT);
+#elif defined(STM32F1)
+    gpioLed.init(GPIO_Mode_Out_PP);
+#else
+ #error
+#endif
 
     while (1) {
-        gpio_Led.toggle();
-        mDelay(delay_ms);
+        gpioLed.toggle();
+        mDelay(500);
     }
 
     return 0;
