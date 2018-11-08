@@ -1,4 +1,4 @@
-include src/board/storm32.mk
+include src/board/nucleo-f334.mk
 
 TARGET_MCU ?= STM32F303RE
 
@@ -52,8 +52,12 @@ endif
 
 ifneq (,$(findstring stm32f3, $(TARGET_LINE)))
 STM32F303xE_PARTS = STM32F303CE STM32F303CD STM32F303RE STM32F303RD STM32F303VE STM32F303VD STM32F303ZE STM32F303ZD STM32F302CE STM32F302CD STM32F302RE STM32F302RD STM32F302VE STM32F302ZE STM32F302ZD STM32F398VE
+STM32F334x8_PARTS = STM32F334C4 STM32F334K4 STM32F334C6 STM32F334R6 STM32F334K6 STM32F334C8 STM32F334R8 STM32F334K8 STM32F303K8 STM32F303K6 STM32F303C8 STM32F303C6 STM32F303R8 STM32F303R6 STM32F328C8
 ifneq (,$(filter $(STM32F303xE_PARTS), $(TARGET_MCU)))
 ARCH_FLAGS += -DSTM32F303xE
+endif
+ifneq (,$(filter $(STM32F334x8_PARTS), $(TARGET_MCU)))
+ARCH_FLAGS += -DSTM32F334x8
 endif
 endif
 
@@ -148,12 +152,12 @@ $(OBJ_DIR)/%.os: %.s
 %-flash: %
 ifneq (,$(FLASH_OVERRIDE))
 	openocd \
-	-f interface/stlink-v2.cfg \
+	-f interface/stlink-v2-1.cfg \
 	-f $(OPENOCD_TARGET) \
 	-c "flash bank override $(OPENOCD_FLASH_DRIVER) 0x08000000 $(FLASH_HEX) 0 0 \$$_TARGETNAME" \
 	-c "program build/bin/$<.hex verify reset exit"
 else
-	openocd -f interface/stlink-v2.cfg -f $(OPENOCD_TARGET) -c "program build/bin/$<.hex verify reset exit"
+	openocd -f interface/stlink-v2-1.cfg -f $(OPENOCD_TARGET) -c "program build/bin/$<.hex verify reset exit"
 endif
 
 .PHONY: clean
