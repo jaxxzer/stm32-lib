@@ -141,8 +141,6 @@ endif
 	arm-none-eabi-objcopy -O ihex $(BIN_DIR)/$@.elf $(BIN_DIR)/$@.hex
 	cp $(BIN_DIR)/$@.hex $(BIN_DIR)/debug.hex
 	arm-none-eabi-objcopy -O binary $(BIN_DIR)/$@.elf $(BIN_DIR)/$@.bin
-	
-
 
 $(OBJ_DIR)/%.os: %.s
 	@echo "dir $(dir $@)"
@@ -152,11 +150,17 @@ $(OBJ_DIR)/%.os: %.s
 %-flash: %
 ifneq (,$(FLASH_OVERRIDE))
 	openocd \
+	-f interface/stlink-v2.cfg \
+	-f $(OPENOCD_TARGET) \
+	-c "flash bank override $(OPENOCD_FLASH_DRIVER) 0x08000000 $(FLASH_HEX) 0 0 \$$_TARGETNAME" \
+	-c "program build/bin/$<.hex verify reset exit" || \
+	openocd \
 	-f interface/stlink-v2-1.cfg \
 	-f $(OPENOCD_TARGET) \
 	-c "flash bank override $(OPENOCD_FLASH_DRIVER) 0x08000000 $(FLASH_HEX) 0 0 \$$_TARGETNAME" \
 	-c "program build/bin/$<.hex verify reset exit"
 else
+	openocd -f interface/stlink-v2.cfg -f $(OPENOCD_TARGET) -c "program build/bin/$<.hex verify reset exit" || \
 	openocd -f interface/stlink-v2-1.cfg -f $(OPENOCD_TARGET) -c "program build/bin/$<.hex verify reset exit"
 endif
 
