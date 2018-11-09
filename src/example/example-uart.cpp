@@ -1,5 +1,7 @@
 #include "stm32lib-conf.h"
 
+#define USART_BAUDRATE 1e6
+
 Gpio gpioLed { GPIO_LED1_PORT, GPIO_LED1_PIN };
 
 #if defined(USE_USART_1)
@@ -34,7 +36,7 @@ void initUsart1(void)
  #error
 #endif
 
-    uart1.init(3000000);
+    uart1.init(USART_BAUDRATE);
     uart1.ITConfig(USART_IT_RXNE, ENABLE);
     uart1.setEnabled(ENABLE);
     uart1.cls();
@@ -63,7 +65,7 @@ void initUsart3(void)
  #error
 #endif
 
-    uart3.init(3000000);
+    uart3.init(USART_BAUDRATE);
     uart3.ITConfig(USART_IT_RXNE, ENABLE);
     uart3.setEnabled(ENABLE);
     uart3.cls();

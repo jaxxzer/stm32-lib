@@ -13,8 +13,7 @@ uint32_t crcCalcChecksum(uint32_t* buf, uint8_t len)
 {
 	CRC->CR |= CRC_CR_RESET;
 	for (uint8_t i = 0; i < len; i++) {
-		//print("\n\rcs byte: "); printHex(buf[i]);
-		  CRC->DR = buf[i];
+		CRC->DR = buf[i];
 	}
 	return CRC->DR;
 }

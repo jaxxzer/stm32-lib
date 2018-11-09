@@ -7,7 +7,7 @@ TimerChannelOutput tco { &timer, GPIO_LED1_TIM_CH };
 int main()
 {
     configureClocks(1000);
-    gpioLed.init(GPIO_LED1_MODE);
+    gpioLed.init(GPIO_Mode_AF);
 
 #if defined(STM32F1)
     gpioLed.configRemap(GPIO_LED1_REMAP, ENABLE);

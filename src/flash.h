@@ -54,4 +54,3 @@ private:
 	const uint8_t _pages;
 	const uint16_t _blockSize; // words
 };
-
