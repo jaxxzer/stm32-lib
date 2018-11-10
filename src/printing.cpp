@@ -31,15 +31,12 @@ extern "C" {
 	}
 
 	int _write(int file, char* data, int len)	{
-		volatile int len2 = len;
-		//while ((len2 > 0) && (*data != 0)) {
-		while (len2 > 0) {
-			STDOUT_USART.write((char*)data);
-			len = len - 1;
-			len2 = len2 - 1;
-			data = data + 1;
+		while (len--) {
+			STDOUT_USART.write((char*)data++);
 		}
+		return 0;
 	}
+	
 	int __io_getchar(void) {
 		// Code to read a character from the UART
 		return 0;
