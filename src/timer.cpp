@@ -29,11 +29,6 @@ Timer timer17  { TIM17 }; // 16 bit Advanced control
 ///////////////////////////////////
 /////////////  Input Channel //////
 ///////////////////////////////////
-void Timer::setCCPreloadControl(FunctionalState enabled) //  AKA CCPC
-{
-	TIM_CCPreloadControl(_peripheral, enabled);
-}
-
 
 void TimerChannelInput::init(uint16_t polarity,
 			uint16_t filter,
@@ -208,6 +203,11 @@ void Timer::init(uint16_t prescaler,
 	_config.TIM_RepetitionCounter = repetitionCounter;
 	_config.TIM_CounterMode = counterMode;
 	_initTimeBase();
+}
+
+void Timer::setCCPreloadControl(FunctionalState enabled) //  AKA CCPC
+{
+	TIM_CCPreloadControl(_peripheral, enabled);
 }
 
 void Timer::interruptConfig(const uint8_t interrupts, const FunctionalState newState)

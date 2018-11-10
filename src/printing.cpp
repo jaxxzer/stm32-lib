@@ -96,46 +96,47 @@ void print_clocks()
 
 
 
-// void Uart::minPrint(const char* c) {
-// 	while (*c != 0) {
-// 		uart1.write(c++);
-// 	}
-// }
+void print(const char* c) {
+	while (*c != 0) {
+		_write(FD_STDOUT, (char*)c++, 1);
+	}
+}
 
-// void Uart::minPrintLn(void)
-// {
-// 	print("\n\r");
-// }
+void println(void)
+{
+	print("\n\r");
+}
 
-// void Uart::minPrintHex(uint32_t i)
-// {
-// 	uint8_t size = 4;
-// 	if (i > 0xFFFF) {
-// 		size = 8;
-// 	}
+void printHex(uint32_t i)
+{
+	uint8_t size = 4;
+	if (i > 0xFFFF) {
+		size = 8;
+	}
 
-// 	char buf[8];
-// 	uint8_t p = 8;
+	char buf[8];
+	uint8_t p = 8;
 
-// 	do {
-// 		uint8_t digit = i%16;
-// 		switch (digit) {
-// 		case 0 ... 9:
-// 			buf[--p] = '0' + digit;
-// 			break;
-// 		case 0xA ... 0xF:
-// 			buf[--p] = 'A' + digit - 10;
-// 			break;
-// 		default:
-// 			break;
-// 		}
-// 		i /= 16;
-// 	} while (i);
-// 	while (p > 8 - size) {
-// 		buf[--p] = '0';
-// 	}
-// 	uart1.write(&buf[p], size);
-// }
+	do {
+		uint8_t digit = i%16;
+		switch (digit) {
+		case 0 ... 9:
+			buf[--p] = '0' + digit;
+			break;
+		case 0xA ... 0xF:
+			buf[--p] = 'A' + digit - 10;
+			break;
+		default:
+			break;
+		}
+		i /= 16;
+	} while (i);
+	while (p > 8 - size) {
+		buf[--p] = '0';
+	}
+	_write(FD_STDOUT, &buf[p], size);
+	//uart1.write(&buf[p], size);
+}
 
 // uint16_t my_atoi(char* c)
 // {
@@ -166,19 +167,21 @@ void print_clocks()
 // 	uart1.write(&c[len], 5-len);
 // }
 
-// void my_printInt(uint32_t i) {
-// 	char c[10];
-// 	uint8_t len = 10;
+void my_printInt(uint32_t i) {
+	char c[10];
+	uint8_t len = 10;
 
-// 	uint8_t p = i % 10;
-// 	c[--len] = p + '0';
-// 	i -= p; // not neccessary? taken care of with integer division
+	uint8_t p = i % 10;
+	c[--len] = p + '0';
+	i -= p; // not neccessary? taken care of with integer division
 
-// 	while (i) {
-// 		i /= 10;
-// 		p = i % 10;
-// 		c[--len] = p  + '0';
-// 		i -= p; // not neccessary? taken care of with integer division
-// 	}
-// 	uart1.write(&c[len], 10-len);
-// }
+	while (i) {
+		i /= 10;
+		p = i % 10;
+		c[--len] = p  + '0';
+		i -= p; // not neccessary? taken care of with integer division
+	}
+	_write(FD_STDOUT, &c[len], 10-len);
+
+	//uart1.write(&c[len], 10-len);
+}
