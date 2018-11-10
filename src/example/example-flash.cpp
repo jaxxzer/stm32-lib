@@ -122,8 +122,8 @@ void initParameters(void)
     if (f.verifyChecksum()) {
     	f.readBlock((uint16_t*)&params, sizeof(params)/sizeof(uint16_t)); // load configuration
     } else {
-    	//print("Bad Config!\r\n"); // use defaults
-    	//f.printContents();
+    	print("Bad Config!\n\r"); // use defaults
+    	f.printContents();
     }
 
     // Update boot count and immediately write back
@@ -131,7 +131,7 @@ void initParameters(void)
     // We must update the checksum before committing to flash <- TODO move checksum step to flash library
     params.boot_count++;
 
-    //writeParams(); // update boot count // TODO replace with param length? for endurance considerations and carryover after upgrade
+    writeParams(); // update boot count // TODO replace with param length? for endurance considerations and carryover after upgrade
 }
 
 
@@ -173,8 +173,8 @@ int main()
 
     print("sup");
     mDelay(1000);
-    // initParameters();
-    // printParams();
+    initParameters();
+    printParams();
 
     while (1) {
         mDelay(500);
