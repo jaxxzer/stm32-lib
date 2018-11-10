@@ -31,7 +31,7 @@ endif
 ifneq (,$(findstring STM32F3, $(TARGET_MCU)))
 TARGET_LINE = stm32f3
 OPENOCD_TARGET = target/stm32f3x.cfg
-OPENOCD_FLASH_DRIVER = stm32f3x
+OPENOCD_FLASH_DRIVER = stm32f1x
 ARCH_FLAGS += -DSTM32F3
 SYSTEM_FILE = system_stm32f30x.c
 ARCH_FLAGS += -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -msoft-float -march=armv7e-m
@@ -77,7 +77,7 @@ INCLUDES += -I $(CMSIS_DIR)/core
 INCLUDES += -I $(STDPERIPH_DIR)/inc
 INCLUDES += -I $(STM32LIB_DIR)/src
 
-OPTIMIZE = -O0
+OPTIMIZE = -Os
 CFLAGS = $(ARCH_FLAGS) 
 CFLAGS += $(OPTIMIZE) -g -Wa,--warn -x assembler-with-cpp -specs=nano.specs
 CFLAGS += $(INCLUDES)

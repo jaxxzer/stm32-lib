@@ -64,9 +64,9 @@ public:
 
 	// tail == head      means empty
 	// tail == head - 1  means full
-	uint8_t rxHead; // TODO allow use of full buffer, right now we use only bufSize-1 bytes
-	uint8_t rxTail;
-	uint8_t rxOverruns;
+	uint8_t rxHead = 0; // TODO allow use of full buffer, right now we use only bufSize-1 bytes
+	uint8_t rxTail = 0;
+	uint8_t rxOverruns = 0;
 
 	uint8_t txHead;
 	uint8_t txTail;

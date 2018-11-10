@@ -30,9 +30,14 @@ extern "C" {
 		return *ch;
 	}
 
-	int _write(int file, char *data, int len)	{
-		while (len-- && *data) {
-			STDOUT_USART.write((char*)data++);
+	int _write(int file, char* data, int len)	{
+		volatile int len2 = len;
+		//while ((len2 > 0) && (*data != 0)) {
+		while (len2 > 0) {
+			STDOUT_USART.write((char*)data);
+			len = len - 1;
+			len2 = len2 - 1;
+			data = data + 1;
 		}
 	}
 	int __io_getchar(void) {

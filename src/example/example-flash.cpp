@@ -19,6 +19,7 @@ Gpio gpioUsart3Tx         { GPIO_USART3_TX_PORT, GPIO_USART3_TX_PIN };
 Gpio gpioUsart3Rx         { GPIO_USART3_RX_PORT, GPIO_USART3_RX_PIN };
 #endif
 
+#if defined(USE_USART_1)
 void initUsart1(void)
 {
 #if defined(STM32F0)
@@ -46,6 +47,7 @@ void initUsart1(void)
     uart1.setEnabled(ENABLE);
     uart1.cls();
 }
+#endif
 
 void initUsart2(void)
 {
@@ -120,8 +122,8 @@ void initParameters(void)
     if (f.verifyChecksum()) {
     	f.readBlock((uint16_t*)&params, sizeof(params)/sizeof(uint16_t)); // load configuration
     } else {
-    	printf("Bad Config!\n\r"); // use defaults
-    	f.printContents();
+    	//print("Bad Config!\r\n"); // use defaults
+    	//f.printContents();
     }
 
     // Update boot count and immediately write back
@@ -129,7 +131,7 @@ void initParameters(void)
     // We must update the checksum before committing to flash <- TODO move checksum step to flash library
     params.boot_count++;
 
-    writeParams(); // update boot count // TODO replace with param length? for endurance considerations and carryover after upgrade
+    //writeParams(); // update boot count // TODO replace with param length? for endurance considerations and carryover after upgrade
 }
 
 
@@ -145,19 +147,19 @@ void writeCorruptedBlock(void)
 // Print current parameter configuration
 void printParams(void)
 {
-	printf("bc: %d\n\r", params.boot_count);
+	print("\n\rbc: "); my_printInt(params.boot_count);
 
-	printf("Vm: %d\n\r", params.cell_v_min);
-	printf("Vto: %d\n\r", params.cell_v_min_timeout);
-	printf("Ve: %d\n\r", params.cell_v_event_count);
+	print(" Vm: "); my_printInt(params.cell_v_min);
+	print(" Vto: "); my_printInt(params.cell_v_min_timeout);
+	print(" Ve: "); my_printInt(params.cell_v_event_count);
 
-	printf("Tm: %d\n\r", params.temperature_max);
-	printf("Tto: %d\n\r", params.temperature_max_timeout);
-	printf("Te: %d\n\r", params.temperature_event_count);
+	print(" Tm: "); my_printInt(params.temperature_max);
+	print(" Tto: "); my_printInt(params.temperature_max_timeout);
+	print(" Te: "); my_printInt(params.temperature_event_count);
 
-	printf("Cm: %d\n\r", params.current_max);
-	printf("Cto: %d\n\r", params.current_max_timeout);
-	printf("Ce: %d\n\r", params.current_event_count);
+	print(" Cm: "); my_printInt(params.current_max);
+	print(" Cto: "); my_printInt(params.current_max_timeout);
+	print(" Ce: "); my_printInt(params.current_event_count);
 }
 
 
@@ -169,13 +171,11 @@ int main()
 
     initUsart2();
 
-    initParameters();
-    printParams();
+    print("sup");
+    mDelay(1000);
+    // initParameters();
+    // printParams();
 
-    uint32_t buf[] = { 0x00000000, 0x44474444, 0x88888888 };
-
-    uint32_t crc = crcCalcChecksum(buf, sizeof(buf) / sizeof(uint32_t));
-    
     while (1) {
         mDelay(500);
         gpioLed.toggle();
