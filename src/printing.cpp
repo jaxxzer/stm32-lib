@@ -1,6 +1,5 @@
 #include "printing.h"
 
-
 extern "C" {
 	// This is used by printf, which calls _write in syscalls.c
 	int16_t __io_putchar(uint8_t* ch, uint32_t file) {
@@ -10,8 +9,14 @@ extern "C" {
 			break;
 		case FD_STDERR:
 		case FD_USART1: // For example
-			USART_SendData(USART1, *ch);
-			while (USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET); // blocking!! can prevent code to run
+#ifdef USE_USART1
+			uart1.write((char*)ch);
+#endif
+			break;
+		case FD_USART2: // For example
+#ifdef USE_USART2
+			uart2.write((char*)ch);
+#endif
 			break;
 		case FD_USART3: // For example
 #ifdef USE_USART3
@@ -32,11 +37,11 @@ extern "C" {
 
 	int _write(int file, char* data, int len)	{
 		while (len--) {
-			STDOUT_USART.write((char*)data++);
+			__io_putchar((uint8_t*)data++, file);
 		}
 		return 0;
 	}
-	
+
 	int __io_getchar(void) {
 		// Code to read a character from the UART
 		return 0;
@@ -46,12 +51,14 @@ extern "C" {
 	int fputc(int ch, FILE *f)
 	{
 		return __io_putchar((uint8_t*)&ch, f->_file);
+		return 0;
 	}
 
 	int fputs(const char* str, FILE* stream) {
 		while (str) {
 			fputc(*(str++), stream);
 		}
+		return 0;
 	}
 
 }
@@ -95,8 +102,6 @@ void print_clocks()
 // 	}
 // 	puts("");
 // }
-
-
 
 void print(const char* c) {
 	while (*c != 0) {

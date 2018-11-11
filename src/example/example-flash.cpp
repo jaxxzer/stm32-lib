@@ -78,36 +78,28 @@ void initUsart2(void)
 }
 
 // Parameter configuration - retained across boots
+// TODO must be aligned on 4 byte boundary: make it 2 byte (like underlying flash hardware)
 // TODO we can squeeze this into 8 bit ints
 // TODO add write count to avoid over-wearing flash
 // The size of this struct MUST fall on 32bit boundaries
 struct params_t {
-	uint16_t boot_count;                     // boots since last mass erase
-
-	uint16_t cell_v_min              = 3100; // minimum milliVolts per cell allowed
-	uint16_t cell_v_min_timeout      = 2000; // milliseconds
-	uint16_t cell_v_event_count      = 0;
-
-	uint16_t temperature_max         = 5000; // centi-degrees C // TODO use kelvin to avoid negative numbers, or support negative numbers
-	uint16_t temperature_max_timeout = 2000; // milliseconds
-	uint16_t temperature_event_count = 0;
-
-	uint16_t current_max             = 8000; // centiAmps 0~15000 80A default limit
-	uint16_t current_max_timeout     = 2000; // milliseconds
-	uint16_t current_event_count     = 0;
-
-	uint16_t dynamic_reconfig        = 1;    // Allow dynamic reconfiguration via dip switch
-	const uint16_t struct_size       = sizeof(params_t); // Size of this structure, for upgrading to subsequent versions of this structure // TODO version instead?
-
-	uint32_t checksum                = 0;    // integrity check when loading from flash
+	uint16_t boot_count = 0;                     // boots since last mass erase
+    uint16_t last_key = 0;
+	uint32_t checksum = 0;    // integrity check when loading from flash
 } defaults;
 
 struct params_t params;
 
 Flash f {1, sizeof(params)/sizeof(uint16_t)};
 
+static uint8_t writeCount = 0;
 void writeParams(void)
 {
+    if (writeCount > 30) {
+        print("\n\rmax write count exceeded, not writing");
+        return;
+    }
+    writeCount++;
 	params.checksum = crcCalcChecksum((uint32_t*)&params, sizeof(params)/sizeof(uint32_t) - 1);
 	f.writeBlock((uint16_t*)&params, sizeof(params)/sizeof(uint16_t));
 }
@@ -134,8 +126,6 @@ void initParameters(void)
     writeParams(); // update boot count // TODO replace with param length? for endurance considerations and carryover after upgrade
 }
 
-
-
 // Introduce a corrupt block
 // Useful for testing checksum and validating error handling
 void writeCorruptedBlock(void)
@@ -147,21 +137,10 @@ void writeCorruptedBlock(void)
 // Print current parameter configuration
 void printParams(void)
 {
-	print("\n\rbc: "); my_printInt(params.boot_count);
+	print("\n\rboot count: "); my_printInt(params.boot_count);
+	print(" last key pressed: "); _write(FD_STDOUT, (char*)&(params.last_key), 1);
 
-	print(" Vm: "); my_printInt(params.cell_v_min);
-	print(" Vto: "); my_printInt(params.cell_v_min_timeout);
-	print(" Ve: "); my_printInt(params.cell_v_event_count);
-
-	print(" Tm: "); my_printInt(params.temperature_max);
-	print(" Tto: "); my_printInt(params.temperature_max_timeout);
-	print(" Te: "); my_printInt(params.temperature_event_count);
-
-	print(" Cm: "); my_printInt(params.current_max);
-	print(" Cto: "); my_printInt(params.current_max_timeout);
-	print(" Ce: "); my_printInt(params.current_event_count);
 }
-
 
 int main()
 {
@@ -179,6 +158,13 @@ int main()
     while (1) {
         mDelay(500);
         gpioLed.toggle();
+        int readchar = uart2.read();
+        while(readchar != -1) {
+            params.last_key = readchar;
+            writeParams();
+            printParams();
+            readchar = uart2.read();
+        }
     }
 
     return 0;
