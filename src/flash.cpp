@@ -37,6 +37,9 @@ void Flash::printBlock(uint16_t* block)
 
 // Find and set firstAvailableWordOffset
 void Flash::init() {
+	FLASH_SetLatency(FLASH_Latency_1);
+	crcInit();
+
 	firstAvailableWordOffset = _pageSize * _pages;
 
 	for (uint16_t* addr = pageAddress; addr < pageAddress + _pageSize * _pages; addr++) {

@@ -139,7 +139,6 @@ void printParams(void)
 {
 	print("\n\rboot count: "); my_printInt(params.boot_count);
 	print(" last key pressed: "); _write(FD_STDOUT, (char*)&(params.last_key), 1);
-
 }
 
 int main()
@@ -150,14 +149,14 @@ int main()
 
     initUsart2();
 
-    print("sup");
-    mDelay(1000);
     initParameters();
     printParams();
 
     while (1) {
         mDelay(500);
         gpioLed.toggle();
+
+        // Read in characters, save the last pressed character
         int readchar = uart2.read();
         while(readchar != -1) {
             params.last_key = readchar;

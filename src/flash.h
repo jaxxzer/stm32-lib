@@ -19,8 +19,7 @@ public:
 		: _blockSize(blockSize) // add two 16 bit words for the 32 bit checksum
 		, _pages(pages)
 	{
-	    FLASH_SetLatency(FLASH_Latency_1);
-	    crcInit();
+
 	}
 
 	static const uint16_t FLASH_ERASED = 0xFFFF;
