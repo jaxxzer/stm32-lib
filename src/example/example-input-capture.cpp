@@ -31,7 +31,7 @@ int main()
     gpioLed.init(GPIO_Mode_AF);
     gpioCapture.init(GPIO_Mode_AF);
     gpioLed.configAF(GPIO_LED1_AF);
-    gpioLed.configAF(GPIO_CAPTURE_AF);
+    gpioCapture.configAF(GPIO_CAPTURE_AF);
 #else
  #error
 #endif
@@ -42,6 +42,16 @@ int main()
 
     tco.init(TIM_OCMode_PWM1, 0, TIM_OutputState_Enable, TIM_OutputNState_Enable);
 
+
+
+#if defined(STM32F0)
+    nvic_config(TIM1_BRK_UP_TRG_COM_IRQn, 0, ENABLE);
+#elif defined(STM32F1)
+    nvic_config(TIM1_UP_IRQn, 0, 0, ENABLE);
+#elif defined(STM32F3)
+    nvic_config(TIM1_CC_IRQn, 0, 0, ENABLE);
+#endif
+
     timerCapture.setupCc1Callback(&risingCallback);
     //timer1.setupCc2Callback(&fallingCallback);
     timerCapture.initFreq(1e6); // 1MHz capture frequency
@@ -49,8 +59,8 @@ int main()
     timerCapture.interruptConfig(TIM_IT_CC1, ENABLE);
     //timer1.interruptConfig(TIM_IT_CC2, ENABLE);
 
-    tciRising.init(TIM_ICPolarity_BothEdge, 0, TIM_ICPSC_DIV1);
-    tciRising.init(TIM_ICPolarity_BothEdge, 0, TIM_ICPSC_DIV1, TIM_ICSelection_IndirectTI);
+    tciRising.init(TIM_ICPolarity_Rising);
+    //tciRising.init(TIM_ICPolarity_BothEdge, 0, TIM_ICPSC_DIV1, TIM_ICSelection_IndirectTI);
 
     // breath
     uint16_t duty = 0;
