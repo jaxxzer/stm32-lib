@@ -49,7 +49,7 @@ int main()
 #elif defined(STM32F1)
     nvic_config(TIM1_UP_IRQn, 0, 0, ENABLE);
 #elif defined(STM32F3)
-    nvic_config(TIM1_CC_IRQn, 0, 0, ENABLE);
+    //nvic_config(TIM1_CC_IRQn, 0, 0, ENABLE);
 #endif
 
     timerCapture.setupCc1Callback(&risingCallback);
@@ -59,7 +59,8 @@ int main()
     timerCapture.interruptConfig(TIM_IT_CC1, ENABLE);
     //timer1.interruptConfig(TIM_IT_CC2, ENABLE);
 
-    tciRising.init(TIM_ICPolarity_Rising);
+    // Note CCxS bits only writable when CCxE is 0 (channel is disabled)
+    tciRising.init(TIM_ICPolarity_Rising, 0xF);
     //tciRising.init(TIM_ICPolarity_BothEdge, 0, TIM_ICPSC_DIV1, TIM_ICSelection_IndirectTI);
 
     // breath
