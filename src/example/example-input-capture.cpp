@@ -8,7 +8,7 @@ TimerChannelOutput tco { &timer, GPIO_LED1_TIM_CH };
 Timer& timerCapture = CAPTURE_TIMER;
 Gpio gpioCapture { GPIO_CAPTURE_PORT, GPIO_CAPTURE_PIN };
 TimerChannelInput tciRising { &timerCapture, GPIO_CAPTURE_TIM_CH_RISING };
-//TimerChannelInput tciFalling { &timerCapture, GPIO_CAPTURE_TIM_CH_FALLING };
+TimerChannelOutput tcoFalling { &timerCapture, GPIO_CAPTURE_TIM_CH_FALLING };
 
 uint16_t riseCapture;
 uint32_t lastCapture;
@@ -17,6 +17,14 @@ void risingCallback(void)
     lastCapture = microseconds;
     riseCapture = tciRising._peripheral->CCR1;
 }
+
+
+void fallingCallback(void)
+{
+    lastCapture = microseconds;
+    riseCapture = tciRising._peripheral->CCR2;
+}
+
 
 int main()
 {
@@ -36,26 +44,22 @@ int main()
  #error
 #endif
 
-    timer.initFreq(1e4); // 10kHz pwm frequency
+    timer.initFreq(1e3); // 10kHz pwm frequency
     timer.setEnabled(ENABLE);
     timer.setMOE(ENABLE);
 
     tco.init(TIM_OCMode_PWM1, 0, TIM_OutputState_Enable, TIM_OutputNState_Enable);
 
-
-
-
-
     timerCapture.setupCc1Callback(&risingCallback);
-    //timer1.setupCc2Callback(&fallingCallback);
-    timerCapture.initFreq(1e6); // 1MHz capture frequency
+    timerCapture.setupCc2Callback(&fallingCallback);
+    timerCapture.initFreq(1e3); // 1MHz capture frequency
     timerCapture.setEnabled(ENABLE);    
     timerCapture.interruptConfig(TIM_IT_CC1, ENABLE);
-    //timer1.interruptConfig(TIM_IT_CC2, ENABLE);
+    timerCapture.interruptConfig(TIM_IT_CC2, ENABLE);
 
     // Note CCxS bits only writable when CCxE is 0 (channel is disabled)
     tciRising.init(TIM_ICPolarity_Rising, 0xF);
-    //tciRising.init(TIM_ICPolarity_BothEdge, 0, TIM_ICPSC_DIV1, TIM_ICSelection_IndirectTI);
+    tcoFalling.init(TIM_ICPolarity_Falling, 0xF, TIM_ICPSC_DIV1, TIM_ICSelection_IndirectTI);
 
 
 
