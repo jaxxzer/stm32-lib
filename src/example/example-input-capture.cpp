@@ -110,7 +110,7 @@ int main()
     while (1) { 
         mDelay(1);
         //print_clocks();
-        printf("T: %d, C: %d\r\n", fallTime - riseTime, fallCapture - riseCapture);
+        printf("T: %d, C: %d\r\n", (uint32_t)(fallTime - riseTime), (uint16_t)(fallCapture - riseCapture));
         tco.setDuty(duty);
         if ( (inc > 0 && inc > 65535 - duty) ||
              (inc < 0 && duty < -inc) )
