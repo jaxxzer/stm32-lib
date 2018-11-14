@@ -8,10 +8,10 @@ TimerChannelOutput tco { &timer, GPIO_LED1_TIM_CH };
 Timer& timerCapture = CAPTURE_TIMER;
 Gpio gpioCapture { GPIO_CAPTURE_PORT, GPIO_CAPTURE_PIN };
 TimerChannelInput tciRising { &timerCapture, GPIO_CAPTURE_TIM_CH_RISING };
-TimerChannelOutput tcoFalling { &timerCapture, GPIO_CAPTURE_TIM_CH_FALLING };
+TimerChannelInput tciFalling { &timerCapture, GPIO_CAPTURE_TIM_CH_FALLING };
 
-uint16_t riseCapture;
-uint32_t lastCapture;
+uint16_t riseCapture, fallCapture;
+uint32_t riseTime, fallTime;
 void risingCallback(void)
 {
     lastCapture = microseconds;
@@ -22,7 +22,7 @@ void risingCallback(void)
 void fallingCallback(void)
 {
     lastCapture = microseconds;
-    riseCapture = tciRising._peripheral->CCR2;
+    fallCapture = tciRising._peripheral->CCR2;
 }
 
 
@@ -58,8 +58,8 @@ int main()
     timerCapture.interruptConfig(TIM_IT_CC2, ENABLE);
 
     // Note CCxS bits only writable when CCxE is 0 (channel is disabled)
-    tciRising.init(TIM_ICPolarity_Rising, 0xF);
-    tcoFalling.init(TIM_ICPolarity_Falling, 0xF, TIM_ICPSC_DIV1, TIM_ICSelection_IndirectTI);
+    tciRising.init(TIM_ICPolarity_Falling, 0xF);
+    tciFalling.init(TIM_ICPolarity_Rising, 0xF, TIM_ICPSC_DIV1, TIM_ICSelection_IndirectTI);
 
 
 
