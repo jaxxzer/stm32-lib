@@ -1,9 +1,42 @@
 #include "stm32lib-conf.h"
 
+#define USART_BAUDRATE 1e6
+
 Timer& timer = GPIO_LED1_TIMER;
 Gpio gpioLed { GPIO_LED1_PORT, GPIO_LED1_PIN };
 TimerChannelOutput tco { &timer, GPIO_LED1_TIM_CH };
 
+
+void initUsart2(void)
+{
+    Gpio gpioUsart2Tx         { GPIO_USART2_TX_PORT, GPIO_USART2_TX_PIN };
+    Gpio gpioUsart2Rx         { GPIO_USART2_RX_PORT, GPIO_USART2_RX_PIN };
+
+#if defined(STM32F0)
+    nvic_config(USART2_IRQn, 0, ENABLE);
+#elif defined(STM32F1) || defined(STM32F3)
+    nvic_config(USART2_IRQn, 0, 0, ENABLE);
+#else
+ #error
+#endif
+
+	gpioUsart2Rx.init(GPIO_Mode_AF);
+    gpioUsart2Tx.init(GPIO_Mode_AF);
+
+#if defined(STM32F0) || defined(STM32F3)
+    gpioUsart2Rx.configAF(GPIO_USART2_RX_AF);
+    gpioUsart2Tx.configAF(GPIO_USART2_TX_AF);
+#elif defined(STM32F1)
+    Gpio::remapConfig(GPIO_USART2_REMAP, ENABLE);
+#else
+ #error
+#endif
+
+    uart2.init(USART_BAUDRATE);
+    uart2.ITConfig(USART_IT_RXNE, ENABLE);
+    uart2.setEnabled(ENABLE);
+    uart2.cls();
+}
 
 Timer& timerCapture = CAPTURE_TIMER;
 Gpio gpioCapture { GPIO_CAPTURE_PORT, GPIO_CAPTURE_PIN };
@@ -12,16 +45,16 @@ TimerChannelInput tciFalling { &timerCapture, GPIO_CAPTURE_TIM_CH_FALLING };
 
 uint16_t riseCapture, fallCapture;
 uint32_t riseTime, fallTime;
+
 void risingCallback(void)
 {
-    lastCapture = microseconds;
+    riseTime = microseconds;
     riseCapture = tciRising._peripheral->CCR1;
 }
 
-
 void fallingCallback(void)
 {
-    lastCapture = microseconds;
+    fallTime = microseconds;
     fallCapture = tciRising._peripheral->CCR2;
 }
 
@@ -29,7 +62,7 @@ void fallingCallback(void)
 int main()
 {
     configureClocks(1000);
-
+    initUsart2();
 #if defined(STM32F1)
     gpioLed.init(GPIO_Mode_AF_PP);
     gpioCapture.init(GPIO_Mode_AF_OD);
@@ -52,7 +85,7 @@ int main()
 
     timerCapture.setupCc1Callback(&risingCallback);
     timerCapture.setupCc2Callback(&fallingCallback);
-    timerCapture.initFreq(1e3); // 1MHz capture frequency
+    timerCapture.init(72); // 1MHz clock frequency
     timerCapture.setEnabled(ENABLE);    
     timerCapture.interruptConfig(TIM_IT_CC1, ENABLE);
     timerCapture.interruptConfig(TIM_IT_CC2, ENABLE);
@@ -76,6 +109,8 @@ int main()
     int8_t inc = 75;
     while (1) { 
         mDelay(1);
+        //print_clocks();
+        printf("T: %d, C: %d\r\n", fallTime - riseTime, fallCapture - riseCapture);
         tco.setDuty(duty);
         if ( (inc > 0 && inc > 65535 - duty) ||
              (inc < 0 && duty < -inc) )
