@@ -1,4 +1,5 @@
-include src/board/nucleo-f334.mk
+BOARD ?= nucleo-f072
+include src/board/$(BOARD).mk
 
 TARGET_MCU ?= STM32F303RE
 
@@ -15,7 +16,7 @@ OPENOCD_TARGET = target/stm32f0x.cfg
 OPENOCD_FLASH_DRIVER = stm32f1x
 ARCH_FLAGS += -DSTM32F0
 SYSTEM_FILE = system_stm32f0xx.c
-ARCH_FLAGS += -DSTM32F030
+ARCH_FLAGS += -DSTM32F072
 ARCH_FLAGS += -mcpu=cortex-m0 -mthumb
 LD_FLAGS = -specs=nano.specs -specs=nosys.specs --static -mthumb -mcpu=cortex-m0 -mfpu=vfp -ggdb3 -Wl,--cref -Wl,--gc-sections -Wl,--start-group -lc -lgcc -lnosys -Wl,--end-group 
 endif

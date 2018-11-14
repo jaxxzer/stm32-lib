@@ -44,7 +44,7 @@
         },
 
         {
-            "name": "F030-nucleo",
+            "name": "F072-nucleo",
             "cwd": "${workspaceRoot}",
             "executable": "build/bin/debug.elf",
             "request": "launch",
@@ -54,7 +54,7 @@
                 "openocd/f0-nucleo.cfg"
             ],
             "svdFile": "${workspaceRoot}/svd/stm32f0/STM32F0x0.svd",
-            "device": "STM32F030"
+            "device": "STM32F072"
         },
         {
             "name": "F103-nucleo",
