@@ -97,10 +97,12 @@ int main()
     timer.setMOE(ENABLE);
 
     tco.init(TIM_OCMode_PWM1, 0, TIM_OutputState_Enable, TIM_OutputNState_Enable);
+    TIM_SelectInputTrigger(TIM1, TIM_TS_TI1FP1);
+    TIM_SelectSlaveMode(TIM1, TIM_SlaveMode_Reset);
 
     timerCapture.setupCc1Callback(&risingCallback);
     timerCapture.setupCc2Callback(&fallingCallback);
-    timerCapture.init(2); // 1MHz clock frequency
+    timerCapture.init(); // 1MHz clock frequency
     timerCapture.setEnabled(ENABLE);    
     timerCapture.interruptConfig(TIM_IT_CC1, ENABLE);
     timerCapture.interruptConfig(TIM_IT_CC2, ENABLE);

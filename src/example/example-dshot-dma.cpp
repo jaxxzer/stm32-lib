@@ -68,8 +68,8 @@ void risingCallback(void)
 void fallingCallback(void)
 {
     fallTime = microseconds;
-    fallCapture = tciFalling._peripheral->CCR2;
-    captures[captureIndex++] = fallCapture;
+    fallCapture = tciRising._peripheral->CCR2;
+    captures[captureIndex++] = fallCapture - riseCapture;
     captureIndex = captureIndex % numCaptures;
 }
 
@@ -100,14 +100,14 @@ int main()
 
     timerCapture.setupCc1Callback(&risingCallback);
     timerCapture.setupCc2Callback(&fallingCallback);
-    timerCapture.init(2); // 1MHz clock frequency
+    timerCapture.init(); // 1MHz clock frequency
     timerCapture.setEnabled(ENABLE);    
     timerCapture.interruptConfig(TIM_IT_CC1, ENABLE);
     timerCapture.interruptConfig(TIM_IT_CC2, ENABLE);
 
     // Note CCxS bits only writable when CCxE is 0 (channel is disabled)
-    tciRising.init(TIM_ICPolarity_Rising, 0x0);
-    tciFalling.init(TIM_ICPolarity_Falling, 0x0, TIM_ICPSC_DIV1, TIM_ICSelection_IndirectTI);
+    tciRising.init(TIM_ICPolarity_Falling, 0x0);
+    tciFalling.init(TIM_ICPolarity_Rising, 0x0, TIM_ICPSC_DIV1, TIM_ICSelection_IndirectTI);
 
 
 
