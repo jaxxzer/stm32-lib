@@ -44,10 +44,11 @@ Timer& timerCapture = CAPTURE_TIMER;
 Gpio gpioCapture { GPIO_CAPTURE_PORT, GPIO_CAPTURE_PIN };
 TimerChannelInput tciRising { &timerCapture, GPIO_CAPTURE_TIM_CH_RISING };
 TimerChannelInput tciFalling { &timerCapture, GPIO_CAPTURE_TIM_CH_FALLING };
+TimerChannelOutput tcoFraming { &timerCapture, TIM_Channel_3 };
 
-const uint8_t numCaptures = 10;
-uint16_t riseCapture, fallCapture, captures[numCaptures], captureIndex = 0;
-uint32_t riseTime, fallTime;
+const uint8_t numCaptures = 50;
+volatile uint16_t riseCapture, fallCapture, captures[numCaptures], captureIndex = 0;
+volatile uint32_t riseTime, fallTime;
 
 const uint16_t dshot_bit_duration_ns = 1670;
 const uint16_t dshot_1_high_duration_ns = 2 * dshot_bit_duration_ns / 2.675f;
@@ -61,18 +62,25 @@ const uint16_t dshot_0_tim_cnt = dshot_0_high_duration_ns / dshot_tim_period;
 
 void risingCallback(void)
 {
-    riseTime = microseconds;
+    // Period
     riseCapture = tciRising._peripheral->CCR1;
+    //captures[captureIndex++] = riseCapture;
+
 }
 
 void fallingCallback(void)
 {
-    fallTime = microseconds;
+    // Duty cycle
     fallCapture = tciFalling._peripheral->CCR2;
     captures[captureIndex++] = fallCapture;
     captureIndex = captureIndex % numCaptures;
 }
 
+void cc3Callback(void)
+{
+    // timeout
+    captureIndex = 0;
+}
 
 int main()
 {
@@ -102,16 +110,17 @@ int main()
 
     timerCapture.setupCc1Callback(&risingCallback);
     timerCapture.setupCc2Callback(&fallingCallback);
+    timerCapture.setupCc3Callback(&cc3Callback);
     timerCapture.init(); // 1MHz clock frequency
     timerCapture.setEnabled(ENABLE);    
     timerCapture.interruptConfig(TIM_IT_CC1, ENABLE);
     timerCapture.interruptConfig(TIM_IT_CC2, ENABLE);
+    timerCapture.interruptConfig(TIM_IT_CC3, ENABLE);
 
     // Note CCxS bits only writable when CCxE is 0 (channel is disabled)
+    tcoFraming.init(TIM_OCMode_PWM1, 600, TIM_OutputState_Enable);
     tciRising.init(TIM_ICPolarity_Rising, 0x0);
     tciFalling.init(TIM_ICPolarity_Falling, 0x0, TIM_ICPSC_DIV1, TIM_ICSelection_IndirectTI);
-
-
 
 #if defined(STM32F0)
     nvic_config(TIM1_BRK_UP_TRG_COM_IRQn, 0, ENABLE);
@@ -128,8 +137,10 @@ int main()
         mDelay(1);
         //print_clocks();
         for ( uint8_t i = 0; i < numCaptures; i++) {
-          printf("%d, ", captures[i]);
+            if(captures[i] > 0) {
+                printf("%d, ", captures[i]);
 
+            }
         }
         printf("\r\n");
         tco.setDuty(duty);
