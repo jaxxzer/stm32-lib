@@ -65,6 +65,7 @@ void risingCallback(void)
     // Period
     riseCapture = tciRising._peripheral->CCR1;
     //captures[captureIndex++] = riseCapture;
+    //captureIndex = captureIndex % numCaptures;
 
 }
 
@@ -76,10 +77,16 @@ void fallingCallback(void)
     captureIndex = captureIndex % numCaptures;
 }
 
+volatile bool gotCapture = false;
+volatile uint16_t frameLength;
 void cc3Callback(void)
 {
     // timeout
+    captures[captureIndex] = 0;
+    frameLength = captureIndex;
     captureIndex = 0;
+
+    gotCapture = true;
 }
 
 int main()
@@ -136,13 +143,15 @@ int main()
     while (1) { 
         mDelay(1);
         //print_clocks();
-        for ( uint8_t i = 0; i < numCaptures; i++) {
-            if(captures[i] > 0) {
+        if (gotCapture) {
+            gotCapture = false;
+            printf("%d ", frameLength);
+            for ( uint8_t i = 0; i < frameLength; i++) {
                 printf("%d, ", captures[i]);
-
             }
+            printf("\r\n");
         }
-        printf("\r\n");
+
         tco.setDuty(duty);
         if ( (inc > 0 && inc > 65535 - duty) ||
              (inc < 0 && duty < -inc) )
