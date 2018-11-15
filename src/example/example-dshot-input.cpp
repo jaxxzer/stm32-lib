@@ -1,6 +1,8 @@
 #include "stm32lib-conf.h"
 
-#define USART_BAUDRATE 1e6
+#define DSHOT 600
+
+#define USART_BAUDRATE 230400
 
 Timer& timer = GPIO_LED1_TIMER;
 Gpio gpioLed { GPIO_LED1_PORT, GPIO_LED1_PIN };
@@ -43,8 +45,19 @@ Gpio gpioCapture { GPIO_CAPTURE_PORT, GPIO_CAPTURE_PIN };
 TimerChannelInput tciRising { &timerCapture, GPIO_CAPTURE_TIM_CH_RISING };
 TimerChannelInput tciFalling { &timerCapture, GPIO_CAPTURE_TIM_CH_FALLING };
 
-uint16_t riseCapture, fallCapture;
+const uint8_t numCaptures = 10;
+uint16_t riseCapture, fallCapture, captures[numCaptures], captureIndex = 0;
 uint32_t riseTime, fallTime;
+
+const uint16_t dshot_bit_duration_ns = 1670;
+const uint16_t dshot_1_high_duration_ns = 2 * dshot_bit_duration_ns / 2.675f;
+const uint16_t dshot_0_high_duration_ns = 1 * dshot_bit_duration_ns / 2.675f;
+
+const uint32_t dshot_tim_freq = 72000000;
+const double dshot_tim_period = 1.0 / dshot_tim_freq;
+const uint16_t dshot_1_tim_cnt = dshot_1_high_duration_ns / dshot_tim_period;
+const uint16_t dshot_0_tim_cnt = dshot_0_high_duration_ns / dshot_tim_period;
+
 
 void risingCallback(void)
 {
@@ -56,6 +69,8 @@ void fallingCallback(void)
 {
     fallTime = microseconds;
     fallCapture = tciRising._peripheral->CCR2;
+    captures[captureIndex++] = fallCapture - riseCapture;
+    captureIndex = captureIndex % numCaptures;
 }
 
 
@@ -77,7 +92,7 @@ int main()
  #error
 #endif
 
-    timer.initFreq(1e6); // 10kHz pwm frequency
+    timer.initFreq(1e3); // 10kHz pwm frequency
     timer.setEnabled(ENABLE);
     timer.setMOE(ENABLE);
 
@@ -85,14 +100,14 @@ int main()
 
     timerCapture.setupCc1Callback(&risingCallback);
     timerCapture.setupCc2Callback(&fallingCallback);
-    timerCapture.init(72); // 1MHz clock frequency
+    timerCapture.init(); // 1MHz clock frequency
     timerCapture.setEnabled(ENABLE);    
     timerCapture.interruptConfig(TIM_IT_CC1, ENABLE);
     timerCapture.interruptConfig(TIM_IT_CC2, ENABLE);
 
     // Note CCxS bits only writable when CCxE is 0 (channel is disabled)
-    tciRising.init(TIM_ICPolarity_Falling, 0xF);
-    tciFalling.init(TIM_ICPolarity_Rising, 0xF, TIM_ICPSC_DIV1, TIM_ICSelection_IndirectTI);
+    tciRising.init(TIM_ICPolarity_Falling, 0x0);
+    tciFalling.init(TIM_ICPolarity_Rising, 0x0, TIM_ICPSC_DIV1, TIM_ICSelection_IndirectTI);
 
 
 
@@ -110,7 +125,11 @@ int main()
     while (1) { 
         mDelay(1);
         //print_clocks();
-        printf("T: %d, C: %d\r\n", (uint32_t)(fallTime - riseTime), (uint16_t)(fallCapture - riseCapture));
+        for ( uint8_t i = 0; i < numCaptures; i++) {
+          printf("%d, ", captures[i]);
+
+        }
+        printf("\r\n");
         tco.setDuty(duty);
         if ( (inc > 0 && inc > 65535 - duty) ||
              (inc < 0 && duty < -inc) )
