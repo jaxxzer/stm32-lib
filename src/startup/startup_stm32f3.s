@@ -176,8 +176,8 @@ g_pfnVectors:
 	.word	EXTI9_5_IRQHandler
 	.word	TIM1_BRK_TIM15_IRQHandler
 	.word	TIM1_UP_TIM16_IRQHandler
-	.word	USART1_IRQHandler
 	.word	0
+	.word	USART1_IRQHandler
 	.word	TIM2_IRQHandler
 	.word	TIM3_IRQHandler
 	.word	TIM4_IRQHandler
