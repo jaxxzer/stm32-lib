@@ -153,12 +153,32 @@ int main()
         //print_clocks();
         if (gotCapture) {
             gotCapture = false;
+            uint16_t packet = 0;
             uint16_t throttle = 0;
-            for (uint8_t i = 0; i < 11; i++) {
+            uint8_t telemRequest = fallCaptures[11] > 250;
+            uint8_t csum = 0;
+            for (uint8_t i = 0; i < 16; i++) {
                 bool bit = fallCaptures[i] > 250;
-                throttle |= bit;
-                throttle = throttle << 1;
+                //printf("%d", bit);
+                packet = packet << 1;
+                packet |= bit;
             }
+
+            csum = packet & 0xf;
+            packet = packet >> 4;
+            telemRequest = packet & 0x1;
+            throttle = packet >> 1;
+
+            uint16_t csumCheck = 0;
+            for (uint8_t i = 0; i < 3; i++) {
+                csumCheck ^= packet;
+                packet >>= 4;
+            }
+
+            csumCheck &= 0xf;
+
+
+            
             //printf("%d ", frameFallCaptures);
             // for ( uint8_t i = 0; i < frameFallCaptures; i++) {
             //     printf("%d, ", fallCaptures[i]);
@@ -167,7 +187,7 @@ int main()
             // for ( uint8_t i = 0; i < frameRiseCaptures; i++) {
             //     printf("%d, ", riseCaptures[i]);
             // }
-            printf("%d\r\n", throttle);
+            printf("%d %d %d %d\r\n", throttle, telemRequest, csum, csumCheck);
         }
 
         tco.setDuty(duty);
