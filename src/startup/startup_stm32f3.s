@@ -176,8 +176,8 @@ g_pfnVectors:
 	.word	EXTI9_5_IRQHandler
 	.word	TIM1_BRK_TIM15_IRQHandler
 	.word	TIM1_UP_TIM16_IRQHandler
-	.word	TIM1_TRG_COM_TIM17_IRQHandler
-	.word	TIM1_CC_IRQHandler
+	.word	USART1_IRQHandler
+	.word	0
 	.word	TIM2_IRQHandler
 	.word	TIM3_IRQHandler
 	.word	TIM4_IRQHandler
@@ -187,7 +187,7 @@ g_pfnVectors:
 	.word	I2C2_ER_IRQHandler
 	.word	SPI1_IRQHandler
 	.word	SPI2_IRQHandler
-	.word	USART1_IRQHandler
+	.word	0
 	.word	USART2_IRQHandler
 	.word	USART3_IRQHandler
 	.word	EXTI15_10_IRQHandler
