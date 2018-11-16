@@ -153,16 +153,21 @@ int main()
         //print_clocks();
         if (gotCapture) {
             gotCapture = false;
-            printf("f%d ", frameFallCaptures);
-            for ( uint8_t i = 0; i < frameFallCaptures; i++) {
-                printf("%d, ", fallCaptures[i]);
+            uint16_t throttle = 0;
+            for (uint8_t i = 0; i < 11; i++) {
+                bool bit = fallCaptures[i] > 250;
+                throttle |= bit;
+                throttle = throttle << 1;
             }
-            printf("\r\n");
-            printf("r%d ", frameRiseCaptures);
-            for ( uint8_t i = 0; i < frameRiseCaptures; i++) {
-                printf("%d, ", riseCaptures[i]);
-            }
-            printf("\r\n");
+            //printf("%d ", frameFallCaptures);
+            // for ( uint8_t i = 0; i < frameFallCaptures; i++) {
+            //     printf("%d, ", fallCaptures[i]);
+            // }
+            //printf("%d ", frameRiseCaptures);
+            // for ( uint8_t i = 0; i < frameRiseCaptures; i++) {
+            //     printf("%d, ", riseCaptures[i]);
+            // }
+            printf("%d\r\n", throttle);
         }
 
         tco.setDuty(duty);
