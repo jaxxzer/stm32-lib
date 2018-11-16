@@ -1,1 +1,1 @@
-[{"node":"GPIOC","expanded":true,"format":0},{"node":"TIM1","expanded":true,"format":0},{"node":"TIM1.CCER","expanded":true,"format":0},{"node":"TIM1.PSC","expanded":true,"format":0},{"node":"TIM1.ARR","expanded":true,"format":0}]
+[{"node":"GPIOA.MODER","expanded":true,"format":0},{"node":"GPIOC","expanded":true,"format":0},{"node":"GPIOC.ODR","expanded":true,"format":0},{"node":"RCC","expanded":true,"format":0},{"node":"RCC.AHBENR","expanded":true,"format":0}]

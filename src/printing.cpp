@@ -5,7 +5,9 @@ extern "C" {
 	int16_t __io_putchar(uint8_t* ch, uint32_t file) {
 		switch(file) {
 		case FD_STDOUT: // TODO find an easy way to map this (function pointer?) without modifying library
-			STDOUT_USART.write((char*)ch);
+			#if defined(STDOUT_USART)
+				STDOUT_USART.write((char*)ch);
+			#endif
 			break;
 		case FD_STDERR:
 		case FD_USART1: // For example

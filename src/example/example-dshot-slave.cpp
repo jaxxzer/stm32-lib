@@ -47,7 +47,10 @@ TimerChannelInput tciFalling { &timerCapture, GPIO_CAPTURE_TIM_CH_FALLING };
 TimerChannelOutput tcoFraming { &timerCapture, TIM_Channel_3 };
 
 const uint8_t numCaptures = 50;
-volatile uint16_t riseCapture, fallCapture, captures[numCaptures], captureIndex = 0;
+volatile uint16_t riseCapture;
+volatile uint16_t fallCapture;
+volatile uint16_t fallCaptures[numCaptures], fallCaptureIndex = 0;
+volatile uint16_t riseCaptures[numCaptures], riseCaptureIndex = 0;
 volatile uint32_t riseTime, fallTime;
 
 const uint16_t dshot_bit_duration_ns = 1670;
@@ -64,8 +67,8 @@ void risingCallback(void)
 {
     // Period
     riseCapture = tciRising._peripheral->CCR1;
-    //captures[captureIndex++] = riseCapture;
-    //captureIndex = captureIndex % numCaptures;
+    riseCaptures[riseCaptureIndex++] = riseCapture;
+    riseCaptureIndex = riseCaptureIndex % numCaptures;
 
 }
 
@@ -73,18 +76,23 @@ void fallingCallback(void)
 {
     // Duty cycle
     fallCapture = tciFalling._peripheral->CCR2;
-    captures[captureIndex++] = fallCapture;
-    captureIndex = captureIndex % numCaptures;
+    fallCaptures[fallCaptureIndex++] = fallCapture;
+    fallCaptureIndex = fallCaptureIndex % numCaptures;
 }
 
 volatile bool gotCapture = false;
-volatile uint16_t frameLength;
+volatile uint16_t frameFallCaptures;
+volatile uint16_t frameRiseCaptures;
+
 void cc3Callback(void)
 {
     // timeout
-    captures[captureIndex] = 0;
-    frameLength = captureIndex;
-    captureIndex = 0;
+
+    frameFallCaptures = fallCaptureIndex;
+    frameRiseCaptures = riseCaptureIndex;
+
+    riseCaptureIndex = 0;
+    fallCaptureIndex = 0;
 
     gotCapture = true;
 }
@@ -145,9 +153,14 @@ int main()
         //print_clocks();
         if (gotCapture) {
             gotCapture = false;
-            printf("%d ", frameLength);
-            for ( uint8_t i = 0; i < frameLength; i++) {
-                printf("%d, ", captures[i]);
+            printf("f%d ", frameFallCaptures);
+            for ( uint8_t i = 0; i < frameFallCaptures; i++) {
+                printf("%d, ", fallCaptures[i]);
+            }
+            printf("\r\n");
+            printf("r%d ", frameRiseCaptures);
+            for ( uint8_t i = 0; i < frameRiseCaptures; i++) {
+                printf("%d, ", riseCaptures[i]);
             }
             printf("\r\n");
         }

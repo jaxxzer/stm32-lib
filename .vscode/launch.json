@@ -42,7 +42,19 @@
                 "openocd/f3.cfg"
             ]
         },
-
+        {
+            "name": "F334",
+            "cwd": "${workspaceRoot}",
+            "executable": "build/bin/debug.elf",
+            "request": "launch",
+            "type": "cortex-debug",
+            "servertype": "openocd",
+            "configFiles": [
+                "openocd/f3.cfg"
+            ],
+            "svdFile": "${workspaceRoot}/svd/stm32f3/STM32F3x4.svd",
+            "device": "STM32F334"
+        },
         {
             "name": "F072-nucleo",
             "cwd": "${workspaceRoot}",
