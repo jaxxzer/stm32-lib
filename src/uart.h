@@ -58,7 +58,7 @@ public:
 
 	void setClockEnabled(FunctionalState enabled);
 
-	static const uint8_t bufSize = 64;
+	static const uint8_t bufSize = 128;
 	char rxBuf[bufSize];
 	char txBuf[bufSize];
 
@@ -86,9 +86,3 @@ extern Uart uart2;
 #ifdef USE_USART_3
 extern Uart uart3;
 #endif
-
-#ifdef USART_STDOUT
-extern Uart* uartStdout;
-#endif
-//Uart uart2 { USART2 };
-//Uart uart3 { USART3 };

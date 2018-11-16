@@ -19,7 +19,7 @@ Gpio gpioUsart3Tx         { GPIO_USART3_TX_PORT, GPIO_USART3_TX_PIN };
 Gpio gpioUsart3Rx         { GPIO_USART3_RX_PORT, GPIO_USART3_RX_PIN };
 #endif
 
-#if defined (USE_USART1)
+#if defined (USE_USART_1)
 void initUsart1(void)
 {
 #if defined(STM32F0)
@@ -48,8 +48,8 @@ void initUsart1(void)
     uart1.cls();
 }
 #endif
-#define USE_USART2
-#if defined (USE_USART2)
+
+#if defined (USE_USART_2)
 void initUsart2(void)
 {
 #if defined(STM32F0)
@@ -113,7 +113,7 @@ int main()
 {
     configureClocks(1000);
 
-    gpioLed.init(GPIO_LED1_MODE);
+    gpioLed.init(GPIO_Mode_OUT);
 
 #if defined(USE_USART_1)
     initUsart1();
@@ -128,7 +128,17 @@ int main()
 #endif
 
     while (1) {
-        STDOUT_USART.write("hello ", 6);
+        #if defined(USE_USART_1)
+            uart1.write("hello1 ", 7);
+        #endif
+
+        #if defined(USE_USART_2)
+            uart2.write("hello2 ", 7);
+        #endif
+
+        #if defined(USE_USART_3)
+            uart3.write("hello3 ", 7);
+        #endif
         mDelay(100);
         gpioLed.toggle();
     }
