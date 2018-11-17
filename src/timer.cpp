@@ -72,6 +72,11 @@ void TimerChannelInput::setEnabled(FunctionalState enabled)
 	TIM_CCxCmd(_peripheral, _channel, _enabled);
 }
 
+void Timer::setRepetitionCounter(uint16_t repetitions)
+{
+	_peripheral->RCR = repetitions;
+}
+
 void TimerChannelInput::_init(void)
 {
 	_enabled = ENABLE;

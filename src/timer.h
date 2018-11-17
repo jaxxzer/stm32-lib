@@ -53,6 +53,7 @@ public:
     void setEnabled(FunctionalState enabled); // enable output
     void setClockEnabled(FunctionalState enabled);
     void preloadConfig(FunctionalState enabled);
+	void setRepetitionCounter(uint16_t repetitions);
     void setCCPreloadControl(FunctionalState enabled);
     uint32_t getAutoreload(void);
     bool setFrequency(uint32_t f);

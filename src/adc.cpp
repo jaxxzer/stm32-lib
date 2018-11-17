@@ -196,8 +196,10 @@ void Adc::_dmaConfig(void)
 
 	dma1c1.setEnabled(ENABLE);
 
-#ifdef STM32F0
+#if defined(STM32F0)
 	ADC_DMARequestModeConfig(ADC1, ADC_DMAMode_Circular); // use oneshot mode for non-continuous conversion
+#else
+//#error
 #endif
 	ADC_DMACmd(ADC1, ENABLE);
 }
