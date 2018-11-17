@@ -63,6 +63,7 @@ const uint16_t dshot_1_tim_cnt = dshot_1_high_duration_ns / dshot_tim_period;
 const uint16_t dshot_0_tim_cnt = dshot_0_high_duration_ns / dshot_tim_period;
 
 
+static const uint16_t dshot_threshold = 700;
 void risingCallback(void)
 {
     // Period
@@ -156,16 +157,16 @@ int main()
             gotCapture = false;
             uint16_t packet = 0;
             uint16_t throttle = 0;
-            uint8_t telemRequest = fallCaptures[11] > 250;
+            uint8_t telemRequest = 0;
             uint8_t csum = 0;
             for (uint8_t i = 0; i < 16; i++) {
-                bool bit = fallCaptures[i] > 250;
-                printf("%d ", fallCaptures[i]);
+                bool bit = fallCaptures[i] > dshot_threshold;
+                //printf("%d ", fallCaptures[i]);
                 //printf("%d", bit);
                 packet = packet << 1;
-                packet |= bit;
+                packet = packet | bit;
             }
-            printf("\r\n");
+            //printf("  %d\r\n", packet);
 
             csum = packet & 0xf;
             packet = packet >> 4;
