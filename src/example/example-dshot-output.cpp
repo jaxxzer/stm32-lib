@@ -16,6 +16,7 @@ int main()
 #else
  #error
 #endif
+    nvic_config(TIM1_UP_TIM16_IRQn, 0, 0, ENABLE);
 
     timer.initFreq(1); // 1Hz update frequency
     tco.init(TIM_OCMode_PWM1, 20000, TIM_OutputState_Enable);
@@ -24,7 +25,7 @@ int main()
     // Using channel 2, ADC (when declared) uses channel 1
     Dma dma1c2 = Dma(DMA1_Channel2);
 
-    dma1c2.init(timer.peripheral()->CCR1,
+    dma1c2.init((uint32_t)&timer.peripheral()->CCR1,
                 (uint32_t)&pulses,
                 sizeof(pulses),
                 DMA_DIR_PeripheralDST,
@@ -38,8 +39,11 @@ int main()
 
     dma1c2.setEnabled(ENABLE);
     TIM_DMACmd(timer.peripheral(), TIM_DMA_Update, ENABLE);
+//TIM_SelectCCDMA(timer.peripheral(), ENABLE);
 
     timer.setEnabled(ENABLE);
+        timer1.interruptConfig(TIM_IT_Update, ENABLE);
+
     timer.setMOE(ENABLE);
     while (1) { 
 
