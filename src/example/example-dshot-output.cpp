@@ -4,7 +4,11 @@ Timer& timer = GPIO_LED1_TIMER;
 Gpio gpioLed { GPIO_LED1_PORT, GPIO_LED1_PIN };
 TimerChannelOutput tco { &timer, GPIO_LED1_TIM_CH };
 
-uint16_t pulses[] = { 2000, 2000, 2000, 2000, 2000, 2000, 2000, 2000, 2000, 2000, 2000, 1000, 2000, 2000, 2000, 1000, 0 };
+static const uint16_t dshot_0 = 1000;
+static const uint16_t dshot_1 = 2 * dshot_0;
+static const uint16_t dshot_period = 3 * dshot_0;
+uint16_t pulses[] = { dshot_1, dshot_1, dshot_1, dshot_1, dshot_1, dshot_1, dshot_1, dshot_1, dshot_1, dshot_1, dshot_1, dshot_0, dshot_1, dshot_1, dshot_1, dshot_1, dshot_0, 0 };
+
 int main()
 {
     configureClocks(1000);
@@ -16,10 +20,10 @@ int main()
 #else
  #error
 #endif
-    nvic_config(TIM2_IRQn, 0, 0, ENABLE);
+    //nvic_config(TIM2_IRQn, 0, 0, ENABLE);
 
     //timer.initFreq(10000);
-    timer.init(0, 4000);
+    timer.init(0, dshot_period);
     tco.init(TIM_OCMode_PWM1, 0, TIM_OutputState_Enable);
 
 
@@ -42,7 +46,7 @@ int main()
     //TIM1->DCR = TIM_DMABase_CCR1 | TIM_DMABurstLength_1Transfer;
     TIM_DMACmd(timer.peripheral(), TIM_DMA_Update, ENABLE);
 //TIM_SelectCCDMA(timer.peripheral(), ENABLE);
-        timer.interruptConfig(TIM_IT_Update, ENABLE);
+        //timer.interruptConfig(TIM_IT_Update, ENABLE);
 
     timer.setEnabled(ENABLE);
 
