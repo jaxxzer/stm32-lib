@@ -4,7 +4,7 @@ Timer& timer = GPIO_LED1_TIMER;
 Gpio gpioLed { GPIO_LED1_PORT, GPIO_LED1_PIN };
 TimerChannelOutput tco { &timer, GPIO_LED1_TIM_CH };
 
-uint16_t pulses[] = { 255, 2047, 255, 2047, 2047 };
+uint16_t pulses[] = { 255, 2047, 255, 255, 2047 };
 int main()
 {
     configureClocks(1000);
@@ -29,9 +29,9 @@ int main()
                 (uint32_t)&pulses[0],
                 4,
                 DMA_DIR_PeripheralDST,
-                DMA_PeripheralDataSize_HalfWord,
+                DMA_PeripheralDataSize_Word,
                 DMA_MemoryDataSize_HalfWord,
-                DMA_Mode_Circular,
+                DMA_Mode_Normal,
                 DMA_Priority_Medium,
                 DMA_MemoryInc_Enable,
                 DMA_PeripheralInc_Disable,
