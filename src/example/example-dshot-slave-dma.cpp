@@ -8,7 +8,8 @@ Timer& timer = GPIO_LED1_TIMER;
 Gpio gpioLed { GPIO_LED1_PORT, GPIO_LED1_PIN };
 TimerChannelOutput tco { &timer, GPIO_LED1_TIM_CH };
 
-    Dma dma1c3 = Dma(DMA1_Channel3);
+    Dma     dma1c3 = Dma(DMA1_Channel3);
+
 
 void initUsart2(void)
 {
@@ -123,15 +124,16 @@ int main()
     timer.setMOE(ENABLE);
 
     tco.init(TIM_OCMode_PWM1, 0, TIM_OutputState_Enable, TIM_OutputNState_Enable);
+    
+    
     TIM_SelectInputTrigger(TIM1, TIM_TS_TI1FP1);
     TIM_SelectSlaveMode(TIM1, TIM_SlaveMode_Reset);
 
 
    // Using channel 2, ADC (when declared) uses channel 1
-
     dma1c3.init((uint32_t)&(TIM1->CCR2),
                 (uint32_t)&fallCaptures[0],
-                0xffff,
+                50,
                 DMA_DIR_PeripheralSRC,
                 DMA_PeripheralDataSize_HalfWord,
                 DMA_MemoryDataSize_HalfWord,
@@ -143,7 +145,7 @@ int main()
 
     dma1c3.setEnabled(ENABLE);
     //TIM1->DCR = TIM_DMABase_CCR1 | TIM_DMABurstLength_1Transfer;
-    TIM_DMACmd(timer.peripheral(), TIM_DMA_CC2, ENABLE);
+    TIM_DMACmd(timerCapture.peripheral(), TIM_DMA_CC2, ENABLE);
 
     // timerCapture.setupCc1Callback(&risingCallback);
     // timerCapture.setupCc2Callback(&fallingCallback);
