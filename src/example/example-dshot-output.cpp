@@ -18,7 +18,7 @@ int main()
 #endif
     nvic_config(TIM2_IRQn, 0, 0, ENABLE);
 
-    timer.initFreq(2); // 1Hz update frequency
+    timer.initFreq(20); // 1Hz update frequency
     tco.init(TIM_OCMode_PWM1, 0, TIM_OutputState_Enable);
 
 
@@ -47,6 +47,12 @@ int main()
 
     timer.setMOE(ENABLE);
     while (1) { 
+        mDelay(1000);
+            dma1c2.setEnabled(DISABLE);
+
+        DMA1_Channel2->CNDTR = sizeof(pulses)/2;
+	DMA_ClearFlag(DMA1_FLAG_TC2);
+                dma1c2.setEnabled(ENABLE);
 
     }
 
