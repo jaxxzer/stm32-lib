@@ -89,6 +89,8 @@ volatile uint16_t frameRiseCaptures;
 
 void cc3Callback(void)
 {
+    timerCapture.setEnabled(DISABLE);    
+
     // timeout
     dma1c3.setEnabled(DISABLE);
     DMA1_Channel3->CNDTR = 50;
