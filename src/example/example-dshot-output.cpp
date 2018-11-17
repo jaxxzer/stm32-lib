@@ -7,7 +7,7 @@ TimerChannelOutput tco { &timer, GPIO_LED1_TIM_CH };
 static const uint16_t dshot_0 = 1000;
 static const uint16_t dshot_1 = 2 * dshot_0;
 static const uint16_t dshot_period = 3 * dshot_0;
-uint16_t pulses[] = { dshot_1, dshot_1, dshot_1, dshot_1, dshot_1, dshot_1, dshot_1, dshot_1, dshot_1, dshot_1, dshot_1, dshot_0, dshot_1, dshot_1, dshot_1, dshot_1, dshot_0, 0 };
+uint16_t pulses[] = { dshot_1, dshot_1, dshot_1, dshot_1, dshot_1, dshot_1, dshot_1, dshot_1, dshot_1, dshot_1, dshot_1, dshot_0, dshot_1, dshot_1, dshot_1, dshot_0, 0 };
 
 int main()
 {

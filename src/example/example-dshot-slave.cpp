@@ -133,7 +133,7 @@ int main()
     timerCapture.interruptConfig(TIM_IT_CC3, ENABLE);
 
     // Note CCxS bits only writable when CCxE is 0 (channel is disabled)
-    tcoFraming.init(TIM_OCMode_PWM1, 600, TIM_OutputState_Enable);
+    tcoFraming.init(TIM_OCMode_PWM1, 20000, TIM_OutputState_Enable);
     tciRising.init(TIM_ICPolarity_Rising, 0x0);
     tciFalling.init(TIM_ICPolarity_Falling, 0x0, TIM_ICPSC_DIV1, TIM_ICSelection_IndirectTI);
 
@@ -144,6 +144,7 @@ int main()
 #elif defined(STM32F3)
     nvic_config(TIM1_CC_IRQn, 0, 0, ENABLE);
 #endif
+    printf("hello\r\n");
 
     // breath
     uint16_t duty = 0;
@@ -159,10 +160,12 @@ int main()
             uint8_t csum = 0;
             for (uint8_t i = 0; i < 16; i++) {
                 bool bit = fallCaptures[i] > 250;
+                printf("%d ", fallCaptures[i]);
                 //printf("%d", bit);
                 packet = packet << 1;
                 packet |= bit;
             }
+            printf("\r\n");
 
             csum = packet & 0xf;
             packet = packet >> 4;
