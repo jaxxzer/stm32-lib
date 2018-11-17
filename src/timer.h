@@ -58,6 +58,7 @@ public:
     uint32_t getAutoreload(void);
     bool setFrequency(uint32_t f);
     bool setFrequencyForce(uint32_t f);
+	void generateEvent(uint16_t TIM_EventSource);
 //	void setPeriod(uint32_t microseconds);
 //    uint16_t getPeriod(void);
 

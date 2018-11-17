@@ -60,6 +60,7 @@ int main()
         DMA1_Channel2->CNDTR = sizeof(pulses)/2;
 	//DMA_ClearFlag(DMA1_FLAG_TC2);
                 dma1c2.setEnabled(ENABLE);
+                timer.generateEvent(TIM_EventSource_Update);
 
     }
 

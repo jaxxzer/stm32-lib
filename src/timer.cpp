@@ -231,6 +231,12 @@ uint32_t Timer::getAutoreload(void)
 	return _config.TIM_Period;
 }
 
+void Timer::generateEvent(uint16_t TIM_EventSource)
+{
+	TIM_GenerateEvent(_peripheral, TIM_EventSource);
+
+}
+
 void Timer::setClockEnabled(FunctionalState enabled)
 {
     switch((uint32_t)_peripheral)
