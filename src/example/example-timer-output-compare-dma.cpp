@@ -4,7 +4,7 @@ Timer& timer = GPIO_LED1_TIMER;
 Gpio gpioLed { GPIO_LED1_PORT, GPIO_LED1_PIN };
 TimerChannelOutput tco { &timer, GPIO_LED1_TIM_CH };
 
-uint16_t pulses[] = { 2000, 2000, 2000, 2000, 2000, 2000, 2000, 2000, 2000, 2000, 2000, 1000, 2000, 2000, 2000, 1000, 0 };
+uint16_t pulses[] = { 255, 0xfff, 0xfff, 255, 255, 0xffff, 0, 0, 0, 0xffff, 0, 0, 0, 0xf, 0xf};
 int main()
 {
     configureClocks(1000);
@@ -18,8 +18,7 @@ int main()
 #endif
     nvic_config(TIM2_IRQn, 0, 0, ENABLE);
 
-    //timer.initFreq(10000);
-    timer.init(0, 4000);
+    timer.initFreq(4); // 1Hz update frequency
     tco.init(TIM_OCMode_PWM1, 0, TIM_OutputState_Enable);
 
 
@@ -48,7 +47,7 @@ int main()
 
     timer.setMOE(ENABLE);
     while (1) { 
-        mDelay(100);
+        mDelay(5000);
             dma1c2.setEnabled(DISABLE);
 
         DMA1_Channel2->CNDTR = sizeof(pulses)/2;
