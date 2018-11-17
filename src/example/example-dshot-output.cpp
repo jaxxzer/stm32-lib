@@ -24,7 +24,9 @@ int main()
 
     //timer.initFreq(10000);
     timer.init(0, dshot_period);
+    timer.setCCPreloadControl(ENABLE);
     tco.init(TIM_OCMode_PWM1, 0, TIM_OutputState_Enable);
+    tco.preloadConfig(ENABLE);
 
 
     // Using channel 2, ADC (when declared) uses channel 1
