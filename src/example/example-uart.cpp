@@ -30,8 +30,8 @@ void initUsart1(void)
  #error
 #endif
 
-	gpioUsart1Rx.init(GPIO_Mode_AF);
-    gpioUsart1Tx.init(GPIO_Mode_AF);
+	gpioUsart1Rx.init(GPIO_Mode_AF, GPIO_PuPd_UP);
+    gpioUsart1Tx.init(GPIO_Mode_AF, GPIO_PuPd_UP);
 
 #if defined(STM32F0) || defined(STM32F3)
     gpioUsart1Rx.configAF(GPIO_USART1_RX_AF);
