@@ -91,6 +91,10 @@ void cc3Callback(void)
 {
     // timeout
     dma1c3.setEnabled(DISABLE);
+    DMA1_Channel3->CNDTR = 50;
+    dma1c3.setEnabled(ENABLE);
+
+    //TIM_DMACmd(timerCapture.peripheral(), TIM_DMA_CC2, DISABLE);
 
     frameFallCaptures = fallCaptureIndex;
     frameRiseCaptures = riseCaptureIndex;
@@ -125,15 +129,15 @@ int main()
 
     tco.init(TIM_OCMode_PWM1, 0, TIM_OutputState_Enable, TIM_OutputNState_Enable);
     
-    
+    DBGMCU_APB2PeriphConfig(DBGMCU_TIM1_STOP, ENABLE);
     TIM_SelectInputTrigger(TIM1, TIM_TS_TI1FP1);
-    TIM_SelectSlaveMode(TIM1, TIM_SlaveMode_Reset);
+    TIM_SelectSlaveMode(TIM1, TIM_SlaveMode_Combined_ResetTrigger);
 
 
    // Using channel 2, ADC (when declared) uses channel 1
     dma1c3.init((uint32_t)&(TIM1->CCR2),
                 (uint32_t)&fallCaptures[0],
-                50,
+                25,
                 DMA_DIR_PeripheralSRC,
                 DMA_PeripheralDataSize_HalfWord,
                 DMA_MemoryDataSize_HalfWord,
@@ -143,7 +147,6 @@ int main()
                 DMA_PeripheralInc_Disable,
                 DMA_M2M_Disable);
 
-    dma1c3.setEnabled(ENABLE);
     //TIM1->DCR = TIM_DMABase_CCR1 | TIM_DMABurstLength_1Transfer;
     TIM_DMACmd(timerCapture.peripheral(), TIM_DMA_CC2, ENABLE);
 
@@ -151,7 +154,7 @@ int main()
     // timerCapture.setupCc2Callback(&fallingCallback);
     timerCapture.setupCc3Callback(&cc3Callback);
     timerCapture.init(); // 1MHz clock frequency
-    timerCapture.setEnabled(ENABLE);    
+    //timerCapture.setEnabled(ENABLE);    
     // timerCapture.interruptConfig(TIM_IT_CC1, ENABLE);
     // timerCapture.interruptConfig(TIM_IT_CC2, ENABLE);
     timerCapture.interruptConfig(TIM_IT_CC3, ENABLE);
@@ -160,6 +163,7 @@ int main()
     tcoFraming.init(TIM_OCMode_PWM1, 20000, TIM_OutputState_Enable);
     tciRising.init(TIM_ICPolarity_Rising, 0x0);
     tciFalling.init(TIM_ICPolarity_Falling, 0x0, TIM_ICPSC_DIV1, TIM_ICSelection_IndirectTI);
+    dma1c3.setEnabled(ENABLE);
 
 #if defined(STM32F0)
     nvic_config(TIM1_BRK_UP_TRG_COM_IRQn, 0, ENABLE);
