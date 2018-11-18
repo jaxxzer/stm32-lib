@@ -7,7 +7,8 @@ TimerChannelOutput tco { &timer, GPIO_LED1_TIM_CH };
 static const uint16_t dshot_0 = 600;
 static const uint16_t dshot_1 = 2 * dshot_0;
 static const uint16_t dshot_period = 3 * dshot_0;
-uint16_t pulses[] = { dshot_1, dshot_1, dshot_1, dshot_1, dshot_1, dshot_1, dshot_1, dshot_1, dshot_1, dshot_1, dshot_1, dshot_0, dshot_1, dshot_1, dshot_1, dshot_0, 0 };
+uint16_t pulses[] = { dshot_1, dshot_1, dshot_1, dshot_1, dshot_1, dshot_1, dshot_1, dshot_1, dshot_1, dshot_1, dshot_1, dshot_0, 0, dshot_1, dshot_1, dshot_0, 0 };
+uint16_t pulses2[] = { dshot_1, dshot_1, dshot_1, dshot_1, dshot_1, dshot_1, dshot_1, dshot_1, dshot_1, dshot_1, dshot_1, dshot_0, dshot_1, dshot_1, dshot_0, 0 };
 
 int main()
 {
@@ -53,11 +54,17 @@ int main()
     timer.setEnabled(ENABLE);
 
     timer.setMOE(ENABLE);
+    bool toggle = true;
     while (1) { 
         mDelay(100);
             dma1c2.setEnabled(DISABLE);
-
-        DMA1_Channel2->CNDTR = sizeof(pulses)/2;
+        if (toggle) {
+            DMA1_Channel2->CNDTR = (sizeof(pulses)/2) - 4;
+            toggle = false;
+        } else {
+            DMA1_Channel2->CNDTR = sizeof(pulses)/2;
+            toggle = true;
+        }
 	//DMA_ClearFlag(DMA1_FLAG_TC2);
                 dma1c2.setEnabled(ENABLE);
                 timer.generateEvent(TIM_EventSource_Update);

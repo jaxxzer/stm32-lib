@@ -90,6 +90,7 @@ volatile uint16_t frameRiseCaptures;
 void cc3Callback(void)
 {
     timerCapture.setEnabled(DISABLE);    
+    frameFallCaptures = 50 - DMA1_Channel3->CNDTR;
 
     // timeout
     dma1c3.setEnabled(DISABLE);
@@ -98,11 +99,11 @@ void cc3Callback(void)
 
     //TIM_DMACmd(timerCapture.peripheral(), TIM_DMA_CC2, DISABLE);
 
-    frameFallCaptures = fallCaptureIndex;
-    frameRiseCaptures = riseCaptureIndex;
+    // frameFallCaptures = fallCaptureIndex;
+    // frameRiseCaptures = riseCaptureIndex;
 
-    riseCaptureIndex = 0;
-    fallCaptureIndex = 0;
+    // riseCaptureIndex = 0;
+    // fallCaptureIndex = 0;
 
     gotCapture = true;
 }
@@ -162,7 +163,7 @@ int main()
     timerCapture.interruptConfig(TIM_IT_CC3, ENABLE);
 
     // Note CCxS bits only writable when CCxE is 0 (channel is disabled)
-    tcoFraming.init(TIM_OCMode_PWM1, 20000, TIM_OutputState_Enable);
+    tcoFraming.init(TIM_OCMode_PWM1, 0xfffe, TIM_OutputState_Enable);
     tciRising.init(TIM_ICPolarity_Rising, 0x0);
     tciFalling.init(TIM_ICPolarity_Falling, 0x0, TIM_ICPSC_DIV1, TIM_ICSelection_IndirectTI);
     dma1c3.setEnabled(ENABLE);
@@ -188,14 +189,14 @@ int main()
             uint16_t throttle = 0;
             uint8_t telemRequest = 0;
             uint8_t csum = 0;
-            for (uint8_t i = 0; i < 16; i++) {
+            for (uint8_t i = 0; i < frameFallCaptures; i++) {
                 bool bit = fallCaptures[i] > dshot_threshold;
-                //printf("%d ", fallCaptures[i]);
+                printf("%d ", fallCaptures[i]);
                 //printf("%d", bit);
                 packet = packet << 1;
                 packet = packet | bit;
             }
-            //printf("  %d\r\n", packet);
+            printf("  %d\r\n", packet);
 
             csum = packet & 0xf;
             packet = packet >> 4;
