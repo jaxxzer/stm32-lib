@@ -4,7 +4,7 @@ Timer& timer = GPIO_LED1_TIMER;
 Gpio gpioLed { GPIO_LED1_PORT, GPIO_LED1_PIN };
 TimerChannelOutput tco { &timer, GPIO_LED1_TIM_CH };
 
-static const uint16_t dshot_0 = 600;
+static const uint16_t dshot_0 = 75;
 static const uint16_t dshot_1 = 2 * dshot_0;
 static const uint16_t dshot_period = 3 * dshot_0;
 uint16_t pulses[] = { dshot_1, dshot_1, dshot_1, dshot_1, dshot_1, dshot_1, dshot_1, dshot_1, dshot_1, dshot_1, dshot_1, dshot_0, 0, dshot_1, dshot_1, dshot_0, 0 };

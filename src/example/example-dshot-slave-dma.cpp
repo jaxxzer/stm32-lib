@@ -65,7 +65,7 @@ const uint16_t dshot_1_tim_cnt = dshot_1_high_duration_ns / dshot_tim_period;
 const uint16_t dshot_0_tim_cnt = dshot_0_high_duration_ns / dshot_tim_period;
 
 
-static const uint16_t dshot_threshold = 700;
+static const uint16_t dshot_threshold = 120;
 void risingCallback(void)
 {
     // Period
