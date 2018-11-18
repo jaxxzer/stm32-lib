@@ -2,7 +2,37 @@
 
 #define DSHOT 600
 
-#define USART_BAUDRATE 230400
+#define USART_BAUDRATE 1e6
+
+
+typedef enum {
+    DSHOT_CMD_MOTOR_STOP = 0,
+    DSHOT_CMD_BEACON1,
+    DSHOT_CMD_BEACON2,
+    DSHOT_CMD_BEACON3,
+    DSHOT_CMD_BEACON4,
+    DSHOT_CMD_BEACON5,
+    DSHOT_CMD_ESC_INFO, // V2 includes settings
+    DSHOT_CMD_SPIN_DIRECTION_1,
+    DSHOT_CMD_SPIN_DIRECTION_2,
+    DSHOT_CMD_3D_MODE_OFF,
+    DSHOT_CMD_3D_MODE_ON,
+    DSHOT_CMD_SETTINGS_REQUEST, // Currently not implemented
+    DSHOT_CMD_SAVE_SETTINGS,
+    DSHOT_CMD_SPIN_DIRECTION_NORMAL = 20,
+    DSHOT_CMD_SPIN_DIRECTION_REVERSED = 21,
+    DSHOT_CMD_LED0_ON, // BLHeli32 only
+    DSHOT_CMD_LED1_ON, // BLHeli32 only
+    DSHOT_CMD_LED2_ON, // BLHeli32 only
+    DSHOT_CMD_LED3_ON, // BLHeli32 only
+    DSHOT_CMD_LED0_OFF, // BLHeli32 only
+    DSHOT_CMD_LED1_OFF, // BLHeli32 only
+    DSHOT_CMD_LED2_OFF, // BLHeli32 only
+    DSHOT_CMD_LED3_OFF, // BLHeli32 only
+    DSHOT_CMD_AUDIO_STREAM_MODE_ON_OFF = 30, // KISS audio Stream mode on/Off
+    DSHOT_CMD_SILENT_MODE_ON_OFF = 31, // KISS silent Mode on/Off
+    DSHOT_CMD_MAX = 47
+} dshotCommands_e;
 
 Timer& timer = GPIO_LED1_TIMER;
 Gpio gpioLed { GPIO_LED1_PORT, GPIO_LED1_PIN };
@@ -65,7 +95,7 @@ const uint16_t dshot_1_tim_cnt = dshot_1_high_duration_ns / dshot_tim_period;
 const uint16_t dshot_0_tim_cnt = dshot_0_high_duration_ns / dshot_tim_period;
 
 
-static const uint16_t dshot_threshold = 250;
+volatile uint16_t dshot_threshold = 250;
 void risingCallback(void)
 {
     // Period
@@ -86,17 +116,17 @@ void fallingCallback(void)
 volatile bool gotCapture = false;
 volatile uint16_t frameFallCaptures;
 volatile uint16_t frameRiseCaptures;
-
+volatile uint32_t decodedPackets = 0;
 void cc3Callback(void)
 {
     timerCapture.setEnabled(DISABLE);    
     frameFallCaptures = 50 - DMA1_Channel3->CNDTR;
-
+    dshot_threshold = TIM1->CCR1 / 2;
     // timeout
     dma1c3.setEnabled(DISABLE);
     DMA1_Channel3->CNDTR = 50;
     dma1c3.setEnabled(ENABLE);
-
+    decodedPackets++;
     //TIM_DMACmd(timerCapture.peripheral(), TIM_DMA_CC2, DISABLE);
 
     // frameFallCaptures = fallCaptureIndex;
@@ -181,56 +211,58 @@ int main()
     uint16_t duty = 0;
     int8_t inc = 75;
     while (1) { 
-        mDelay(1);
+        mDelay(1000);
+        printf("  %d    %d   %d\r\n", decodedPackets, microseconds, decodedPackets/microseconds/1000);
+
         //print_clocks();
-        if (gotCapture) {
-            gotCapture = false;
-            uint16_t packet = 0;
-            uint16_t throttle = 0;
-            uint8_t telemRequest = 0;
-            uint8_t csum = 0;
-            for (uint8_t i = 0; i < frameFallCaptures; i++) {
-                bool bit = fallCaptures[i] > dshot_threshold;
-                printf("%d ", fallCaptures[i]);
-                //printf("%d", bit);
-                packet = packet << 1;
-                packet = packet | bit;
-            }
-            printf("  %d\r\n", packet);
+        // if (gotCapture) {
+        //     gotCapture = false;
+        //     uint16_t packet = 0;
+        //     uint16_t throttle = 0;
+        //     uint8_t telemRequest = 0;
+        //     uint8_t csum = 0;
+        //     for (uint8_t i = 0; i < frameFallCaptures; i++) {
+        //         bool bit = fallCaptures[i] > dshot_threshold;
+        //         printf("%d ", fallCaptures[i]);
+        //         //printf("%d", bit);
+        //         packet = packet << 1;
+        //         packet = packet | bit;
+        //     }
+        //     printf("  %d  %d  %d\r\n", packet, decodedPackets, microseconds);
 
-            csum = packet & 0xf;
-            packet = packet >> 4;
-            telemRequest = packet & 0x1;
-            throttle = packet >> 1;
+        //     csum = packet & 0xf;
+        //     packet = packet >> 4;
+        //     telemRequest = packet & 0x1;
+        //     throttle = packet >> 1;
 
-            uint16_t csumCheck = 0;
-            for (uint8_t i = 0; i < 3; i++) {
-                csumCheck ^= packet;
-                packet >>= 4;
-            }
+        //     uint16_t csumCheck = 0;
+        //     for (uint8_t i = 0; i < 3; i++) {
+        //         csumCheck ^= packet;
+        //         packet >>= 4;
+        //     }
 
-            csumCheck &= 0xf;
+        //     csumCheck &= 0xf;
 
 
             
-            //printf("%d ", frameFallCaptures);
-            // for ( uint8_t i = 0; i < frameFallCaptures; i++) {
-            //     printf("%d, ", fallCaptures[i]);
-            // }
-            //printf("%d ", frameRiseCaptures);
-            // for ( uint8_t i = 0; i < frameRiseCaptures; i++) {
-            //     printf("%d, ", riseCaptures[i]);
-            // }
-            printf("%d %d %d %d\r\n", throttle, telemRequest, csum, csumCheck);
-        }
+        //     //printf("%d ", frameFallCaptures);
+        //     // for ( uint8_t i = 0; i < frameFallCaptures; i++) {
+        //     //     printf("%d, ", fallCaptures[i]);
+        //     // }
+        //     //printf("%d ", frameRiseCaptures);
+        //     // for ( uint8_t i = 0; i < frameRiseCaptures; i++) {
+        //     //     printf("%d, ", riseCaptures[i]);
+        //     // }
+        //     printf("%d %d %d %d\r\n", throttle, telemRequest, csum, csumCheck);
+        // }
 
-        tco.setDuty(duty);
-        if ( (inc > 0 && inc > 65535 - duty) ||
-             (inc < 0 && duty < -inc) )
-        {
-            inc = -inc;
-        }       
-        duty += inc;
+        // tco.setDuty(duty);
+        // if ( (inc > 0 && inc > 65535 - duty) ||
+        //      (inc < 0 && duty < -inc) )
+        // {
+        //     inc = -inc;
+        // }       
+        // duty += inc;
      }
 
     return 0;
