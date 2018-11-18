@@ -65,7 +65,7 @@ const uint16_t dshot_1_tim_cnt = dshot_1_high_duration_ns / dshot_tim_period;
 const uint16_t dshot_0_tim_cnt = dshot_0_high_duration_ns / dshot_tim_period;
 
 
-static const uint16_t dshot_threshold = 120;
+static const uint16_t dshot_threshold = 250;
 void risingCallback(void)
 {
     // Period
@@ -163,7 +163,7 @@ int main()
     timerCapture.interruptConfig(TIM_IT_CC3, ENABLE);
 
     // Note CCxS bits only writable when CCxE is 0 (channel is disabled)
-    tcoFraming.init(TIM_OCMode_PWM1, 0xfffe, TIM_OutputState_Enable);
+    tcoFraming.init(TIM_OCMode_PWM1, 1000, TIM_OutputState_Enable);
     tciRising.init(TIM_ICPolarity_Rising, 0x0);
     tciFalling.init(TIM_ICPolarity_Falling, 0x0, TIM_ICPSC_DIV1, TIM_ICSelection_IndirectTI);
     dma1c3.setEnabled(ENABLE);
