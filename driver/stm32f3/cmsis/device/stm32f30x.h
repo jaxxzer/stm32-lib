@@ -88,7 +88,7 @@
         devices, you can define the device in your toolchain compiler preprocessor.
   */
 
-#if !defined (STM32F303xC) && !defined (STM32F334x8) && !defined (STM32F302x8) && !defined (STM32F303xE)
+#if !defined (STM32F303xC) && !defined (STM32F334x8) && !defined (STM32F302x8) && !defined (STM32F303xE) && !defined (STM32F350x8)
  #error "Please select first the target STM32F30X device used in your application (in stm32f30x.h file)"
 #endif
 
@@ -438,6 +438,45 @@ typedef enum IRQn
   FPU_IRQn                    = 81,     /*!< Floating point Interrupt                                          */
   SPI4_IRQn                   = 84      /*!< SPI4 global Interrupt                                             */ 
 #endif /* STM32F303xE */
+#ifdef STM32F350x8
+  WWDG_IRQn                   = 0,      /*!< window watchdog timer interrupt                          */
+  LVD_IRQn                     = 1,      /*!< LVD through EXTI line detect interrupt                   */
+  RTC_IRQn                     = 2,      /*!< RTC through EXTI line interrupt                          */
+  FMC_IRQn                     = 3,      /*!< FMC interrupt                                            */
+  RCU_IRQn                     = 4,      /*!< RCU interrupt                                            */
+  EXTI0_1_IRQn                 = 5,      /*!< EXTI line 0 and 1 interrupts                             */
+  EXTI2_3_IRQn                 = 6,      /*!< EXTI line 2 and 3 interrupts                             */
+  EXTI4_15_IRQn                = 7,      /*!< EXTI line 4 to 15 interrupts                             */
+  TSI_IRQn                     = 8,      /*!< TSI Interrupt                                            */
+  DMA_Channel0_IRQn            = 9,      /*!< DMA channel 0 interrupt                                  */
+  DMA_Channel1_2_IRQn          = 10,     /*!< DMA channel 1 and channel 2 interrupts                   */
+  DMA_Channel3_4_IRQn          = 11,     /*!< DMA channel 3 and channel 4 interrupts                   */
+  ADC_CMP_IRQn                 = 12,     /*!< ADC, CMP0 and CMP1 interrupts                            */
+  TIMER0_BRK_UP_TRG_COM_IRQn   = 13,     /*!< TIMER0 break, update, trigger and commutation interrupts */
+  TIMER0_CC_IRQn               = 14,     /*!< TIMER0 capture compare interrupt                         */
+  TIMER1_IRQn                  = 15,     /*!< TIMER1 interrupt                                         */
+  TIMER2_IRQn                  = 16,     /*!< TIMER2 interrupt                                         */
+  TIMER5_DAC_IRQn              = 17,     /*!< TIMER5 and DAC interrupts                                */
+  TIMER13_IRQn                 = 19,     /*!< TIMER13 interrupt                                        */
+  TIMER14_IRQn                 = 20,     /*!< TIMER14 interrupt                                        */
+  TIMER15_IRQn                 = 21,     /*!< TIMER15 interrupt                                        */
+  TIMER16_IRQn                 = 22,     /*!< TIMER16 interrupt                                        */
+  I2C0_EV_IRQn                 = 23,     /*!< I2C0 event interrupt                                     */
+  I2C1_EV_IRQn                 = 24,     /*!< I2C1 event interrupt                                     */
+  SPI0_IRQn                    = 25,     /*!< SPI0 interrupt                                           */
+  SPI1_IRQn                    = 26,     /*!< SPI1 interrupt                                           */
+  USART1_IRQn                  = 27,     /*!< USART0 interrupt                                         */
+  USART2_IRQn                  = 28,     /*!< USART1 interrupt                                         */
+  CEC_IRQn                     = 30,     /*!< CEC interrupt                                            */
+  I2C0_ER_IRQn                 = 32,     /*!< I2C0 error interrupt                                     */
+  I2C1_ER_IRQn                 = 34,     /*!< I2C1 error interrupt                                     */
+  I2C2_EV_IRQn                 = 35,     /*!< I2C2 event interrupt                                     */
+  I2C2_ER_IRQn                 = 36,     /*!< I2C2 error interrupt                                     */
+  DMA_Channel5_6_IRQn          = 48,     /*!< DMA1 channel 5 and channel 6 interrupts                  */
+  USBFS_WKUP_IRQn              = 42,     /*!< USBFS wakeup interrupt                                   */
+  SPI2_IRQn                    = 51,     /*!< SPI2 global interrupt                                    */ 
+  USBFS_IRQn                   = 67,     /*!< USBFS global interrupt                                   */
+#endif
 } IRQn_Type;
 
 /**

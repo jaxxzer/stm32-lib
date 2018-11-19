@@ -1,6 +1,5 @@
 #include "stm32lib-conf.h"
-
-#define USART_BAUDRATE 1e6
+#define USART_BAUDRATE 19200
 
 Gpio gpioLed { GPIO_LED1_PORT, GPIO_LED1_PIN };
 
@@ -130,6 +129,7 @@ int main()
     while (1) {
         #if defined(USE_USART_1)
             uart1.write("hello1 ", 7);
+            print_clocks();
         #endif
 
         #if defined(USE_USART_2)
