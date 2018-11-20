@@ -1,1 +1,1 @@
-[{"node":"DMA1","expanded":true,"format":2},{"node":"TIM1","expanded":true,"format":0}]
+[{"node":"DMA1","expanded":true,"format":2},{"node":"TIM1","expanded":true,"format":0},{"node":"TIM1.BDTR","expanded":true,"format":0}]

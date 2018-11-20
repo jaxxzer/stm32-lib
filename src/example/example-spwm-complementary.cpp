@@ -80,7 +80,11 @@ int main()
 
 
     timer.initFreq(24e4); // 10kHz pwm frequency
+        //timer.setDTG(0x3);
+TIM1->BDTR |=0xe;
+ TIM1->CR1 |= TIM_CR1_CMS_0;
     timer.setEnabled(ENABLE);
+
     timer.setMOE(ENABLE);
 
     tco1.init(TIM_OCMode_PWM1, 0, TIM_OutputState_Enable, TIM_OutputNState_Enable);
@@ -88,7 +92,7 @@ int main()
     tco3.init(TIM_OCMode_PWM1, 0, TIM_OutputState_Enable, TIM_OutputNState_Enable);
     tco4.init(TIM_OCMode_PWM1, 0, TIM_OutputState_Enable);
 
-    tco1.setDuty(32000);
+    tco1.setDuty(34000);
     tco2.setDuty(32000);
     tco3.setDuty(32000);
     tco4.setDuty(32000);
