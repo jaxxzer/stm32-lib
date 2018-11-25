@@ -126,10 +126,11 @@ int main()
     initUsart3();
 #endif
 
+    print_clocks();
+
     while (1) {
         #if defined(USE_USART_1)
             uart1.write("hello1 ", 7);
-            print_clocks();
         #endif
 
         #if defined(USE_USART_2)

@@ -63,17 +63,21 @@ public:
 	// Initialize peripheral with common/default config
 	// More commonly used arguments are listed first
 	// Default arguments are the same as performed by ADC_StructInit()
-#ifdef STM32F0
+#if defined(STM32F0)
 	void init(FunctionalState continuousConvMode = ENABLE,
 			uint32_t resolution = ADC_Resolution_12b,
 			uint32_t extTrigConvEdge = ADC_ExternalTrigConvEdge_None,
 			uint32_t extTrigConv = ADC_ExternalTrigConv_T1_TRGO,
 			uint32_t dataAlign = ADC_DataAlign_Right,
 			uint32_t scanDirection = ADC_ScanDirection_Upward);
-#elif STM32F1
+#elif defined(STM32F1)
 	void init(FunctionalState continuousConvMode = ENABLE,
 			uint32_t extTrigConv = ADC_ExternalTrigConv_None, // reset value?
 			uint32_t dataAlign = ADC_DataAlign_Right);
+#elif defined(STM32F3)
+	void init(uint32_t continuousConvMode = ADC_ContinuousConvMode_Enable);
+#else
+#error
 #endif
 
 
@@ -101,7 +105,7 @@ public:
 	{
 		//_numSamples = samples;
 	}
-#ifdef STM32F1
+#if defined(STM32F1) || defined(STM32F3)
 #define SQR1_CLEAR_Mask ((uint32_t)0xFF0FFFFF)
 	void setSeqNumChannels(uint8_t chans)
 	{
@@ -113,6 +117,7 @@ public:
 		_peripheral->SQR1 = tmpreg1;
 	}
 #endif
+
 private:
 	ADC_TypeDef* _peripheral; // Eg. ADC1, ADC2...
 	AdcChannel* _head; // First channel in sequence

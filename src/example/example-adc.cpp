@@ -1,85 +1,122 @@
 #include "stm32lib-conf.h"
+#define USART_BAUDRATE 1e6
+
+Gpio gpioLed { GPIO_LED1_PORT, GPIO_LED1_PIN };
 
 
-#define GPIO_USART1_TX      GPIOA
-#define PIN_USART1_TX       9
-
-#define GPIO_USART1_RX      GPIOA
-#define PIN_USART1_RX       10
-
-#ifdef STM32F0
-#define GPIO_LED_PORT       GPIOB
-#define GPIO_LED_PIN        1
-#define ADC_CHAN            ADC_Channel_0
-#elif STM32F1
-#define GPIO_LED_PORT       GPIOB
-#define GPIO_LED_PIN        13
-#define ADC_CHAN            ADC_Channel_10
+#if defined(USE_USART_1)
+Gpio gpioUsart1Tx         { GPIO_USART1_TX_PORT, GPIO_USART1_TX_PIN };
+Gpio gpioUsart1Rx         { GPIO_USART1_RX_PORT, GPIO_USART1_RX_PIN };
 #endif
 
-Gpio gpioLed { GPIO_LED_PORT, GPIO_LED_PIN };
-
-Gpio gpioUsart1Tx         { GPIO_USART1_TX, PIN_USART1_TX };
-Gpio gpioUsart1Rx         { GPIO_USART1_RX, PIN_USART1_RX };
-
-#ifdef STM32F1
-#define GPIO_USART3_TX      GPIOB
-#define PIN_USART3_TX       10
-
-#define GPIO_USART3_RX      GPIOB
-#define PIN_USART3_RX       11
-
-Gpio gpioUsart3Tx         { GPIO_USART3_TX, PIN_USART3_TX };
-Gpio gpioUsart3Rx         { GPIO_USART3_RX, PIN_USART3_RX };
+#if defined(USE_USART_2)
+Gpio gpioUsart2Tx         { GPIO_USART2_TX_PORT, GPIO_USART2_TX_PIN };
+Gpio gpioUsart2Rx         { GPIO_USART2_RX_PORT, GPIO_USART2_RX_PIN };
 #endif
 
+#if defined(USE_USART_3)
+Gpio gpioUsart3Tx         { GPIO_USART3_TX_PORT, GPIO_USART3_TX_PIN };
+Gpio gpioUsart3Rx         { GPIO_USART3_RX_PORT, GPIO_USART3_RX_PIN };
+#endif
+
+#if defined (USE_USART_1)
 void initUsart1(void)
 {
-#ifdef STM32F0
-	gpioUsart1Rx.init(GPIO_Mode_AF);
-    gpioUsart1Tx.init(GPIO_Mode_AF);
-    gpioUsart1Rx.configAF(1);
-    gpioUsart1Tx.configAF(1);
+#if defined(STM32F0)
     nvic_config(USART1_IRQn, 0, ENABLE);
-#elif STM32F1
-	gpioUsart1Rx.init(GPIO_Mode_IN_FLOATING, GPIO_Speed_50MHz);
-    gpioUsart1Tx.init(GPIO_Mode_AF_PP, GPIO_Speed_50MHz);
-    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_0);
+#elif defined(STM32F1) || defined(STM32F3)
     nvic_config(USART1_IRQn, 0, 0, ENABLE);
+#else
+ #error
 #endif
-    uart1.init(3000000);
+
+	gpioUsart1Rx.init(GPIO_Mode_AF, GPIO_PuPd_UP);
+    gpioUsart1Tx.init(GPIO_Mode_AF, GPIO_PuPd_UP);
+
+#if defined(STM32F0) || defined(STM32F3)
+    gpioUsart1Rx.configAF(GPIO_USART1_RX_AF);
+    gpioUsart1Tx.configAF(GPIO_USART1_TX_AF);
+#elif defined(STM32F1)
+    Gpio::remapConfig(GPIO_USART1_REMAP, ENABLE);
+#else
+ #error
+#endif
+
+    uart1.init(USART_BAUDRATE);
     uart1.ITConfig(USART_IT_RXNE, ENABLE);
     uart1.setEnabled(ENABLE);
     uart1.cls();
 }
+#endif
 
+#if defined (USE_USART_2)
+void initUsart2(void)
+{
+#if defined(STM32F0)
+    nvic_config(USART2_IRQn, 0, ENABLE);
+#elif defined(STM32F1) || defined(STM32F3)
+    nvic_config(USART2_IRQn, 0, 0, ENABLE);
+#else
+ #error
+#endif
+
+	gpioUsart2Rx.init(GPIO_Mode_AF);
+    gpioUsart2Tx.init(GPIO_Mode_AF);
+
+#if defined(STM32F0) || defined(STM32F3)
+    gpioUsart2Rx.configAF(GPIO_USART2_RX_AF);
+    gpioUsart2Tx.configAF(GPIO_USART2_TX_AF);
+#elif defined(STM32F1)
+    Gpio::remapConfig(GPIO_USART2_REMAP, ENABLE);
+#else
+ #error
+#endif
+
+    uart2.init(USART_BAUDRATE);
+    uart2.ITConfig(USART_IT_RXNE, ENABLE);
+    uart2.setEnabled(ENABLE);
+    uart2.cls();
+}
+#endif
+
+#if defined(USE_USART_3)
 void initUsart3(void)
 {
-#ifdef STM32F1
-    // TODO move to gpio class
-    //RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
-    //mDelay(10);
-    //GPIO_PinRemapConfig(GPIO_PartialRemap_USART3, ENABLE);
-	gpioUsart3Rx.init(GPIO_Mode_IN_FLOATING, GPIO_Speed_50MHz);
-    gpioUsart3Tx.init(GPIO_Mode_AF_PP, GPIO_Speed_50MHz);
-    //GPIO_PinRemapConfig(GPIO_PartialRemap_USART3, ENABLE);
-
-    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_0);
+#if defined(STM32F0)
+    nvic_config(USART3_IRQn, 0, ENABLE);
+#elif defined(STM32F1) || defined(STM32F3)
     nvic_config(USART3_IRQn, 0, 0, ENABLE);
-    
-    uart3.init(980000);
+#else
+ #error
+#endif
+
+	gpioUsart3Rx.init(GPIO_Mode_AF);
+    gpioUsart3Tx.init(GPIO_Mode_AF);
+
+#if defined(STM32F0) || defined(STM32F3)
+    gpioUsart3Rx.configAF(GPIO_USART3_RX_AF);
+    gpioUsart3Tx.configAF(GPIO_USART3_TX_AF);
+#elif defined(STM32F1)
+    Gpio::remapConfig(GPIO_USART3_REMAP, ENABLE);
+#else
+ #error
+#endif
+
+    uart3.init(USART_BAUDRATE);
     uart3.ITConfig(USART_IT_RXNE, ENABLE);
     uart3.setEnabled(ENABLE);
     uart3.cls();
-#endif
 }
+#endif
 
 void initGpioLed(void)
 {
-#ifdef STM32F0
+#if defined(STM32F0) || defined(STM32F3)
     gpioLed.init(GPIO_Mode_OUT);
-#elif STM32F1
+#elif defined(STM32F1)
     gpioLed.init(GPIO_Mode_Out_PP);
+#else
+#error
 #endif
 }
 
@@ -88,11 +125,19 @@ int main()
     configureClocks(1000);
 
     initGpioLed();
+
+#if defined(USE_USART_1)
     initUsart1();
+#endif
+
+#if defined(USE_USART_2)
+    initUsart2();
+#endif
+
 #if defined(USE_USART_3)
     initUsart3();
 #endif
-
+    printf("starting\r\n");
     Adc adc1 { ADC1 };
     AdcChannel* adcChan1;
     adcChan1 = adc1.addChannel( ADC_CHAN );
@@ -103,13 +148,6 @@ int main()
     while (1) {
         adc1.waitConversion();
         printf("adc1: %d\r\n", adcChan1->average);
-        //uart1.write("hello", 5);
-#ifdef STM32F1
-        //printf("Initializing Wraith32");
-        //uart1.write("hello", 5);
-        //uart3.write("hello", 5);
-#endif
-        //mDelay(100);
         gpioLed.toggle();
     }
 

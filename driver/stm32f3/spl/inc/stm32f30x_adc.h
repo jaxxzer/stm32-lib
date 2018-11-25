@@ -54,7 +54,7 @@ typedef struct
 
   uint32_t ADC_ContinuousConvMode;        /*!< Specifies whether the conversion is performed in
                                                Continuous or Single mode.
-                                               This parameter can be set to ENABLE or DISABLE. */
+                                               This parameter can be set to ADC_ContinuousConvMode_Enable or ADC_ContinuousConvMode_Disable. */
   uint32_t ADC_Resolution;                /*!< Configures the ADC resolution.
                                                This parameter can be a value of @ref ADC_resolution */ 
   uint32_t ADC_ExternalTrigConvEvent;      /*!< Defines the external trigger used to start the analog

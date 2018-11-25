@@ -26,10 +26,12 @@ AdcChannel* Adc::addChannel(uint32_t channel)
 	// TODO we should insert here instead of counting on them being added in order
 
 	Gpio gpio(gpiox, pinx);
-#ifdef STM32F0
+#if defined(STM32F0) || defined(STM32F3)
 	gpio.init(GPIO_Mode_AN, GPIO_PuPd_NOPULL);
-#elif STM32F1
+#elif defined(STM32F1)
 	gpio.init(GPIO_Mode_AIN);
+#else
+#error
 #endif
 
 	AdcChannel* chanx = new AdcChannel(channel, _numSamples);
@@ -50,11 +52,15 @@ AdcChannel* Adc::addChannel(uint32_t channel)
 	// TODO configure only the added channel
 	// Configure all channels
 	while (tmp) {
-#ifdef STM32F0
+#if defined(STM32F0)
 		ADC_ChannelConfig(ADC1, tmp->channel, ADC_SampleTime_239_5Cycles);
-#elif STM32F1
+#elif defined(STM32F1)
 		ADC_RegularChannelConfig(ADC1, tmp->channel, _numChannels, ADC_SampleTime_239Cycles5);
 		setSeqNumChannels(_numChannels);
+#elif defined(STM32F3)
+		ADC_RegularChannelConfig(ADC1, tmp->channel, _numChannels, ADC_SampleTime_601Cycles5);
+		setSeqNumChannels(_numChannels);
+#else
 #endif
 		tmp = tmp->next;
 	}
@@ -62,7 +68,7 @@ AdcChannel* Adc::addChannel(uint32_t channel)
 	return chanx;
 }
 
-#ifdef STM32F0
+#if defined(STM32F0)
 void Adc::init(FunctionalState continuousConvMode,
 			uint32_t resolution,
 			uint32_t extTrigConvEdge,
@@ -72,6 +78,7 @@ void Adc::init(FunctionalState continuousConvMode,
 	{
 		// Configuration
 		ADC_InitTypeDef _config;
+		ADC_StructInit(&_config);
 		_config.ADC_ContinuousConvMode = continuousConvMode;
 		_config.ADC_Resolution = resolution;
 		_config.ADC_ExternalTrigConvEdge = extTrigConvEdge;
@@ -80,13 +87,14 @@ void Adc::init(FunctionalState continuousConvMode,
 		_config.ADC_DataAlign = dataAlign;
 		ADC_Init(_peripheral, &_config);
 	}
-#elif STM32F1
+#elif defined(STM32F1)
 void Adc::init(FunctionalState continuousConvMode,
 			uint32_t extTrigConv,
 			uint32_t dataAlign)
 	{
 		// Configuration
 		ADC_InitTypeDef _config;
+		ADC_StructInit(&_config);
 		_config.ADC_Mode = ADC_Mode_Independent;
 		_config.ADC_ScanConvMode = ENABLE; // not reset value!?
 		_config.ADC_ContinuousConvMode = continuousConvMode;
@@ -95,14 +103,31 @@ void Adc::init(FunctionalState continuousConvMode,
 		_config.ADC_NbrOfChannel = 0;
 		ADC_Init(_peripheral, &_config);
 	}
-
+#elif defined(STM32F3)
+	void Adc::init(uint32_t continuousConvMode)
+	{
+		// Configuration
+		ADC_InitTypeDef _config;
+		ADC_StructInit(&_config);
+		_config.ADC_ContinuousConvMode = continuousConvMode;
+		_config.ADC_NbrOfRegChannel = 0;
+		ADC_Init(_peripheral, &_config);
+	}
+#else
+#error
 #endif
 void Adc::_enableClock(void)
 {
-#ifdef STM32F0
+#if defined(STM32F0)
 	ADC_ClockModeConfig(_peripheral, ADC_ClockMode_SynClkDiv2);
-#elif STM32F1
-	RCC_ADCCLKConfig(RCC_PCLK2_Div4); 
+#elif defined(STM32F1)
+	RCC_ADCCLKConfig(RCC_PCLK2_Div4);
+#elif defined(STM32F3)
+	RCC_ADCCLKConfig(RCC_ADC12PLLCLK_Div4);
+
+	//ADC_ClockModeConfig(_peripheral, ADC_ClockMode_SynClkDiv2);
+#else
+#error
 #endif
 	switch((uint32_t)_peripheral) {
 	case ADC1_BASE:
@@ -110,6 +135,8 @@ void Adc::_enableClock(void)
 		RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1, ENABLE);
 	#elif defined(RCC_AHBPeriph_ADC12)
 		RCC_AHBPeriphClockCmd(RCC_AHBPeriph_ADC12, ENABLE);
+	#else
+	#error
 	#endif
 		break;
 	default:
@@ -119,24 +146,32 @@ void Adc::_enableClock(void)
 
 void Adc::enable(void)
 {
-#ifdef STM32F0
+#if defined(STM32F0) || defined(STM32F3)
 	_calibrate();
 	_dmaConfig();
 	ADC_Cmd(ADC1, ENABLE);
-#elif STM32F1
+#elif defined(STM32F1)
 	_dmaConfig();
 	ADC_Cmd(ADC1, ENABLE);
 	_calibrate();
+#else
+#error
 #endif
 	waitReady();
 }
 
 void Adc::waitReady(void)
 {
-#ifdef STM32F0
+#if defined(STM32F0)
 	while(!ADC_GetFlagStatus(ADC1, ADC_FLAG_ADRDY)); // wait ready
-#elif STM32F1
+#elif defined(STM32F1)
 	mDelay(10);
+#elif defined(STM32F3)
+	mDelay(10);
+
+	while (ADC_GetCalibrationStatus(_peripheral));
+#else
+#error
 #endif
 }
 
@@ -149,27 +184,33 @@ void Adc::waitConversion(void)
 
 void Adc::startConversion(void)
 {
-#ifdef STM32F0
-	ADC_StartOfConversion(ADC1);
-#elif STM32F1
-	ADC_SoftwareStartConvCmd(ADC1, ENABLE);
+#if defined(STM32F0)
+	ADC_StartOfConversion(_peripheral);
+#elif defined(STM32F1)
+	ADC_SoftwareStartConvCmd(_peripheral, ENABLE);
+#elif defined(STM32F3)
+	ADC_StartConversion(_peripheral);
+#else
+#error
 #endif
 }
 
 void Adc::_calibrate(void)
 {
-#ifdef STM32F0
+#if defined(STM32F0)
 	ADC_GetCalibrationFactor(ADC1); // blocking on F0
-#elif STM32F1
-  /* Enable ADC1 reset calibration register */   
-  ADC_ResetCalibration(ADC1);
-  /* Check the end of ADC1 reset calibration register */
-  while(ADC_GetResetCalibrationStatus(ADC1));
+#elif defined(STM32F1) || defined(STM32F3)
+//   /* Enable ADC1 reset calibration register */   
+//   ADC_ResetCalibration(ADC1);
+//   /* Check the end of ADC1 reset calibration register */
+//   while(ADC_GetResetCalibrationStatus(ADC1));
 
   /* Start ADC1 calibration */
   ADC_StartCalibration(ADC1);
   /* Check the end of ADC1 calibration */
   while(ADC_GetCalibrationStatus(ADC1));
+#else
+#error
 #endif
 }
 
@@ -198,6 +239,8 @@ void Adc::_dmaConfig(void)
 
 #if defined(STM32F0)
 	ADC_DMARequestModeConfig(ADC1, ADC_DMAMode_Circular); // use oneshot mode for non-continuous conversion
+#elif defined(STM32F3)
+	ADC_DMAConfig(_peripheral, ADC_DMAMode_Circular);
 #else
 //#error
 #endif
