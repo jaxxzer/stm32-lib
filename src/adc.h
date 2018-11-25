@@ -105,7 +105,7 @@ public:
 	{
 		//_numSamples = samples;
 	}
-#if defined(STM32F1) || defined(STM32F3)
+#if defined(STM32F1)
 #define SQR1_CLEAR_Mask ((uint32_t)0xFF0FFFFF)
 	void setSeqNumChannels(uint8_t chans)
 	{
@@ -116,7 +116,19 @@ public:
 		tmpreg1 |= (chans - 1) << 20;
 		_peripheral->SQR1 = tmpreg1;
 	}
+#elif defined(STM32F3)
+#define SQR1_CLEAR_Mask ((uint32_t)0xFFFFFFF0)
+	void setSeqNumChannels(uint8_t chans)
+	{
+		/* Get the ADCx SQR1 value */
+		uint32_t tmpreg1 = _peripheral->SQR1;
+		/* Clear L bits */
+		tmpreg1 &= SQR1_CLEAR_Mask;
+		tmpreg1 |= (chans - 1);
+		_peripheral->SQR1 = tmpreg1;
+	}
 #endif
+
 
 private:
 	ADC_TypeDef* _peripheral; // Eg. ADC1, ADC2...

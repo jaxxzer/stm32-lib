@@ -100,7 +100,7 @@ void Adc::init(FunctionalState continuousConvMode,
 		_config.ADC_ContinuousConvMode = continuousConvMode;
 		_config.ADC_ExternalTrigConv = extTrigConv;
 		_config.ADC_DataAlign = dataAlign;
-		_config.ADC_NbrOfChannel = 0;
+		_config.ADC_NbrOfChannel = _numChannels;
 		ADC_Init(_peripheral, &_config);
 	}
 #elif defined(STM32F3)
@@ -110,7 +110,7 @@ void Adc::init(FunctionalState continuousConvMode,
 		ADC_InitTypeDef _config;
 		ADC_StructInit(&_config);
 		_config.ADC_ContinuousConvMode = continuousConvMode;
-		_config.ADC_NbrOfRegChannel = 0;
+		_config.ADC_NbrOfRegChannel = _numChannels;
 		ADC_Init(_peripheral, &_config);
 	}
 #else
