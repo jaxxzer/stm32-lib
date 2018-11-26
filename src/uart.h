@@ -1,8 +1,10 @@
 #pragma once
 
-#include "stm32lib-conf.h"
+#include "dma.h"
 
+#include "stm32lib-conf.h"
 #include <stdio.h>
+
 
 class Uart
 {
@@ -10,7 +12,6 @@ public:
 	Uart(USART_TypeDef* usartx) : _peripheral(usartx) {
 		setClockEnabled(ENABLE);
 	}
-
 	void write(const char* p, uint16_t len);
 	void write(const char* p);
 
@@ -45,7 +46,7 @@ public:
 
 	// Start auto baud rate detection
 	// Requires the next byte received to start with a 1
-#ifdef STM32F0
+#if defined(STM32F0)
 	void startAutoBaud() {
 		USART_AutoBaudRateConfig(_peripheral, USART_AutoBaudRate_StartBit);
 		USART_AutoBaudRateCmd(_peripheral, ENABLE);
@@ -57,6 +58,7 @@ public:
 	}
 
 	void setClockEnabled(FunctionalState enabled);
+	void dmaInit();
 
 	static const uint8_t bufSize = 128;
 	char rxBuf[bufSize];
@@ -75,6 +77,10 @@ public:
 	USART_TypeDef* _peripheral;
 
 	void _irqHandler(void);
+
+private:
+	bool _dmaMode = false; // default is interrupt-driven
+
 };
 
 #ifdef USE_USART_1

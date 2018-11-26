@@ -38,14 +38,14 @@ void Uart::write(const char* ch) {
 //    USART_SendData(USART1, *ch);
 //    while (!USART_GetFlagStatus(USART1, USART_FLAG_TXE));
 
-	while (!txSpaceAvailable()) {
-		txOverruns++; // block when buffer is full
-	}
+	// while (!txSpaceAvailable()) {
+	// 	txOverruns++; // block when buffer is full
+	// }
 
 	txBuf[txTail++] = *ch;
 	txTail = txTail % bufSize;
 
-	_peripheral->CR1 |= USART_CR1_TXEIE;
+	// _peripheral->CR1 |= USART_CR1_TXEIE;
 }
 
 void Uart::write(const char* ch, uint16_t len)
@@ -86,7 +86,30 @@ void Uart::bkspc(void)
 	static const uint8_t bkspc = 0x08;
 	write((char*)(&bkspc));       // ESC command
 }
+void Uart::dmaInit()
+{
+		
 
+		Dma dma1c7 = Dma(DMA1_Channel7);
+		dma1c7.init(
+			(uint32_t)&(_peripheral->TDR),
+			(uint32_t)txBuf,
+			7, //bufSize
+			DMA_DIR_PeripheralDST,
+			DMA_PeripheralDataSize_Byte,
+			DMA_MemoryDataSize_Byte,
+			DMA_Mode_Circular,
+			DMA_Priority_High,
+			DMA_MemoryInc_Enable);
+		
+		
+		
+		dma1c7.setEnabled(ENABLE);
+		USART_DMACmd(_peripheral, USART_DMAReq_Tx, ENABLE);
+
+
+	
+}
 void Uart::_irqHandler(void)
 {
 	if (USART_GetITStatus(_peripheral, USART_IT_RXNE) != RESET) {

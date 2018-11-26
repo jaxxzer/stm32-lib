@@ -229,6 +229,7 @@ void Adc::_dmaConfig(void)
 	dma1c1.init((uint32_t)&(ADC1->DR),
 			(uint32_t)_dmaBuf,
 			_numChannels * _numSamples,
+			DMA_DIR_PeripheralSRC,
 			DMA_PeripheralDataSize_HalfWord,
 			DMA_MemoryDataSize_HalfWord,
 			DMA_Mode_Circular,
