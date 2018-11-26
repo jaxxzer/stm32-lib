@@ -135,7 +135,12 @@ int main()
     initUsart3();
 #endif
 
-    while(1);
+    while(1)
+    {
+        mDelay(100);
+        uart2.write("hello2 ", 7);
+
+    };
     print_clocks();
 
     while (1) {
