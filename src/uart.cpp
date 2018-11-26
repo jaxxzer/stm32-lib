@@ -32,15 +32,32 @@ uint8_t Uart::txSpaceAvailable(void)
 	return bufSize - txSpaceUsed() - 1;
 }
 
+void Uart::dmaTCcallback()
+{
+	//dma1c7.setEnabled(DISABLE);
+	    DMA_Cmd(DMA1_Channel7, DISABLE);
+
+	txHead += _dmaTransferCount;
+	if (txHead != txTail)
+	{
+		_dmaTransferCount = txSpaceUsed();
+		DMA1_Channel7->CNDTR = _dmaTransferCount;
+		//dma1c7.setEnabled(ENABLE);
+		    DMA_Cmd(DMA1_Channel7, ENABLE);
+
+	}
+}
+
 void Uart::write(const char* ch) {
 
 	// Use this instead for blocking write
 //    USART_SendData(USART1, *ch);
 //    while (!USART_GetFlagStatus(USART1, USART_FLAG_TXE));
 
-	// while (!txSpaceAvailable()) {
-	// 	txOverruns++; // block when buffer is full
-	// }
+	while (!txSpaceAvailable()) {
+		txOverruns++; // block when buffer is full
+		mDelay(1);
+	}
 
 	txBuf[txTail++] = *ch;
 	txTail = txTail % bufSize;
@@ -52,6 +69,13 @@ void Uart::write(const char* ch, uint16_t len)
 {
 	for (uint16_t i = 0; i < len; i++) {
 		write(ch++);
+	}
+	if (!_dmaTransferCount)
+	{
+				_dmaTransferCount = txSpaceUsed();
+		DMA1_Channel7->CNDTR = _dmaTransferCount;
+		//dma1c7.setEnabled(ENABLE);
+		    DMA_Cmd(DMA1_Channel7, ENABLE);
 	}
 }
 
@@ -94,17 +118,17 @@ void Uart::dmaInit()
 		dma1c7.init(
 			(uint32_t)&(_peripheral->TDR),
 			(uint32_t)txBuf,
-			7, //bufSize
+			0, //bufSize
 			DMA_DIR_PeripheralDST,
 			DMA_PeripheralDataSize_Byte,
 			DMA_MemoryDataSize_Byte,
-			DMA_Mode_Circular,
+			DMA_Mode_Normal,
 			DMA_Priority_High,
 			DMA_MemoryInc_Enable);
 		
 		
 		
-		dma1c7.setEnabled(ENABLE);
+		//dma1c7.setEnabled(ENABLE);
 		USART_DMACmd(_peripheral, USART_DMAReq_Tx, ENABLE);
 
 
@@ -160,6 +184,15 @@ extern "C" {
 		uart3._irqHandler();
 #endif
 	}
+}
+
+extern "C"
+{
+	void DMA1_Channel7_IRQHandler(void)
+	{
+		uart2.dmaTCcallback();
+	}
+
 }
 
 #ifdef USE_USART_1

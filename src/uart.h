@@ -59,7 +59,7 @@ public:
 
 	void setClockEnabled(FunctionalState enabled);
 	void dmaInit();
-
+	void dmaTCcallback();
 	static const uint8_t bufSize = 128;
 	char rxBuf[bufSize];
 	char txBuf[bufSize];
@@ -69,9 +69,9 @@ public:
 	uint8_t rxHead = 0; // TODO allow use of full buffer, right now we use only bufSize-1 bytes
 	uint8_t rxTail = 0;
 	uint8_t rxOverruns = 0;
-
-	uint8_t txHead;
-	uint8_t txTail;
+	volatile uint8_t _dmaTransferCount = 0;
+	volatile uint8_t txHead;
+	volatile uint8_t txTail;
 	uint8_t txOverruns;
 
 	USART_TypeDef* _peripheral;

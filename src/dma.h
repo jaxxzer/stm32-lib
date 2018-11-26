@@ -46,4 +46,6 @@ class Dma {
 		RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);
 		//RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA2, ENABLE); TODO: pick
 	}
+
 };
+

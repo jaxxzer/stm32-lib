@@ -119,9 +119,16 @@ int main()
 #endif
 
 #if defined(USE_USART_2)
-    uart2.write("hello2 ", 7);
-    uart2.dmaInit();
-    initUsart2();
+        uart2.dmaInit();
+
+    DMA_ITConfig(DMA1_Channel7, DMA_IT_TC, ENABLE);
+    nvic_config(DMA1_Channel7_IRQn, 0, 0, ENABLE);
+    //dma1c7.setEnabled(ENABLE);
+    // DMA_Cmd(DMA1_Channel7, ENABLE);
+        initUsart2();
+
+        uart2.write("hello2 ", 7);
+
 #endif
 
 #if defined(USE_USART_3)
