@@ -51,6 +51,14 @@ void Uart::dmaTCcallback()
 	startTxDmaTransfer();
 }
 
+void Uart::dmaHTcallback()
+{
+	DMA_ClearFlag(DMA1_FLAG_HT7);
+	txHead += _dmaTransferCount / 2;
+	_dmaTransferCount -= _dmaTransferCount / 2;
+	txHead = txHead % bufSize;
+}
+
 void Uart::write(const char* ch) {
 	// Use this instead for blocking write
 //    USART_SendData(USART1, *ch);
@@ -219,7 +227,14 @@ extern "C"
 {
 	void DMA1_Channel7_IRQHandler(void)
 	{
+		if (DMA_GetITStatus(DMA1_IT_HT7) != RESET) {
+		uart2.dmaHTcallback();
+
+		}
+		if (DMA_GetITStatus(DMA1_IT_TC7) != RESET) {
 		uart2.dmaTCcallback();
+
+		}
 	}
 
 }

@@ -63,6 +63,7 @@ public:
 	void setClockEnabled(FunctionalState enabled);
 	void dmaTxInit();
 	void dmaTCcallback();
+	void dmaHTcallback();
 	void startTxDmaTransfer();
 	static const uint16_t bufSize = 512;
 	char rxBuf[bufSize];

@@ -1,5 +1,6 @@
 #include "stm32lib-conf.h"
-#define USART_BAUDRATE 1e6
+#include <cstring>
+#define USART_BAUDRATE 2e6
 // ALERT!! this does not work with baudrate 115200 and usart bufsize of 32 IDK why the hell not
 Gpio gpioLed { GPIO_LED1_PORT, GPIO_LED1_PIN };
 
@@ -122,11 +123,12 @@ int main()
         uart2.dmaTxInit();
 
     DMA_ITConfig(DMA1_Channel7, DMA_IT_TC, ENABLE);
+    DMA_ITConfig(DMA1_Channel7, DMA_IT_HT, ENABLE);
     nvic_config(DMA1_Channel7_IRQn, 0, 0, ENABLE);
     //dma1c7.setEnabled(ENABLE);
     // DMA_Cmd(DMA1_Channel7, ENABLE);
         initUsart2();
-
+    const char* string = "a quick brown fox jumped over the lazy dog    ";
         uart2.write("hello2 ", 7);
 
 #endif
@@ -138,7 +140,7 @@ int main()
     while(1)
     {
         //mDelay(100);
-        uart2.write("hello2 ", 7);
+        uart2.write(string, strlen(string));
 
     };
     print_clocks();
