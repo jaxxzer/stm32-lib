@@ -43,7 +43,8 @@ void Uart::dmaTCcallback()
 {
 	//dma1c7.setEnabled(DISABLE);
 	    DMA_Cmd(DMA1_Channel7, DISABLE);
-
+	// TODO wtf is difference between clearflag and clearit in spl?
+	DMA_ClearFlag(DMA1_FLAG_TC7);
 	txHead += _dmaTransferCount;
 	txHead = txHead % bufSize;
 	_dmaTransferCount = dmaToTransfer();
@@ -56,8 +57,7 @@ void Uart::dmaTCcallback()
 		    DMA_Cmd(DMA1_Channel7, ENABLE);
 
 	}
-	// TODO wtf is difference between clearflag and clearit in spl?
-	DMA_ClearFlag(DMA1_FLAG_TC7);
+
 }
 
 void Uart::write(const char* ch) {
@@ -67,6 +67,14 @@ void Uart::write(const char* ch) {
 //    while (!USART_GetFlagStatus(USART1, USART_FLAG_TXE));
 	uint8_t x = txSpaceAvailable();
 	while (!x) {
+	if (!(DMA1_Channel7->CCR & DMA_CCR_EN))
+	{
+		_dmaTransferCount = dmaToTransfer();
+		DMA1_Channel7->CNDTR = _dmaTransferCount;
+		DMA1_Channel7->CMAR = (uint32_t)&txBuf[txHead];
+		//dma1c7.setEnabled(ENABLE);
+		DMA_Cmd(DMA1_Channel7, ENABLE);
+	}
 		txOverruns++; // block when buffer is full
 		mDelay(1);
 		x = txSpaceAvailable();
