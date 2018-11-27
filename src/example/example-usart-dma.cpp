@@ -1,5 +1,5 @@
 #include "stm32lib-conf.h"
-#define USART_BAUDRATE 115200
+#define USART_BAUDRATE 1e6
 
 Gpio gpioLed { GPIO_LED1_PORT, GPIO_LED1_PIN };
 
@@ -137,7 +137,7 @@ int main()
 
     while(1)
     {
-        mDelay(100);
+        //mDelay(100);
         uart2.write("hello2 ", 7);
 
     };

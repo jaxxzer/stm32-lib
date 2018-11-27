@@ -91,7 +91,7 @@ void Uart::write(const char* ch, uint16_t len)
 	for (uint16_t i = 0; i < len; i++) {
 		write(ch++);
 	}
-	if (!_dmaTransferCount)
+	if (!(DMA1_Channel7->CCR & DMA_CCR_EN))
 	{
 		_dmaTransferCount = dmaToTransfer();
 		DMA1_Channel7->CNDTR = _dmaTransferCount;
