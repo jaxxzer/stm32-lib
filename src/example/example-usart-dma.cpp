@@ -1,5 +1,5 @@
 #include "stm32lib-conf.h"
-#define USART_BAUDRATE 115200
+#define USART_BAUDRATE 1e6
 // ALERT!! this does not work with baudrate 115200 and usart bufsize of 32 IDK why the hell not
 Gpio gpioLed { GPIO_LED1_PORT, GPIO_LED1_PIN };
 
@@ -119,7 +119,7 @@ int main()
 #endif
 
 #if defined(USE_USART_2)
-        uart2.dmaInit();
+        uart2.dmaTxInit();
 
     DMA_ITConfig(DMA1_Channel7, DMA_IT_TC, ENABLE);
     nvic_config(DMA1_Channel7_IRQn, 0, 0, ENABLE);

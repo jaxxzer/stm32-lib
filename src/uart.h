@@ -5,6 +5,8 @@
 #include "stm32lib-conf.h"
 #include <stdio.h>
 
+//TODO wtf do I have to forward declare this, the include is above?
+class Dma;
 
 class Uart
 {
@@ -16,14 +18,14 @@ public:
 	void write(const char* p);
 
 	int read(void);
-	uint8_t rxWaiting(void);
+	uint16_t rxWaiting(void);
 
 	void cls(void);
 	void bkspc(void);
 	void ITConfig(uint32_t it, FunctionalState enabled);
 	uint16_t dmaToTransfer();
-	uint8_t txSpaceUsed(void);
-	uint8_t txSpaceAvailable(void);
+	uint16_t txSpaceUsed(void);
+	uint16_t txSpaceAvailable(void);
 	void init(uint32_t baudrate,
 				uint32_t stopbits = USART_StopBits_1,
 				uint32_t wordlength = USART_WordLength_8b,
@@ -59,23 +61,26 @@ public:
 	}
 
 	void setClockEnabled(FunctionalState enabled);
-	void dmaInit();
+	void dmaTxInit();
 	void dmaTCcallback();
-	static const uint8_t bufSize = 32;
+	void startTxDmaTransfer();
+	static const uint16_t bufSize = 512;
 	char rxBuf[bufSize];
 	char txBuf[bufSize];
 
 	// tail == head      means empty
 	// tail == head - 1  means full
-	uint8_t rxHead = 0; // TODO allow use of full buffer, right now we use only bufSize-1 bytes
-	uint8_t rxTail = 0;
-	uint8_t rxOverruns = 0;
-	volatile uint8_t _dmaTransferCount = 0;
-	volatile uint8_t txHead;
-	volatile uint8_t txTail;
-	uint8_t txOverruns;
+	uint16_t rxHead = 0; // TODO allow use of full buffer, right now we use only bufSize-1 bytes
+	uint16_t rxTail = 0;
+	uint16_t rxOverruns = 0;
+	volatile uint16_t _dmaTransferCount = 0;
+	volatile uint16_t txHead;
+	volatile uint16_t txTail;
+	uint16_t txOverruns;
 
 	USART_TypeDef* _peripheral;
+	Dma* dmaTx;
+	Dma* dmaRx;
 
 	void _irqHandler(void);
 
