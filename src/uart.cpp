@@ -46,7 +46,7 @@ void Uart::dmaTCcallback()
 
 	txHead += _dmaTransferCount;
 	txHead = txHead % bufSize;
-	_dmaTransferCount = txSpaceUsed();
+	_dmaTransferCount = dmaToTransfer();
 
 	if (_dmaTransferCount)
 	{
@@ -77,6 +77,14 @@ void Uart::write(const char* ch) {
 
 	// _peripheral->CR1 |= USART_CR1_TXEIE;
 }
+uint16_t Uart::dmaToTransfer()
+{
+	if(txTail >= txHead) {
+		return txTail - txHead;
+	} else {
+		return bufSize - txHead;
+	}
+}
 
 void Uart::write(const char* ch, uint16_t len)
 {
@@ -85,7 +93,7 @@ void Uart::write(const char* ch, uint16_t len)
 	}
 	if (!_dmaTransferCount)
 	{
-		_dmaTransferCount = txSpaceUsed();
+		_dmaTransferCount = dmaToTransfer();
 		DMA1_Channel7->CNDTR = _dmaTransferCount;
 		DMA1_Channel7->CMAR = (uint32_t)&txBuf[txHead];
 		//dma1c7.setEnabled(ENABLE);

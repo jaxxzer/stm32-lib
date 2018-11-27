@@ -21,7 +21,7 @@ public:
 	void cls(void);
 	void bkspc(void);
 	void ITConfig(uint32_t it, FunctionalState enabled);
-
+	uint16_t dmaToTransfer();
 	uint8_t txSpaceUsed(void);
 	uint8_t txSpaceAvailable(void);
 	void init(uint32_t baudrate,
