@@ -24,7 +24,14 @@ void Uart::ITConfig(uint32_t it, FunctionalState enabled)
 
 uint8_t Uart::txSpaceUsed(void)
 {
-	return ((uint8_t)(txTail - txHead) % bufSize);
+	//return ((uint8_t)(txTail - txHead) % bufSize);
+
+	if (txTail >= txHead)
+	{
+		return txTail - txHead;
+	} else {
+		return bufSize - (txHead - txTail);
+	}
 }
 
 uint8_t Uart::txSpaceAvailable(void)
@@ -39,11 +46,12 @@ void Uart::dmaTCcallback()
 
 	txHead += _dmaTransferCount;
 	txHead = txHead % bufSize;
-			_dmaTransferCount = txSpaceUsed();
+	_dmaTransferCount = txSpaceUsed();
 
-	if (txHead != txTail)
+	if (_dmaTransferCount)
 	{
 		DMA1_Channel7->CNDTR = _dmaTransferCount;
+		DMA1_Channel7->CMAR = (uint32_t)&txBuf[txHead];
 		//dma1c7.setEnabled(ENABLE);
 		    DMA_Cmd(DMA1_Channel7, ENABLE);
 
@@ -77,10 +85,11 @@ void Uart::write(const char* ch, uint16_t len)
 	}
 	if (!_dmaTransferCount)
 	{
-				_dmaTransferCount = txSpaceUsed();
+		_dmaTransferCount = txSpaceUsed();
 		DMA1_Channel7->CNDTR = _dmaTransferCount;
+		DMA1_Channel7->CMAR = (uint32_t)&txBuf[txHead];
 		//dma1c7.setEnabled(ENABLE);
-		    DMA_Cmd(DMA1_Channel7, ENABLE);
+		DMA_Cmd(DMA1_Channel7, ENABLE);
 	}
 }
 
@@ -141,33 +150,33 @@ void Uart::dmaInit()
 }
 void Uart::_irqHandler(void)
 {
-	if (USART_GetITStatus(_peripheral, USART_IT_RXNE) != RESET) {
-		char rxdata = USART_ReceiveData(_peripheral); // reading the data clears the flag
+	// if (USART_GetITStatus(_peripheral, USART_IT_RXNE) != RESET) {
+	// 	char rxdata = USART_ReceiveData(_peripheral); // reading the data clears the flag
 
-		rxBuf[rxTail++] = rxdata;
-		rxTail = rxTail % bufSize;
+	// 	rxBuf[rxTail++] = rxdata;
+	// 	rxTail = rxTail % bufSize;
 
-		if (rxHead == rxTail) { // overwrite waiting buffer
-			rxOverruns++;
-			rxHead++;
-			rxHead = rxHead % bufSize;
+	// 	if (rxHead == rxTail) { // overwrite waiting buffer
+	// 		rxOverruns++;
+	// 		rxHead++;
+	// 		rxHead = rxHead % bufSize;
 
-			//uart.rxTail++;
-		}
-	}
+	// 		//uart.rxTail++;
+	// 	}
+	// }
 
-	if (USART_GetITStatus(_peripheral, USART_IT_TXE) != RESET) {
-		if (txHead != txTail) { // if there is data in the buffer, send the first byte
-			USART_SendData(_peripheral, txBuf[txHead++]);
-			txHead = txHead % bufSize;
-		} else {
-			_peripheral->CR1 &= ~USART_CR1_TXEIE; // diable interrupt when buffer is empty
-		}
-	}
+	// if (USART_GetITStatus(_peripheral, USART_IT_TXE) != RESET) {
+	// 	if (txHead != txTail) { // if there is data in the buffer, send the first byte
+	// 		USART_SendData(_peripheral, txBuf[txHead++]);
+	// 		txHead = txHead % bufSize;
+	// 	} else {
+	// 		_peripheral->CR1 &= ~USART_CR1_TXEIE; // diable interrupt when buffer is empty
+	// 	}
+	// }
 
-	if (USART_GetFlagStatus(_peripheral, USART_IT_ORE) != RESET) {
-		USART_ClearITPendingBit(_peripheral, USART_IT_ORE);
-	}
+	// if (USART_GetFlagStatus(_peripheral, USART_IT_ORE) != RESET) {
+	// 	USART_ClearITPendingBit(_peripheral, USART_IT_ORE);
+	// }
 }
 
 extern "C" {

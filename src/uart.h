@@ -31,6 +31,7 @@ public:
 				uint32_t mode = USART_Mode_Rx | USART_Mode_Tx,
 				uint32_t flowcontrol = USART_HardwareFlowControl_None)
 	{
+		txBuf[bufSize] = 'F';
 		USART_InitTypeDef _config;
 		USART_StructInit(&_config);
 		_config.USART_BaudRate = baudrate;
@@ -60,7 +61,7 @@ public:
 	void setClockEnabled(FunctionalState enabled);
 	void dmaInit();
 	void dmaTCcallback();
-	static const uint8_t bufSize = 128;
+	static const uint8_t bufSize = 32;
 	char rxBuf[bufSize];
 	char txBuf[bufSize];
 

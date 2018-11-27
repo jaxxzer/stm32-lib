@@ -1,5 +1,5 @@
 #include "stm32lib-conf.h"
-#define USART_BAUDRATE 1000000
+#define USART_BAUDRATE 115200
 
 Gpio gpioLed { GPIO_LED1_PORT, GPIO_LED1_PIN };
 
@@ -115,7 +115,7 @@ int main()
     gpioLed.init(GPIO_Mode_OUT);
 
 #if defined(USE_USART_1)
-    initUsart1();
+    //initUsart1();
 #endif
 
 #if defined(USE_USART_2)
@@ -132,7 +132,7 @@ int main()
 #endif
 
 #if defined(USE_USART_3)
-    initUsart3();
+    //initUsart3();
 #endif
 
     while(1)
