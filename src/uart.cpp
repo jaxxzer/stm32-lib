@@ -123,6 +123,7 @@ int Uart::read(void)
 	if (!rxWaiting()) {
 		return -1;
 	}
+	// todo read character out first
 	uint16_t bufIndex = rxHead++;
 	rxHead = rxHead % bufSize;
 	return rxBuf[bufIndex];
@@ -186,33 +187,33 @@ void Uart::dmaTxInit()
 
 void Uart::_irqHandler(void)
 {
-	// if (USART_GetITStatus(_peripheral, USART_IT_RXNE) != RESET) {
-	// 	char rxdata = USART_ReceiveData(_peripheral); // reading the data clears the flag
+	if (USART_GetITStatus(_peripheral, USART_IT_RXNE) != RESET) {
+		char rxdata = USART_ReceiveData(_peripheral); // reading the data clears the flag
 
-	// 	rxBuf[rxTail++] = rxdata;
-	// 	rxTail = rxTail % bufSize;
+		rxBuf[rxTail++] = rxdata;
+		rxTail = rxTail % bufSize;
 
-	// 	if (rxHead == rxTail) { // overwrite waiting buffer
-	// 		rxOverruns++;
-	// 		rxHead++;
-	// 		rxHead = rxHead % bufSize;
+		if (rxHead == rxTail) { // overwrite waiting buffer
+			rxOverruns++;
+			rxHead++;
+			rxHead = rxHead % bufSize;
 
-	// 		//uart.rxTail++;
-	// 	}
-	// }
+			//uart.rxTail++;
+		}
+	}
 
-	// if (USART_GetITStatus(_peripheral, USART_IT_TXE) != RESET) {
-	// 	if (txHead != txTail) { // if there is data in the buffer, send the first byte
-	// 		USART_SendData(_peripheral, txBuf[txHead++]);
-	// 		txHead = txHead % bufSize;
-	// 	} else {
-	// 		_peripheral->CR1 &= ~USART_CR1_TXEIE; // diable interrupt when buffer is empty
-	// 	}
-	// }
+	if (USART_GetITStatus(_peripheral, USART_IT_TXE) != RESET) {
+		if (txHead != txTail) { // if there is data in the buffer, send the first byte
+			USART_SendData(_peripheral, txBuf[txHead++]);
+			txHead = txHead % bufSize;
+		} else {
+			_peripheral->CR1 &= ~USART_CR1_TXEIE; // diable interrupt when buffer is empty
+		}
+	}
 
-	// if (USART_GetFlagStatus(_peripheral, USART_IT_ORE) != RESET) {
-	// 	USART_ClearITPendingBit(_peripheral, USART_IT_ORE);
-	// }
+	if (USART_GetFlagStatus(_peripheral, USART_IT_ORE) != RESET) {
+		USART_ClearITPendingBit(_peripheral, USART_IT_ORE);
+	}
 }
 
 extern "C" {
