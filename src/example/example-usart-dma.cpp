@@ -52,13 +52,13 @@ void initUsart1(void)
 #if defined (USE_USART_2)
 void initUsart2(void)
 {
-// #if defined(STM32F0)
-//     nvic_config(USART2_IRQn, 0, ENABLE);
-// #elif defined(STM32F1) || defined(STM32F3)
-//     nvic_config(USART2_IRQn, 0, 0, ENABLE);
-// #else
-//  #error
-// #endif
+#if defined(STM32F0)
+    nvic_config(USART2_IRQn, 0, ENABLE);
+#elif defined(STM32F1) || defined(STM32F3)
+    nvic_config(USART2_IRQn, 0, 0, ENABLE);
+#else
+ #error
+#endif
 
 	gpioUsart2Rx.init(GPIO_Mode_AF);
     gpioUsart2Tx.init(GPIO_Mode_AF);
@@ -73,9 +73,9 @@ void initUsart2(void)
 #endif
 
     uart2.init(USART_BAUDRATE);
-    //uart2.ITConfig(USART_IT_RXNE, ENABLE);
+    uart2.ITConfig(USART_IT_RXNE, ENABLE);
     uart2.setEnabled(ENABLE);
-    //uart2.cls();
+    uart2.cls();
 }
 #endif
 
@@ -120,17 +120,10 @@ int main()
 #endif
 
 #if defined(USE_USART_2)
-        uart2.dmaTxInit();
-
-    DMA_ITConfig(DMA1_Channel7, DMA_IT_TC, ENABLE);
-    DMA_ITConfig(DMA1_Channel7, DMA_IT_HT, ENABLE);
-    nvic_config(DMA1_Channel7_IRQn, 0, 0, ENABLE);
-    //dma1c7.setEnabled(ENABLE);
-    // DMA_Cmd(DMA1_Channel7, ENABLE);
-        initUsart2();
+    uart2.dmaTxInit();
+    initUsart2();
     const char* string = "a quick brown fox jumped over the lazy dog    ";
-        uart2.write("hello2 ", 7);
-
+    uart2.write("hello2 ", 7);
 #endif
 
 #if defined(USE_USART_3)
@@ -142,8 +135,6 @@ int main()
         //mDelay(100);
         uart2.write(string, strlen(string));
         print_clocks();
-
-
     };
 
     while (1) {

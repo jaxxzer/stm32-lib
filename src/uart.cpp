@@ -140,11 +140,13 @@ void Uart::bkspc(void)
 void Uart::dmaTxInit()
 {
 	DMA_Channel_TypeDef* dmaCh = nullptr;
+	uint32_t dmaIRQn = 0;
 	switch((uint32_t)_peripheral) {
 		case USART1_BASE:
 			break;
 		case USART2_BASE:
 			dmaCh = DMA1_Channel7;
+			dmaIRQn = DMA1_Channel7_IRQn;
 			break;
 		case USART3_BASE:
 			break;
@@ -169,6 +171,10 @@ void Uart::dmaTxInit()
 	
 	//dma1c7.setEnabled(ENABLE);
 	USART_DMACmd(_peripheral, USART_DMAReq_Tx, ENABLE);
+
+	DMA_ITConfig(dmaCh, DMA_IT_TC, ENABLE);
+    DMA_ITConfig(dmaCh, DMA_IT_HT, ENABLE);
+    nvic_config(dmaIRQn, 0, 0, ENABLE);
 }
 
 void Uart::_irqHandler(void)
