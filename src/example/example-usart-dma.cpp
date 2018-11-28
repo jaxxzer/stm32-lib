@@ -1,6 +1,6 @@
 #include "stm32lib-conf.h"
 #include <cstring>
-#define USART_BAUDRATE 2e6
+#define USART_BAUDRATE 1e6
 // ALERT!! this does not work with baudrate 115200 and usart bufsize of 32 IDK why the hell not
 Gpio gpioLed { GPIO_LED1_PORT, GPIO_LED1_PIN };
 
@@ -141,9 +141,10 @@ int main()
     {
         //mDelay(100);
         uart2.write(string, strlen(string));
+        print_clocks();
+
 
     };
-    print_clocks();
 
     while (1) {
         #if defined(USE_USART_1)
