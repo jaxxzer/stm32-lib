@@ -2036,7 +2036,7 @@ uint16_t ADC_GetInjectedConversionValue(ADC_TypeDef* ADCx, uint8_t ADC_InjectedS
       (+) ADC_IT_OVR: ADC overrun interrupt source
   
   
-  (#) Flags and Interrupts for ADC regular channels
+  (#) Flags and Interrupts for ADC **INJECTED** changed by jacob** channels
   (##)Flags
       (+) ADC_FLAG_JEOC: ADC Ready flag
       (+) ADC_FLAG_JEOS: ADC End of Sampling flag
