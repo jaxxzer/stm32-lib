@@ -124,11 +124,21 @@ extern "C"
 {
     void ADC1_2_IRQHandler(void)
     {
+        // if (ADC_GetFlagStatus(ADC1, ADC_FLAG_EOSMP)) {
+        //     ADC_ClearFlag(ADC1, ADC_FLAG_EOSMP);
+        //     uint16_t val = ADC1->DR;
+        //     printf("smp:%d\r\n", val);
+        // }
         if (ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC)) {
             ADC_ClearFlag(ADC1, ADC_FLAG_EOC);
+            //uint16_t val = ADC1->DR;
+            printf("val: %d\r\n", 23);
         }
-        uint16_t val = ADC1->DR;
-        printf("val: %d\r\n", val);
+
+        // if (ADC_GetFlagStatus(ADC1, ADC_FLAG_EOS)) {
+        //     ADC_ClearFlag(ADC1, ADC_FLAG_EOS);
+        //     printf("?\r\n");
+        // }
 
     }
 }
@@ -155,15 +165,19 @@ int main()
     Adc adc1 { ADC1 };
     AdcChannel* adcChan1;
     adcChan1 = adc1.addChannel( ADC_CHAN );
+    //adc1.addChannel(ADC_Channel_2);
 	adc1.init();
 	adc1.enable();
+    nvic_config(ADC1_2_IRQn, 0, 2, ENABLE);
+    //ADC_ITConfig(ADC1, ADC_FLAG_EOSMP, ENABLE);
+    ADC_ITConfig(ADC1, ADC_FLAG_EOC, ENABLE);
+    //ADC_ITConfig(ADC1, ADC_FLAG_EOS, ENABLE);
 	adc1.startConversion();
-    // nvic_config(ADC1_2_IRQn, 0, 0, ENABLE);
-    // ADC_ITConfig(ADC1, ADC_FLAG_EOC, ENABLE);
+
     while (1) {
-        adc1.waitConversion();
+        //adc1.waitConversion();
         // print_clocks();
-        printf("adc1: %d\r\n", adcChan1->average);
+        //printf("adc1: %d\r\n", adcChan1->average);
         gpioLed.toggle();
     }
 
