@@ -61,19 +61,26 @@ void Uart::dmaHTcallback()
 
 void Uart::write(const char* ch) {
 	// Use this instead for blocking write
-//    USART_SendData(USART1, *ch);
-//    while (!USART_GetFlagStatus(USART1, USART_FLAG_TXE));
-	while (!txSpaceAvailable()) {
-		if (!(DMA1_Channel7->CCR & DMA_CCR_EN)) {
-			startTxDmaTransfer();
+	if(_dmaCh) { // dma mode
+		while (!txSpaceAvailable()) {
+			if (!(DMA1_Channel7->CCR & DMA_CCR_EN)) {
+				startTxDmaTransfer();
+			}
+			txOverruns++; // block when buffer is full
 		}
-		txOverruns++; // block when buffer is full
+
+		txBuf[txTail++] = *ch;
+		txTail = txTail % bufSize;
+	} else { // interrupt mode
+		while (!txSpaceAvailable()) {
+			txOverruns++; // block when buffer is full
+		}
+
+		txBuf[txTail++] = *ch;
+		txTail = txTail % bufSize;
+
+		_peripheral->CR1 |= USART_CR1_TXEIE;
 	}
-
-	txBuf[txTail++] = *ch;
-	txTail = txTail % bufSize;
-
-	// _peripheral->CR1 |= USART_CR1_TXEIE;
 }
 
 uint16_t Uart::dmaToTransfer()
@@ -139,27 +146,27 @@ void Uart::bkspc(void)
 }
 void Uart::dmaTxInit()
 {
-	DMA_Channel_TypeDef* dmaCh = nullptr;
 	uint32_t dmaIRQn = 0;
 	switch((uint32_t)_peripheral) {
 		case USART1_BASE:
 			break;
 		case USART2_BASE:
-			dmaCh = DMA1_Channel7;
+			_dmaCh = DMA1_Channel7;
 			dmaIRQn = DMA1_Channel7_IRQn;
 			break;
 		case USART3_BASE:
 			break;
 	}
 
-	if (!dmaCh) {
+	if (!_dmaCh) {
 		return;
 	}
-	Dma dma1c7 = Dma(dmaCh);
+
+	Dma dma1c7 = Dma(_dmaCh);
 	dma1c7.init(
 		(uint32_t)&(_peripheral->TDR),
 		(uint32_t)txBuf,
-		0, //bufSize
+		0, //bufSize (CNDTR)
 		DMA_DIR_PeripheralDST,
 		DMA_PeripheralDataSize_Byte,
 		DMA_MemoryDataSize_Byte,
@@ -172,8 +179,8 @@ void Uart::dmaTxInit()
 	//dma1c7.setEnabled(ENABLE);
 	USART_DMACmd(_peripheral, USART_DMAReq_Tx, ENABLE);
 
-	DMA_ITConfig(dmaCh, DMA_IT_TC, ENABLE);
-    DMA_ITConfig(dmaCh, DMA_IT_HT, ENABLE);
+	DMA_ITConfig(_dmaCh, DMA_IT_TC, ENABLE);
+    DMA_ITConfig(_dmaCh, DMA_IT_HT, ENABLE);
     nvic_config(dmaIRQn, 0, 0, ENABLE);
 }
 

@@ -87,6 +87,7 @@ public:
 
 private:
 	bool _dmaMode = false; // default is interrupt-driven
+	DMA_Channel_TypeDef* _dmaCh = nullptr;
 
 };
 
