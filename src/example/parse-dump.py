@@ -44,7 +44,10 @@ with open(filename, "rb") as f:
     byteBuf = []
     for c in content:
         #print(hex(c), end=',')
-        for c in parseChar(c):
+        data = parseChar(c)
+        if len(data) == 0:
+            highByte = False
+        for c in data:
             #print("fuck")
             if (highByte):
                 #print("h", end='')

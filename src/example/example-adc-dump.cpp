@@ -132,6 +132,8 @@ extern "C"
                 uart2.write("ya a", 4);
             }
             sampleCount = sampleCount % 128;
+            ADC_ClearFlag(ADC1, ADC_FLAG_EOS);
+
         }
         // if (ADC_GetFlagStatus(ADC1, ADC_FLAG_EOSMP)) {
         //     ADC_ClearFlag(ADC1, ADC_FLAG_EOSMP);
@@ -164,7 +166,7 @@ int main()
 #endif
 
 #if defined(USE_USART_2)
-    //uart2.dmaTxInit();
+    uart2.dmaTxInit();
 
     initUsart2();
 #endif

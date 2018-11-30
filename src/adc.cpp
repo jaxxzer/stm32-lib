@@ -123,7 +123,7 @@ void Adc::_enableClock(void)
 #elif defined(STM32F1)
 	RCC_ADCCLKConfig(RCC_PCLK2_Div4);
 #elif defined(STM32F3)
-	RCC_ADCCLKConfig(RCC_ADC12PLLCLK_Div128);
+	RCC_ADCCLKConfig(RCC_ADC12PLLCLK_Div4);
 
 	//ADC_ClockModeConfig(_peripheral, ADC_ClockMode_SynClkDiv2);
 #else
