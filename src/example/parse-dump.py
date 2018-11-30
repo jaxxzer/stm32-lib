@@ -15,7 +15,7 @@ def headerToIntList(s):
 
 #header = headerToInt(header)
 header = headerToIntList(header)
-print("header:", header)
+print("header:", header, hex(header[0]), hex(header[1]), hex(header[2]), hex(header[3]))
 parseState = 0
 
 parseBuf = 4*[0]
@@ -24,9 +24,9 @@ def parseChar(c):
     global header
     if c != header[parseState]:
         parseBuf[parseState] = c
-        last = parseState
+        chars = parseState + 1
         parseState = 0
-        return parseBuf[:last]
+        return parseBuf[0:chars]
     else:
         parseBuf[parseState] = c
         parseState += 1
@@ -43,18 +43,17 @@ with open(filename, "rb") as f:
 
     byteBuf = []
     for c in content:
-        print(hex(c), end=',')
-
+        #print(hex(c), end=',')
         for c in parseChar(c):
-
+            #print("fuck")
             if (highByte):
-                print("h", end='')
+                #print("h", end='')
                 i = c << 8
                 highByte = False
             else:
                 i = i | c
                 #print("%s," % hex(i), end='')
-                print("l", end='')
+                #print("l", end='')
 
                 print(i)
                 i = 0
