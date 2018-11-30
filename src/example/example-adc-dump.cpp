@@ -124,26 +124,32 @@ extern "C"
 {
     void ADC1_2_IRQHandler(void)
     {
+                static uint8_t sampleCount = 0x0;
+
+                if (ADC_GetFlagStatus(ADC1, ADC_FLAG_EOS)) {
+            ADC_ClearFlag(ADC1, ADC_FLAG_EOS);
+            if (!sampleCount--) {
+                uart2.write("ya a", 4);
+            }
+            sampleCount = sampleCount % 6;
+        }
         // if (ADC_GetFlagStatus(ADC1, ADC_FLAG_EOSMP)) {
         //     ADC_ClearFlag(ADC1, ADC_FLAG_EOSMP);
         //     uint16_t val = ADC1->DR;
         //     printf("smp:%d\r\n", val);
         // }
-        static uint8_t sampleCount = 0x0;
         if (ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC)) {
             ADC_ClearFlag(ADC1, ADC_FLAG_EOC);
             uint16_t val = ADC1->DR;
             //uint16_t val = ADC1->DR;
+            // uart2.write((char*)&val + 1);
+
+            // uart2.write((char*)&val);
             uart2.write((char*)&val, 2);
             //printf("val: %d\r\n", val);
 
         }
-        if (ADC_GetFlagStatus(ADC1, ADC_FLAG_EOS)) {
-            ADC_ClearFlag(ADC1, ADC_FLAG_EOS);
-            if (!sampleCount--) {
-                uart2.write("ya a", 4);
-            }
-        }
+
 
     }
 }
