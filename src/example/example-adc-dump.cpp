@@ -124,14 +124,14 @@ extern "C"
 {
     void ADC1_2_IRQHandler(void)
     {
-                static uint8_t sampleCount = 0x0;
+        static uint16_t sampleCount = 0x0;
 
-                if (ADC_GetFlagStatus(ADC1, ADC_FLAG_EOS)) {
+        if (ADC_GetFlagStatus(ADC1, ADC_FLAG_EOS)) {
             ADC_ClearFlag(ADC1, ADC_FLAG_EOS);
             if (!sampleCount--) {
                 uart2.write("ya a", 4);
             }
-            sampleCount = sampleCount % 6;
+            sampleCount = sampleCount % 128;
         }
         // if (ADC_GetFlagStatus(ADC1, ADC_FLAG_EOSMP)) {
         //     ADC_ClearFlag(ADC1, ADC_FLAG_EOSMP);
