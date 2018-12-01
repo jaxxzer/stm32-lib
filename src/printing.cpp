@@ -108,7 +108,7 @@ void print_clocks()
 	printf("\t- TIM17: %u\r\n", RCC_ClocksStruct.TIM17CLK_Frequency);
 	printf("\t- TIM20: %u\r\n", RCC_ClocksStruct.TIM20CLK_Frequency);
 #else
-#error
+//#error
 #endif
 }
 

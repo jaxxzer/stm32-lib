@@ -63,7 +63,7 @@ void Uart::write(const char* ch) {
 	// Use this instead for blocking write
 	if(_dmaCh) { // dma mode
 		while (!txSpaceAvailable()) {
-			if (!(DMA1_Channel7->CCR & DMA_CCR_EN)) {
+			if (!(DMA1_Channel7->CCR & 0x1)) {
 				startTxDmaTransfer();
 			}
 			txOverruns++; // block when buffer is full
@@ -108,7 +108,7 @@ void Uart::write(const char* ch, uint16_t len)
 	for (uint16_t i = 0; i < len; i++) {
 		write(ch++);
 	}
-	if (!(DMA1_Channel7->CCR & DMA_CCR_EN)) {
+	if (!(DMA1_Channel7->CCR & 0x1)) {
 		startTxDmaTransfer();
 	}
 }
@@ -165,7 +165,13 @@ void Uart::dmaTxInit()
 
 	Dma dma1c7 = Dma(_dmaCh);
 	dma1c7.init(
+#if defined(STM32F1)
+		(uint32_t)&(_peripheral->DR),
+#elif defined(STM32F3)
 		(uint32_t)&(_peripheral->TDR),
+#else
+#error
+#endif
 		(uint32_t)txBuf,
 		0, //bufSize (CNDTR)
 		DMA_DIR_PeripheralDST,
@@ -217,28 +223,20 @@ void Uart::_irqHandler(void)
 }
 
 extern "C" {
+#ifdef USE_USART_1
+
     void USART1_IRQHandler(void)
     {
-#ifdef USE_USART_1
 		uart1._irqHandler();
-#endif
     }
+#endif
+
+#ifdef USE_USART_2
+
 	void USART2_IRQHandler(void)
     {
-#ifdef USE_USART_2
 		uart2._irqHandler();
-#endif
     }
-	void USART3_IRQHandler(void)
-	{
-#ifdef USE_USART_3
-		uart3._irqHandler();
-#endif
-	}
-}
-
-extern "C"
-{
 	void DMA1_Channel7_IRQHandler(void)
 	{
 		if (DMA_GetITStatus(DMA1_IT_HT7) != RESET) {
@@ -250,6 +248,16 @@ extern "C"
 
 		}
 	}
+	
+#endif
+
+#ifdef USE_USART_3
+
+	void USART3_IRQHandler(void)
+	{
+		uart3._irqHandler();
+	}
+#endif
 
 }
 

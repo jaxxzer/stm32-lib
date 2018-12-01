@@ -18,17 +18,17 @@ uint32_t crcCalcChecksum(uint32_t* buf, uint8_t len)
 	return CRC->DR;
 }
 
-void crcTest(void)
-{
-	uint32_t n = 0x77777777;
-	CRC_ReverseInputDataSelect(CRC_ReverseInputData_No);
-	CRC_ReverseOutputDataCmd(DISABLE);
+// void crcTest(void)
+// {
+// 	uint32_t n = 0x77777777;
+// 	CRC_ReverseInputDataSelect(CRC_ReverseInputData_No);
+// 	CRC_ReverseOutputDataCmd(DISABLE);
 
-	println(); printHex(crcCalcChecksum(&n, 1));
-	CRC_ReverseInputDataSelect(CRC_ReverseInputData_32bits);
-	println(); printHex(crcCalcChecksum(&n, 1));
-	CRC_ReverseOutputDataCmd(ENABLE);
-	println(); printHex(crcCalcChecksum(&n, 1));
-	CRC_ReverseInputDataSelect(CRC_ReverseInputData_No);
-	println(); printHex(crcCalcChecksum(&n, 1));
-}
+// 	println(); printHex(crcCalcChecksum(&n, 1));
+// 	CRC_ReverseInputDataSelect(CRC_ReverseInputData_32bits);
+// 	println(); printHex(crcCalcChecksum(&n, 1));
+// 	CRC_ReverseOutputDataCmd(ENABLE);
+// 	println(); printHex(crcCalcChecksum(&n, 1));
+// 	CRC_ReverseInputDataSelect(CRC_ReverseInputData_No);
+// 	println(); printHex(crcCalcChecksum(&n, 1));
+// }

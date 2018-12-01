@@ -22,6 +22,7 @@ LD_FLAGS = -specs=nano.specs -specs=nosys.specs --static -mthumb -mcpu=cortex-m0
 endif
 ifneq (,$(findstring STM32F1, $(TARGET_MCU)))
 TARGET_LINE = stm32f1
+STARTUP_FILE ?= stm32f1
 OPENOCD_TARGET = target/stm32f1x.cfg
 OPENOCD_FLASH_DRIVER = stm32f1x
 ARCH_FLAGS += -DSTM32F1
