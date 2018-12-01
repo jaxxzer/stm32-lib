@@ -29,7 +29,7 @@ public:
 			, GPIOOType_TypeDef otype = GPIO_OType_PP
 			, GPIOSpeed_TypeDef speed = GPIO_Speed_Level_2);
 #elif defined(STM32F1)
-	static void configRemap(uint32_t remap, FunctionalState newstate);
+	static void remapConfig(uint32_t remap, FunctionalState newstate);
 	void init(GPIOMode_TypeDef mode
 			, GPIOSpeed_TypeDef speed = GPIO_Speed_50MHz);
 #else

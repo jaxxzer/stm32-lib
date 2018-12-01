@@ -95,7 +95,7 @@ void Gpio::configAF(uint8_t af) {
     GPIO_PinAFConfig(_port, _pinSource, af);
 }
 #elif defined(STM32F1)
-void Gpio::configRemap(uint32_t remap, FunctionalState newstate)
+void Gpio::remapConfig(uint32_t remap, FunctionalState newstate)
 {
 	// All valid remaps are non-zero
 	// Zero here indicates no remap

@@ -29,13 +29,16 @@ void initUsart1(void)
  #error
 #endif
 
-	gpioUsart1Rx.init(GPIO_Mode_AF, GPIO_PuPd_UP);
-    gpioUsart1Tx.init(GPIO_Mode_AF, GPIO_PuPd_UP);
+
 
 #if defined(STM32F0) || defined(STM32F3)
+	gpioUsart1Rx.init(GPIO_Mode_AF, GPIO_PuPd_UP);
+    gpioUsart1Tx.init(GPIO_Mode_AF, GPIO_PuPd_UP);
     gpioUsart1Rx.configAF(GPIO_USART1_RX_AF);
     gpioUsart1Tx.configAF(GPIO_USART1_TX_AF);
 #elif defined(STM32F1)
+	gpioUsart1Rx.init(GPIO_Mode_AF_PP);
+    gpioUsart1Tx.init(GPIO_Mode_AF_PP);
     Gpio::remapConfig(GPIO_USART1_REMAP, ENABLE);
 #else
  #error
@@ -112,10 +115,16 @@ int main()
 {
     configureClocks(1000);
 
+#if defined(STM32F0) || defined(STM32F3)
     gpioLed.init(GPIO_Mode_OUT);
+#elif defined(STM32F1)
+    gpioLed.init(GPIO_Mode_Out_PP);
+#else
+#error
+#endif
 
 #if defined(USE_USART_1)
-    //initUsart1();
+    initUsart1();
 #endif
 
 #if defined(USE_USART_2)
