@@ -50,7 +50,7 @@ int main(void)
     while (1) {
         //p2
         //pin 1
-        for (uint8_t i = 0; i < 1; i++) {
+        for (uint8_t i = 0; i < 5; i++) {
             for (uint8_t j = 0; j < 16; j++) {
                 testPin(i, j);
             }
