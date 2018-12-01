@@ -1,5 +1,5 @@
-#include "stm32lib-conf.h"
-
+#include "gpio.h"
+#include "scheduling.h"
 GPIO_TypeDef* ports[] = { GPIOA, GPIOB, GPIOC, GPIOD, GPIOE };
 
 
@@ -22,23 +22,24 @@ void testPin(uint8_t port, uint8_t pin)
  #error
 #endif
 
-    for (int i = 0; i < port; i++) {
+    for (int i = 0; i < port + 1; i++) {
         gpio.reset();
-        mDelay(1);
+        //mDelay(1);
         gpio.set();
-        mDelay(1);
-        gpio.reset();
+        //mDelay(1);
     }
-
-    mDelay(5);
-
-    for (int i = 0; i < pin; i++) {
         gpio.reset();
-        mDelay(1);
+
+    //mDelay(5);
+
+    for (int i = 0; i < pin + 1; i++) {
+        gpio.reset();
+        //mDelay(1);
         gpio.set();
-        mDelay(1);
-        gpio.reset();
+        //mDelay(1);
     }
+            gpio.reset();
+
 }
 
 int main(void)
@@ -47,9 +48,11 @@ int main(void)
 
 
     while (1) {
-        for (int i = 0; i < 5; i++) {
-            for (int j = 0; i < 16; i++) {
-                //testPin(i, j);
+        //p2
+        //pin 1
+        for (uint8_t i = 0; i < 1; i++) {
+            for (uint8_t j = 0; j < 16; j++) {
+                testPin(i, j);
             }
         }  
     }
