@@ -1,6 +1,16 @@
 #pragma once
 
-#include "stm32lib-conf.h"
+#if defined(STM32F0)
+#include "stm32f0xx_conf.h"
+#elif defined(STM32F1)
+#include "stm32f10x_conf.h"
+#elif defined(STM32F3)
+#include "stm32f30x_conf.h"
+#else
+ #error
+#endif
+
+//#include "stm32lib-conf.h"
 #include <inttypes.h>
 
 class Gpio
