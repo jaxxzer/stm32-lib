@@ -120,7 +120,7 @@ int main()
 #endif
 
 #if defined(USE_USART_2)
-    uart2.dmaTxInit();
+    //uart2.dmaTxInit();
     initUsart2();
     const char* string = "a quick brown fox jumped over the lazy dog    ";
     uart2.write("hello2 ", 7);

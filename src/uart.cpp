@@ -181,7 +181,7 @@ void Uart::dmaTxInit()
 	USART_DMACmd(_peripheral, USART_DMAReq_Tx, ENABLE);
 
 	DMA_ITConfig(_dmaCh, DMA_IT_TC, ENABLE);
-    DMA_ITConfig(_dmaCh, DMA_IT_HT, ENABLE);
+    //DMA_ITConfig(_dmaCh, DMA_IT_HT, ENABLE);
     nvic_config(dmaIRQn, 0, 0, ENABLE);
 }
 
