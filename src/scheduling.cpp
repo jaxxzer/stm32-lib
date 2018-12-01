@@ -11,7 +11,7 @@ void configureClocks(uint32_t frequency)
 #if defined(STM32F0) || defined(STM32F3)
     RCC_PLLConfig(RCC_PLLSource_HSI, RCC_PLLMul_12);
 #elif defined(STM32F1)
-    RCC_PLLConfig(RCC_PLLSource_HSE_Div1, RCC_PLLMul_12);
+    RCC_PLLConfig(RCC_PLLSource_HSI_Div2, RCC_PLLMul_12);
 #else
 #error
 #endif
