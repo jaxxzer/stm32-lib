@@ -28,22 +28,33 @@ int main(void)
 #else
  #error
 #endif
+    mDelay(10);
     char* str = "abcd";
     initGpio();
     Spi spi = Spi();
     spi.init();
+    SPI_SSOutputCmd(SPI2, ENABLE);
+
     spi.enable(ENABLE);
     uint8_t idx = 0;
 
     uint8_t reg = 0x1;
     uint8_t writeFlag = 0x80;
     uint8_t transferVal = 0x0;
+            uint8_t a = 0;
 
     while (1) {
         transferVal = reg;
         //spi.write(&transferVal, 1);
         //spi.write(&str[idx++], 1);
-        spi.write("hello", 5);
+        // spi.write("hellolll", 8);
+
+        for (uint8_t i = 1; i < 0x2; i++)
+        {
+            spi.write((char*)&i, 1);
+            spi.write((char*)&a, 1);
+        }
+        SPI_I2S_ReceiveData(SPI2);
         idx = idx %4;
         gpioLed.toggle();
         mDelay(10);
