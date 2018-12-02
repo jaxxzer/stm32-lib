@@ -28,15 +28,17 @@ int main(void)
 #else
  #error
 #endif
-
+    char* str = "abcd";
     initGpio();
     Spi spi = Spi();
     spi.init();
     spi.enable(ENABLE);
+    uint8_t idx = 0;
     while (1) {
-        spi.write("a", 1);
+        spi.write(&str[idx++], 1);
+        idx = idx %4;
         gpioLed.toggle();
-        mDelay(500);
+        mDelay(10);
     }
 
     return 0;

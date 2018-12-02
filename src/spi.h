@@ -11,6 +11,7 @@ public:
               uint32_t mode = SPI_Mode_Master) {
         _clockEnable();
         enable(ENABLE);
+        mDelay(10);
         SPI_StructInit(&_config);
         _config.SPI_Mode = mode;
         _config.SPI_BaudRatePrescaler = prescaler;
