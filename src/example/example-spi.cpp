@@ -13,7 +13,7 @@ void initGpio()
 
     gpioNss.init(GPIO_Mode_AF_PP);
     gpioMosi.init(GPIO_Mode_AF_PP);
-    gpioMiso.init(GPIO_Mode_AF_PP);
+    gpioMiso.init(GPIO_Mode_IN_FLOATING);
     gpioSck.init(GPIO_Mode_AF_PP);
     
 }
@@ -49,11 +49,22 @@ int main(void)
         //spi.write(&str[idx++], 1);
         // spi.write("hellolll", 8);
 
-        for (uint8_t i = 1; i < 0x3; i++)
+        for (uint8_t i = 1; i < 0xa; i++)
         {
+                spi.init();
+                mDelay(10);
+    SPI_SSOutputCmd(SPI2, ENABLE);
+mDelay(10);
+    spi.enable(ENABLE);
+    mDelay(10);
             spi.write((char*)&i, 1);
             spi.write((char*)&a, 1);
+            while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
+    //SPI_SSOutputCmd(SPI2, DISABLE);
+    spi.enable(DISABLE);
+
             SPI_I2S_ReceiveData(SPI2);
+
             mDelay(1);
 
         }
