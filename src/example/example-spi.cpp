@@ -173,7 +173,7 @@ int main(void)
         //spi.write(&str[idx++], 1);
         // spi.write("hellolll", 8);
  char ch;
-        for (uint8_t i = 1; i < 0xa; i++)
+        for (uint8_t i = 0; i < 0xa; i++)
         {
             resetDev();
             spi.enable(ENABLE);
@@ -187,7 +187,7 @@ int main(void)
             while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_RXNE));
     //SPI_SSOutputCmd(SPI2, DISABLE);
             ch = SPI_I2S_ReceiveData(SPI2);
-            printf("%d : %d\r\n", i, ch);
+            printf("%d : %x\r\n", i, ch);
             spi.enable(DISABLE);
             mDelay(1);
         }
