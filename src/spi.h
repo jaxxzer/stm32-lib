@@ -25,6 +25,7 @@ public:
     };
     void write(char* d)
     {
+        while(!SPI_I2S_GetFlagStatus(_peripheral, SPI_I2S_FLAG_TXE));
         SPI_I2S_SendData(_peripheral, *d);
     }
     void _clockEnable() {

@@ -34,8 +34,16 @@ int main(void)
     spi.init();
     spi.enable(ENABLE);
     uint8_t idx = 0;
+
+    uint8_t reg = 0x1;
+    uint8_t writeFlag = 0x80;
+    uint8_t transferVal = 0x0;
+
     while (1) {
-        spi.write(&str[idx++], 1);
+        transferVal = reg;
+        //spi.write(&transferVal, 1);
+        //spi.write(&str[idx++], 1);
+        spi.write("hello", 5);
         idx = idx %4;
         gpioLed.toggle();
         mDelay(10);
