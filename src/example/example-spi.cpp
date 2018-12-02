@@ -51,19 +51,15 @@ int main(void)
 
         for (uint8_t i = 1; i < 0xa; i++)
         {
-                spi.init();
-                mDelay(10);
-    SPI_SSOutputCmd(SPI2, ENABLE);
-mDelay(10);
     spi.enable(ENABLE);
-    mDelay(10);
             spi.write((char*)&i, 1);
             spi.write((char*)&a, 1);
             while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
     //SPI_SSOutputCmd(SPI2, DISABLE);
+                SPI_I2S_ReceiveData(SPI2);
+
     spi.enable(DISABLE);
 
-            SPI_I2S_ReceiveData(SPI2);
 
             mDelay(1);
 
