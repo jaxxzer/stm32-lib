@@ -18,6 +18,10 @@ public:
         SPI_Init(_peripheral, &_config);
     };
 
+    void write(uint8_t c)
+    {
+        write((char*)&c);
+    }
     void write(char* d, uint16_t len) {
         while(len--) {
             write(d++);

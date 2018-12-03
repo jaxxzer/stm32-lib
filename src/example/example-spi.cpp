@@ -172,11 +172,14 @@ int main(void)
         //spi.write(&transferVal, 1);
         //spi.write(&str[idx++], 1);
         // spi.write("hellolll", 8);
- char ch;
+        char ch;
         for (uint8_t i = 0; i < 0xa; i++)
         {
             resetDev();
+            spi.init(SPI_BaudRatePrescaler_16);
+
             spi.enable(ENABLE);
+            mDelay(10);
             spi.write((char*)&i, 1);
             while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
             while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_RXNE));
@@ -191,6 +194,24 @@ int main(void)
             spi.enable(DISABLE);
             mDelay(1);
         }
+        mDelay(100);
+            spi.enable(ENABLE);
+            mDelay(10);
+        spi.write(0x88);
+        spi.write(0x02);
+                    while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
+            spi.enable(DISABLE);
+            mDelay(1);
+                    mDelay(100);
+            spi.enable(ENABLE);
+            mDelay(10);
+        spi.write(0x08);
+            spi.write((char*)&a, 1);
+                    while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
+            spi.enable(DISABLE);
+            mDelay(500);
+            
+
         idx = idx %4;
         gpioLed.toggle();
         mDelay(10);
