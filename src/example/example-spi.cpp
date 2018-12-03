@@ -155,7 +155,7 @@ int main(void)
     char* str = "abcd";
     initGpio();
     Spi spi = Spi();
-    spi.init();
+    spi.init(SPI_BaudRatePrescaler_16);
     SPI_SSOutputCmd(SPI2, ENABLE);
 
     spi.enable(ENABLE);
