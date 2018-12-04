@@ -7,7 +7,20 @@
 Gpio gpioLed { GPIO_LED1_PORT, GPIO_LED1_PIN };
 
 Gpio gpioReset { GPIOB, 11 };
+Spi spi = Spi();
+uint8_t regValues[] = {
+    0x0,
+    0x9,
+    0x1a,
+    0xb,
+    0x0,
+    0x52,
+    0x6c,
+    0x80,
+    0x0,
+    0x4f,
 
+};
 
 #if defined(USE_USART_1)
 Gpio gpioUsart1Tx         { GPIO_USART1_TX_PORT, GPIO_USART1_TX_PIN };
@@ -137,8 +150,25 @@ void resetDev()
     gpioReset.reset();
     mDelay(1);
     gpioReset.set();
-    mDelay(10);
+    mDelay(1);
 }
+
+char readAddr(uint8_t addr)
+{
+    char ch;
+    spi.write((char*)&addr, 1);
+    while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
+    while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_RXNE));
+    ch = SPI_I2S_ReceiveData(SPI2);
+
+    spi.write((uint8_t)0);
+    while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
+    while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_RXNE));
+    ch = SPI_I2S_ReceiveData(SPI2);
+
+    return ch;
+}
+
 int main(void)
 {
 	configureClocks(1000);
@@ -154,7 +184,7 @@ int main(void)
     mDelay(10);
     char* str = "abcd";
     initGpio();
-    Spi spi = Spi();
+
     spi.init(SPI_BaudRatePrescaler_16);
     SPI_SSOutputCmd(SPI2, ENABLE);
 
@@ -172,49 +202,17 @@ int main(void)
         //spi.write(&transferVal, 1);
         //spi.write(&str[idx++], 1);
         // spi.write("hellolll", 8);
-        char ch;
+        resetDev();
+        spi.init(SPI_BaudRatePrescaler_16);
+
         for (uint8_t i = 0; i < 0xa; i++)
         {
-            resetDev();
-            spi.init(SPI_BaudRatePrescaler_16);
-
             spi.enable(ENABLE);
-            mDelay(10);
-            spi.write((char*)&i, 1);
-            while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
-            while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_RXNE));
-    //SPI_SSOutputCmd(SPI2, DISABLE);
-            ch = SPI_I2S_ReceiveData(SPI2);
-            spi.write((char*)&a, 1);
-            while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
-            while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_RXNE));
-    //SPI_SSOutputCmd(SPI2, DISABLE);
-            ch = SPI_I2S_ReceiveData(SPI2);
+            char ch = readAddr(i);
             printf("%d : %x\r\n", i, ch);
             spi.enable(DISABLE);
-            mDelay(1);
         }
-        mDelay(100);
-            spi.enable(ENABLE);
-            mDelay(10);
-        spi.write(0x88);
-        spi.write(0x02);
-                    while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
-            spi.enable(DISABLE);
-            mDelay(1);
-                    mDelay(100);
-            spi.enable(ENABLE);
-            mDelay(10);
-        spi.write(0x08);
-            spi.write((char*)&a, 1);
-                    while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
-            spi.enable(DISABLE);
-            mDelay(500);
-            
-
-        idx = idx %4;
         gpioLed.toggle();
-        mDelay(10);
     }
 
     return 0;
