@@ -1,3 +1,4 @@
+#pragma once
 #include "stm32lib-conf.h"
 
 class Spi
@@ -18,19 +19,30 @@ public:
         SPI_Init(_peripheral, &_config);
     };
 
-    void write(uint8_t c)
-    {
-        write((char*)&c);
-    }
+
     void write(char* d, uint16_t len) {
         while(len--) {
-            write(d++);
+            write(*d++);
         }
     };
-    void write(char* d)
+
+    static const uint16_t rxBufSize = 256;
+    uint8_t rxBuf[rxBufSize];
+    uint16_t _rxTail = 0;
+    uint16_t read(uint8_t base, uint16_t len) {
+        write(base);
+        SPI_I2S_ReceiveData(SPI2);
+        _rxTail = 0;
+        while(_rxTail < len) {
+            write(0x0);
+            rxBuf[_rxTail++] = SPI_I2S_ReceiveData(SPI2);
+        }
+    }
+    void write(char d)
     {
         while(!SPI_I2S_GetFlagStatus(_peripheral, SPI_I2S_FLAG_TXE));
-        SPI_I2S_SendData(_peripheral, *d);
+        SPI_I2S_SendData(_peripheral, d);
+        while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
     }
     void _clockEnable() {
         RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI2, ENABLE);

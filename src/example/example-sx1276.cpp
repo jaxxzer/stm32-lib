@@ -2,8 +2,10 @@
 #include "gpio.h"
 #include "scheduling.h"
 #include "spi.h"
+#include "sx1276.h"
 
 #define USART_BAUDRATE 1e6
+
 Gpio gpioLed { GPIO_LED1_PORT, GPIO_LED1_PIN };
 
 Gpio gpioReset { GPIOB, 11 };
@@ -169,6 +171,8 @@ char readAddr(uint8_t addr)
     return ch;
 }
 
+SX1276 sx1276(spi);
+
 int main(void)
 {
 	configureClocks(1000);
@@ -205,14 +209,13 @@ int main(void)
         resetDev();
         spi.init(SPI_BaudRatePrescaler_16);
 
-        for (uint8_t i = 0; i < 0xa; i++)
-        {
-    void writeFIFO(base, data, length);
-            char ch = readAddr(i);
-            printf("%d : %x\r\n", i, ch);
-            spi.enable(DISABLE);
-        }
+        sx1276.init();
+        sx1276.transmit();
+        mDelay(500);
+        sx1276.transmit();
+
         gpioLed.toggle();
+        mDelay(1000);
     }
 
     return 0;
