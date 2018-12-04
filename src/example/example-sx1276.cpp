@@ -9,7 +9,7 @@
 Gpio gpioLed { GPIO_LED1_PORT, GPIO_LED1_PIN };
 
 Gpio gpioReset { GPIOB, 11 };
-Spi spi = Spi();
+Spi spi;
 uint8_t regValues[] = {
     0x0,
     0x9,

@@ -4,15 +4,17 @@
 class Spi
 {
 public:
+    Spi() 
+    {
+        _clockEnable();
+        //mDelay(10);
+    }
     void enable(FunctionalState enabled) {
         SPI_Cmd(_peripheral, enabled);
     };
     void init(
-              uint32_t prescaler = SPI_BaudRatePrescaler_64,
-              uint32_t mode = SPI_Mode_Master) {
-        _clockEnable();
-        enable(ENABLE);
-        mDelay(10);
+        uint32_t prescaler = SPI_BaudRatePrescaler_64,
+        uint32_t mode = SPI_Mode_Master) {
         SPI_StructInit(&_config);
         _config.SPI_Mode = mode;
         _config.SPI_BaudRatePrescaler = prescaler;
