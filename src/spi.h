@@ -33,12 +33,18 @@ public:
     uint16_t _rxTail = 0;
     uint16_t read(uint8_t base, uint16_t len) {
         write(base);
-        SPI_I2S_ReceiveData(SPI2);
         _rxTail = 0;
+        while(!SPI_I2S_GetFlagStatus(_peripheral, SPI_I2S_FLAG_RXNE));
+
+        rxBuf[_rxTail] = SPI_I2S_ReceiveData(SPI2);
+
         while(_rxTail < len) {
             write(0x0);
+            while(!SPI_I2S_GetFlagStatus(_peripheral, SPI_I2S_FLAG_RXNE));
+
             rxBuf[_rxTail++] = SPI_I2S_ReceiveData(SPI2);
         }
+        return len;
     }
     void write(char d)
     {

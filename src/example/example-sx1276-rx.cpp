@@ -210,11 +210,11 @@ int main(void)
         spi.init(SPI_BaudRatePrescaler_16);
 
         sx1276.init();
-        while(1) {
-            sx1276.transmit();
-            mDelay(1);
+        sx1276.receive();
+        mDelay(500);
 
-        }
+        gpioLed.toggle();
+        mDelay(1000);
     }
 
     return 0;
