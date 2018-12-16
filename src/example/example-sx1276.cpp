@@ -8,7 +8,7 @@
 
 Gpio gpioLed { GPIO_LED1_PORT, GPIO_LED1_PIN };
 
-Gpio gpioReset { GPIOB, 11 };
+Gpio gpioReset { GPIO_NRST_PORT, GPIO_NRST_PIN };
 Spi spi;
 uint8_t regValues[] = {
     0x0,

@@ -5,19 +5,25 @@
 #ch3 1/10 A9
 #ch2 1/12 A11
 #ch1 1/9 A8
-#red led C1
-#nrst 3/15 C14
 
+#green led 1/13 A12
+#red led 1/12 A11
+
+
+#nrst 3/15 C14
 #chip select 2/13 B12
 #MOSI 2/16 B15
 #MISO 2/13 AND 2/15 B12 and B14
 #CK 2/14 B13
+
+#buzzer 2/2 B1
+#eeprom pin1 2/8
 TARGET_MCU = STM32F103CB
 
 STARTUP = stm32f1
 BOARD_DEFINES += \
-  -DGPIO_LED1_PORT=GPIOC \
-  -DGPIO_LED1_PIN=1 \
+  -DGPIO_LED1_PORT=GPIOA \
+  -DGPIO_LED1_PIN=12 \
  -DUSE_USART_1 \
  -DSTDOUT_USART=uart1 \
  -DGPIO_USART1_TX_PORT=GPIOA \

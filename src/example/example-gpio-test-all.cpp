@@ -5,14 +5,17 @@ GPIO_TypeDef* ports[] = { GPIOA, GPIOB, GPIOC, GPIOD, GPIOE };
 
 void testPin(uint8_t port, uint8_t pin)
 {
-    Gpio gpio { ports[port], pin };
 
-    if  ((port == GPIOA_BASE && pin==13) ||
-        (port == GPIOA_BASE && pin==14))
+    if  (
+        ((uint32_t)ports[port] == GPIOA_BASE && pin == 13) ||
+        ((uint32_t)ports[port] == GPIOA_BASE && pin == 14) ||
+        ((uint32_t)ports[port] == GPIOB_BASE && pin == 1)
+        )
     {
         return;
     }
 
+    Gpio gpio { ports[port], pin };
 
 #if defined(STM32F0) || defined(STM32F3)
     gpio.init(GPIO_Mode_OUT);

@@ -133,7 +133,7 @@ class SX1276
     {
         setMode(0x0);
         setMode(0x0);
-        setFrequency(433E6);
+        setFrequency(900E6);
         // readRegister(REG_IRQ_FLAGS_MASK);
         // writeRegister(REG_IRQ_FLAGS_MASK, ~IRQ_MASK_RX_DONE);
         // readRegister(REG_IRQ_FLAGS_MASK);
