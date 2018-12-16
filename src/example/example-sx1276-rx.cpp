@@ -150,9 +150,9 @@ void initGpio()
 void resetDev()
 {
     gpioReset.reset();
-    mDelay(1);
+    mDelay(10);
     gpioReset.set();
-    mDelay(1);
+    mDelay(10);
 }
 
 char readAddr(uint8_t addr)

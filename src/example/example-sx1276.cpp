@@ -150,9 +150,9 @@ void initGpio()
 void resetDev()
 {
     gpioReset.reset();
-    mDelay(1);
+    mDelay(10);
     gpioReset.set();
-    mDelay(1);
+    mDelay(10);
 }
 
 char readAddr(uint8_t addr)
@@ -205,11 +205,15 @@ int main(void)
         transferVal = reg;
         //spi.write(&transferVal, 1);
         //spi.write(&str[idx++], 1);
-        // spi.write("hellolll", 8);
+        //spi.write("hellolll", 8);
         resetDev();
         spi.init(SPI_BaudRatePrescaler_16);
 
         sx1276.init();
+
+        sx1276.dumpRegs();
+        while(1);
+
         while(1) {
             sx1276.transmit();
             mDelay(1);
