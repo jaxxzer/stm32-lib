@@ -144,7 +144,10 @@ void println(void)
 
 void printHex(uint32_t i)
 {
-	uint8_t size = 2;
+	uint8_t size = 1;
+	if (i > 0xF) {
+		size = 2;
+	}
 	if (i > 0xFF) {
 		size = 4;
 	}

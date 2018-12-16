@@ -211,12 +211,15 @@ int main(void)
 
         sx1276.init();
 
-        sx1276.dumpRegs();
-        while(1);
+            // sx1276.dumpRegs();
+            // while(1);
+        // mDelay(10);
 
         while(1) {
             sx1276.transmit();
-            mDelay(1);
+            sx1276.dumpRegs();
+            //while(1);
+            mDelay(100);
 
         }
     }

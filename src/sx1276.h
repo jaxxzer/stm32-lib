@@ -122,7 +122,9 @@ class SX1276
 
 {
       for (int i = 0; i < 128; i++) {
-    printf("%d:");
+          uart1.write("0x",2);
+    printHex(i);
+    uart1.write(": 0x", 4);
     printHex(readRegister(i));
     printf("\r\n");
   }
