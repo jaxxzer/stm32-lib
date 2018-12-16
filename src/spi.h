@@ -17,6 +17,7 @@ public:
         uint32_t mode = SPI_Mode_Master) {
         SPI_StructInit(&_config);
         _config.SPI_Mode = mode;
+        _config.SPI_NSS = SPI_NSS_Soft;
         _config.SPI_BaudRatePrescaler = prescaler;
         SPI_Init(_peripheral, &_config);
     };

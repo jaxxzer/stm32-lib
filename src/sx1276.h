@@ -71,6 +71,9 @@
 #define MAX_PKT_LENGTH           255
 
 #include "spi.h"
+
+    Gpio gpioNss = { GPIOB, 12 };
+
 class SX1276
 {
     public:
@@ -88,18 +91,16 @@ class SX1276
     void writeRegister(uint8_t base, char* data, uint16_t length)
     {
         static const uint8_t WRITE = 0x80;
-        _spi.init(SPI_BaudRatePrescaler_16);
-        _spi.enable(ENABLE);
+        gpioNss.reset();
         _spi.write(base | WRITE);
         _spi.write(data, length);
-        _spi.enable(DISABLE);
+        gpioNss.set();
     }
 
     char readRegister(uint8_t base, uint16_t length = 1) {
-        _spi.init(SPI_BaudRatePrescaler_16);
-        _spi.enable(ENABLE);
+        gpioNss.reset();
         _spi.read(base, length);
-        _spi.enable(DISABLE);
+        gpioNss.set();
         return _spi.rxBuf[0];
     }
 

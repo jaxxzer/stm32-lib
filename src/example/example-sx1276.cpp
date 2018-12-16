@@ -135,16 +135,16 @@ void initUsart3(void)
 void initGpio()
 {
     gpioLed.init(GPIO_Mode_Out_PP);
-    Gpio gpioNss = { GPIOB, 12 };
     Gpio gpioMosi = { GPIOB, 15 };
     Gpio gpioMiso = { GPIOB, 14 };
     Gpio gpioSck = { GPIOB, 13 };
 
-    gpioNss.init(GPIO_Mode_AF_PP);
+    gpioNss.init(GPIO_Mode_Out_PP);
     gpioMosi.init(GPIO_Mode_AF_PP);
     gpioMiso.init(GPIO_Mode_IN_FLOATING);
     gpioSck.init(GPIO_Mode_AF_PP);
-    
+            gpioNss.set();
+
     gpioReset.init(GPIO_Mode_Out_PP);
     gpioReset.set();
 }
@@ -191,7 +191,7 @@ int main(void)
     initGpio();
 
     spi.init(SPI_BaudRatePrescaler_16);
-    SPI_SSOutputCmd(SPI2, ENABLE);
+     SPI_SSOutputCmd(SPI2, DISABLE);
 
     spi.enable(ENABLE);
     uint8_t idx = 0;
@@ -208,7 +208,7 @@ int main(void)
         //spi.write(&str[idx++], 1);
         //spi.write("hellolll", 8);
         resetDev();
-        spi.init(SPI_BaudRatePrescaler_16);
+        // spi.init(SPI_BaudRatePrescaler_16);
 
         sx1276.init();
 
