@@ -204,6 +204,8 @@ class SX1276
         mDelay(1);
 
         readRegister(REG_OP_MODE);
+                                writeRegister(REG_IRQ_FLAGS, 0xFF);
+
         setMode(0b110);
         readRegister(REG_OP_MODE);
 
@@ -218,11 +220,8 @@ class SX1276
             char flags = readRegister(REG_IRQ_FLAGS);
             rxDone = flags & IRQ_MASK_RX_DONE;
             bool rxTimeout = flags & IRQ_MASK_RX_TIMEOUT;
-            if (rxDone) {
-                while(0);
-            }
+
             if (rxTimeout) {
-                mDelay(10);
                 writeRegister(REG_IRQ_FLAGS, 0xFF);
                 setMode(0b110);
             }

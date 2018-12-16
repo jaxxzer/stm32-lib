@@ -202,14 +202,15 @@ int main(void)
     uint8_t a = 0;
     printf("hello\r\n");
     mDelay(1000);
+            resetDev();
+
+        sx1276.init();
     while (1) {
         transferVal = reg;
         //spi.write(&transferVal, 1);
         //spi.write(&str[idx++], 1);
         // spi.write("hellolll", 8);
-        resetDev();
 
-        sx1276.init();
         sx1276.receive();
         gpioLed.toggle();
     }
