@@ -134,6 +134,7 @@ void initUsart3(void)
 
 void initGpio()
 {
+    gpioLed.init(GPIO_Mode_Out_PP);
     Gpio gpioNss = { GPIOB, 12 };
     Gpio gpioMosi = { GPIOB, 15 };
     Gpio gpioMiso = { GPIOB, 14 };
@@ -220,6 +221,7 @@ int main(void)
             sx1276.dumpRegs();
             //while(1);
             mDelay(100);
+            gpioLed.toggle();
 
         }
     }
