@@ -77,11 +77,10 @@
 class SX1276
 {
     public:
-    SX1276(Spi& spi) : _spi(spi) {};
+    SX1276(Spi& spi, Gpio& nss, Gpio& nrst) : _spi(spi) {};
     Spi& _spi;
-
-
-    
+    Gpio& _gpioNss;
+    Gpio& _gpioNrst;
 
     void writeRegister(uint8_t base, char data)
     {
@@ -91,16 +90,16 @@ class SX1276
     void writeRegister(uint8_t base, char* data, uint16_t length)
     {
         static const uint8_t WRITE = 0x80;
-        gpioNss.reset();
+        _gpioNss.reset();
         _spi.write(base | WRITE);
         _spi.write(data, length);
-        gpioNss.set();
+        _gpioNss.set();
     }
 
     char readRegister(uint8_t base, uint16_t length = 1) {
-        gpioNss.reset();
+        _gpioNss.reset();
         _spi.read(base, length);
-        gpioNss.set();
+        _gpioNss.set();
         return _spi.rxBuf[0];
     }
 
@@ -152,6 +151,8 @@ class SX1276
     
     // 
   writeRegister(REG_MODEM_CONFIG_1, readRegister(REG_MODEM_CONFIG_1) & 0xfe);
+  writeRegister(REG_MODEM_CONFIG_1, 0b10010010);
+  writeRegister(REG_MODEM_CONFIG_2, 0x70);// spreading factor
 
 
 //     uint8_t temp = readRegister(REG_DETECTION_OPTIMIZE) & 0xF8;
@@ -171,7 +172,7 @@ class SX1276
     }
     void transmit()
     {
-        writeFIFO("asdf", 4);
+        writeFIFO("as", 2);
         readRegister(REG_OP_MODE);
         readRegister(REG_IRQ_FLAGS);
         writeRegister(REG_IRQ_FLAGS, 0xFF);
@@ -201,13 +202,10 @@ class SX1276
 
     void receive()
     {
-        mDelay(1);
 
-        readRegister(REG_OP_MODE);
-                                writeRegister(REG_IRQ_FLAGS, 0xFF);
+         writeRegister(REG_IRQ_FLAGS, 0xFF);
 
         setMode(0b110);
-        readRegister(REG_OP_MODE);
 
 
         bool rxDone = false;
@@ -215,8 +213,7 @@ class SX1276
         while (!rxDone)
         {
 
-            readRegister(REG_OP_MODE);
-            readRegister(REG_MODEM_STATUS);
+
             char flags = readRegister(REG_IRQ_FLAGS);
             rxDone = flags & IRQ_MASK_RX_DONE;
             bool rxTimeout = flags & IRQ_MASK_RX_TIMEOUT;

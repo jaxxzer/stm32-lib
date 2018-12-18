@@ -1765,6 +1765,16 @@ static __INLINE uint32_t ITM_SendChar (uint32_t ch)
   return (ch);
 }
 
+static __INLINE uint32_t ITM_SendCharPort (uint32_t ch, uint32_t port)
+{
+  if ((ITM->TCR & ITM_TCR_ITMENA_Msk)                  &&      /* ITM enabled */
+      (ITM->TER & (port << 0)        )                    )     /* ITM Port #0 enabled */
+  {
+    while (ITM->PORT[port].u32 == 0);
+    ITM->PORT[port].u8 = (uint8_t) ch;
+  }
+  return (ch);
+}
 
 /**
  * @brief  Inputs a character via variable ITM_RxBuffer

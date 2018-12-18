@@ -9,7 +9,8 @@ void testPin(uint8_t port, uint8_t pin)
     if  (
         ((uint32_t)ports[port] == GPIOA_BASE && pin == 13) ||
         ((uint32_t)ports[port] == GPIOA_BASE && pin == 14) ||
-        ((uint32_t)ports[port] == GPIOB_BASE && pin == 1)
+        ((uint32_t)ports[port] == GPIOB_BASE && pin == 1)  ||
+        ((uint32_t)ports[port] == GPIOA_BASE && pin == 0)
         )
     {
         return;
@@ -27,19 +28,19 @@ void testPin(uint8_t port, uint8_t pin)
 
     for (int i = 0; i < port + 1; i++) {
         gpio.reset();
-        //mDelay(1);
+        mDelay(1);
         gpio.set();
-        //mDelay(1);
+        mDelay(1);
     }
         gpio.reset();
 
-    //mDelay(5);
+    mDelay(5);
 
     for (int i = 0; i < pin + 1; i++) {
         gpio.reset();
-        //mDelay(1);
+        mDelay(1);
         gpio.set();
-        //mDelay(1);
+        mDelay(1);
     }
             gpio.reset();
 
@@ -48,7 +49,9 @@ void testPin(uint8_t port, uint8_t pin)
 int main(void)
 {
 	configureClocks(1000);
-
+Gpio gpioLed { GPIOA, 0 };
+    gpioLed.init(GPIO_Mode_Out_PP);
+    gpioLed.set();
     for (uint8_t i = 0; i < 5; i++) {
         for (uint8_t j = 0; j < 16; j++) {
             testPin(i, j);
