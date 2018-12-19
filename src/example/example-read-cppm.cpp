@@ -138,9 +138,6 @@ void cc3Callback(void)
     gotCapture = true;
 }
 
-// ch1 -> rising counter is captured into ccr1 on rising edges tells you the frequency of pulse (ccr == time since last rising edge)
-// ch2 -> falling timer counter is captured into ccr2 on falling edges
-// ch3 -> reset and trigger timer on ccr match (make this less than or equal to the inter-frame period) Dma transfer is restarted (the buffer must be copied by application code before the next transfer request from the timer (next pulse))
 int main()
 {
     configureClocks(1000);
