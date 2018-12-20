@@ -2,7 +2,7 @@
 
 #define DSHOT 600
 
-#define USART_BAUDRATE 1e6
+#define USART_BAUDRATE 115200
 
 
 typedef enum {
@@ -38,14 +38,59 @@ Timer& timer = GPIO_LED1_TIMER;
 Gpio gpioLed { GPIO_LED1_PORT, GPIO_LED1_PIN };
 TimerChannelOutput tco { &timer, GPIO_LED1_TIM_CH };
 
-    Dma     dma1c3 = Dma(DMA1_Channel3);
+    Dma     dma1c7 = Dma(DMA1_Channel7);
+
+#if defined(USE_USART_1)
+Gpio gpioUsart1Tx         { GPIO_USART1_TX_PORT, GPIO_USART1_TX_PIN };
+Gpio gpioUsart1Rx         { GPIO_USART1_RX_PORT, GPIO_USART1_RX_PIN };
+#endif
+
+#if defined(USE_USART_2)
+Gpio gpioUsart2Tx         { GPIO_USART2_TX_PORT, GPIO_USART2_TX_PIN };
+Gpio gpioUsart2Rx         { GPIO_USART2_RX_PORT, GPIO_USART2_RX_PIN };
+#endif
+
+#if defined(USE_USART_3)
+Gpio gpioUsart3Tx         { GPIO_USART3_TX_PORT, GPIO_USART3_TX_PIN };
+Gpio gpioUsart3Rx         { GPIO_USART3_RX_PORT, GPIO_USART3_RX_PIN };
+#endif
+
+#if defined (USE_USART_1)
+void initUsart1(void)
+{
+#if defined(STM32F0)
+    nvic_config(USART1_IRQn, 0, ENABLE);
+#elif defined(STM32F1) || defined(STM32F3)
+    nvic_config(USART1_IRQn, 0, 0, ENABLE);
+#else
+ #error
+#endif
 
 
+
+#if defined(STM32F0) || defined(STM32F3)
+	gpioUsart1Rx.init(GPIO_Mode_AF, GPIO_PuPd_UP);
+    gpioUsart1Tx.init(GPIO_Mode_AF, GPIO_PuPd_UP);
+    gpioUsart1Rx.configAF(GPIO_USART1_RX_AF);
+    gpioUsart1Tx.configAF(GPIO_USART1_TX_AF);
+#elif defined(STM32F1)
+	gpioUsart1Rx.init(GPIO_Mode_AF_PP);
+    gpioUsart1Tx.init(GPIO_Mode_AF_PP);
+    Gpio::remapConfig(GPIO_USART1_REMAP, ENABLE);
+#else
+ #error
+#endif
+
+    uart1.init(USART_BAUDRATE);
+    uart1.ITConfig(USART_IT_RXNE, ENABLE);
+    uart1.setEnabled(ENABLE);
+    uart1.cls();
+}
+#endif
+
+#if defined (USE_USART_2)
 void initUsart2(void)
 {
-    Gpio gpioUsart2Tx         { GPIO_USART2_TX_PORT, GPIO_USART2_TX_PIN };
-    Gpio gpioUsart2Rx         { GPIO_USART2_RX_PORT, GPIO_USART2_RX_PIN };
-
 #if defined(STM32F0)
     nvic_config(USART2_IRQn, 0, ENABLE);
 #elif defined(STM32F1) || defined(STM32F3)
@@ -71,7 +116,37 @@ void initUsart2(void)
     uart2.setEnabled(ENABLE);
     uart2.cls();
 }
+#endif
 
+#if defined(USE_USART_3)
+void initUsart3(void)
+{
+#if defined(STM32F0)
+    nvic_config(USART3_IRQn, 0, ENABLE);
+#elif defined(STM32F1) || defined(STM32F3)
+    nvic_config(USART3_IRQn, 0, 0, ENABLE);
+#else
+ #error
+#endif
+
+	gpioUsart3Rx.init(GPIO_Mode_AF);
+    gpioUsart3Tx.init(GPIO_Mode_AF);
+
+#if defined(STM32F0) || defined(STM32F3)
+    gpioUsart3Rx.configAF(GPIO_USART3_RX_AF);
+    gpioUsart3Tx.configAF(GPIO_USART3_TX_AF);
+#elif defined(STM32F1)
+    Gpio::remapConfig(GPIO_USART3_REMAP, ENABLE);
+#else
+ #error
+#endif
+
+    uart3.init(USART_BAUDRATE);
+    uart3.ITConfig(USART_IT_RXNE, ENABLE);
+    uart3.setEnabled(ENABLE);
+    uart3.cls();
+}
+#endif
 Timer& timerCapture = CAPTURE_TIMER;
 Gpio gpioCapture { GPIO_CAPTURE_PORT, GPIO_CAPTURE_PIN };
 TimerChannelInput tciRising { &timerCapture, GPIO_CAPTURE_TIM_CH_RISING };
@@ -123,9 +198,9 @@ void cc3Callback(void)
     frameFallCaptures = 50 - DMA1_Channel3->CNDTR;
     dshot_threshold = TIM1->CCR1 / 2;
     // timeout
-    dma1c3.setEnabled(DISABLE);
-    DMA1_Channel3->CNDTR = 50;
-    dma1c3.setEnabled(ENABLE);
+    dma1c7.setEnabled(DISABLE);
+    DMA1_Channel7->CNDTR = 50;
+    dma1c7.setEnabled(ENABLE);
     decodedPackets++;
     //TIM_DMACmd(timerCapture.peripheral(), TIM_DMA_CC2, DISABLE);
 
@@ -138,15 +213,18 @@ void cc3Callback(void)
     gotCapture = true;
 }
 
+// ch1 -> rising counter is captured into ccr1 on rising edges tells you the frequency of pulse (ccr == time since last rising edge)
+// ch2 -> falling timer counter is captured into ccr2 on falling edges
+// ch3 -> reset and trigger timer on ccr match (make this less than or equal to the inter-frame period) Dma transfer is restarted (the buffer must be copied by application code before the next transfer request from the timer (next pulse))
 int main()
 {
     configureClocks(1000);
-    initUsart2();
+    initUsart1();
 #if defined(STM32F1)
     gpioLed.init(GPIO_Mode_AF_PP);
     gpioCapture.init(GPIO_Mode_AF_OD);
-    gpioLed.configRemap(GPIO_LED1_REMAP, ENABLE);
-    gpioLed.configRemap(GPIO_CAPTURE_REMAP, ENABLE);
+    gpioLed.remapConfig(GPIO_LED1_REMAP, ENABLE);
+    gpioLed.remapConfig(GPIO_CAPTURE_REMAP, ENABLE);
 #elif defined(STM32F0) || defined(STM32F3)
     gpioLed.init(GPIO_Mode_AF);
     gpioCapture.init(GPIO_Mode_AF);
@@ -162,13 +240,13 @@ int main()
 
     tco.init(TIM_OCMode_PWM1, 0, TIM_OutputState_Enable, TIM_OutputNState_Enable);
     
-    DBGMCU_APB2PeriphConfig(DBGMCU_TIM1_STOP, ENABLE);
-    TIM_SelectInputTrigger(TIM1, TIM_TS_TI1FP1);
-    TIM_SelectSlaveMode(TIM1, TIM_SlaveMode_Combined_ResetTrigger);
+    //DBGMCU_APB2PeriphConfig(DBGMCU_TIM1_STOP, ENABLE);
+    TIM_SelectInputTrigger(TIM2, TIM_TS_TI1FP1);
+    TIM_SelectSlaveMode(TIM2, TIM_SlaveMode_Reset);
 
 
    // Using channel 2, ADC (when declared) uses channel 1
-    dma1c3.init((uint32_t)&(TIM1->CCR2),
+    dma1c7.init((uint32_t)&(TIM2->CCR2),
                 (uint32_t)&fallCaptures[0],
                 25,
                 DMA_DIR_PeripheralSRC,
@@ -186,26 +264,25 @@ int main()
     // timerCapture.setupCc1Callback(&risingCallback);
     // timerCapture.setupCc2Callback(&fallingCallback);
     timerCapture.setupCc3Callback(&cc3Callback);
-    timerCapture.init(); // 1MHz clock frequency
+    timerCapture.init(71); // 1MHz clock frequency
     //timerCapture.setEnabled(ENABLE);    
     // timerCapture.interruptConfig(TIM_IT_CC1, ENABLE);
     // timerCapture.interruptConfig(TIM_IT_CC2, ENABLE);
     timerCapture.interruptConfig(TIM_IT_CC3, ENABLE);
 
     // Note CCxS bits only writable when CCxE is 0 (channel is disabled)
-    tcoFraming.init(TIM_OCMode_PWM1, 1000, TIM_OutputState_Enable);
+    tcoFraming.init(TIM_OCMode_PWM1, 2000, TIM_OutputState_Enable);
     tciRising.init(TIM_ICPolarity_Rising, 0x0);
     tciFalling.init(TIM_ICPolarity_Falling, 0x0, TIM_ICPSC_DIV1, TIM_ICSelection_IndirectTI);
-    dma1c3.setEnabled(ENABLE);
-
+    dma1c7.setEnabled(ENABLE);
+    timerCapture.setEnabled(ENABLE);
 #if defined(STM32F0)
-    nvic_config(TIM1_BRK_UP_TRG_COM_IRQn, 0, ENABLE);
+    nvic_config(TIM2_IRQn, 0, ENABLE);
 #elif defined(STM32F1)
-    nvic_config(TIM1_UP_IRQn, 0, 0, ENABLE);
+    nvic_config(TIM2_IRQn, 0, 0, ENABLE);
 #elif defined(STM32F3)
-    nvic_config(TIM1_CC_IRQn, 0, 0, ENABLE);
+    nvic_config(TIM2_IRQn, 0, 0, ENABLE);
 #endif
-    printf("hello\r\n");
 
     // breath
     uint16_t duty = 0;

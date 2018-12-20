@@ -473,6 +473,13 @@ it_callback_t* Timer::setupCc4Callback(void (*cc4CallbackFn)(void))
 	return addCallback(&cc4Callbacks, cc4CallbackFn);
 }
 
+it_callback_t* Timer::setupTriggerCallback(void (*triggerCallbackFn)(void))
+{
+	if (!IS_TIM_LIST6_PERIPH(_peripheral)) {
+		return nullptr;
+	}
+	return addCallback(&triggerCallbacks, triggerCallbackFn);
+}
 
 /// ~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@~~@
 /// Interrupts

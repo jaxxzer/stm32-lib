@@ -72,6 +72,7 @@ public:
 
     // todo private
 	it_callback_t* upCallbacks = nullptr;
+	it_callback_t* triggerCallbacks = nullptr;
 	it_callback_t* cc1Callbacks = nullptr;
 	it_callback_t* cc2Callbacks = nullptr;
 	it_callback_t* cc3Callbacks = nullptr;
@@ -80,6 +81,7 @@ public:
 	// todo private
 	it_callback_t* addCallback(it_callback_t** callbacks, void (*newCallbackFn)(void));
 	it_callback_t* setupUpCallback(void (*upCallbackFn)(void));
+	it_callback_t* setupTriggerCallback(void (*triggerCallbackFn)(void));
 	it_callback_t* setupCc1Callback(void (*cc1CallbackFn)(void));
 	it_callback_t* setupCc2Callback(void (*cc2CallbackFn)(void));
 	it_callback_t* setupCc3Callback(void (*cc3CallbackFn)(void));
