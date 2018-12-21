@@ -157,7 +157,7 @@ int main()
  #error
 #endif
 
-    timer.initFreq(1e6); // 10kHz pwm frequency
+    timer.initFreq(1e3); // 10kHz pwm frequency
     timer.setEnabled(ENABLE);
     timer.setMOE(ENABLE);
 
@@ -193,7 +193,7 @@ int main()
 
     // breath
     uint16_t duty = 0;
-    int8_t inc = 75;
+    int16_t inc = 2500;
     while (1) { 
         mDelay(50);
         //print_clocks();
