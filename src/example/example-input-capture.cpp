@@ -121,8 +121,10 @@ Gpio gpioCapture { GPIO_CAPTURE_PORT, GPIO_CAPTURE_PIN };
 TimerChannelInput tciRising { &timerCapture, GPIO_CAPTURE_TIM_CH_RISING };
 TimerChannelInput tciFalling { &timerCapture, GPIO_CAPTURE_TIM_CH_FALLING };
 
-uint16_t riseCapture, fallCapture;
-uint32_t riseTime, fallTime;
+volatile uint16_t riseCapture;
+volatile uint16_t fallCapture;
+volatile uint32_t riseTime;
+volatile uint32_t fallTime;
 
 void risingCallback(void)
 {
@@ -133,7 +135,7 @@ void risingCallback(void)
 void fallingCallback(void)
 {
     fallTime = microseconds;
-    fallCapture = tciRising._peripheral->CCR2;
+    fallCapture = tciFalling._peripheral->CCR2;
 }
 
 
@@ -145,7 +147,7 @@ int main()
     gpioLed.init(GPIO_Mode_AF_PP);
     gpioCapture.init(GPIO_Mode_AF_OD);
     gpioLed.remapConfig(GPIO_LED1_REMAP, ENABLE);
-    gpioLed.remapConfig(GPIO_CAPTURE_REMAP, ENABLE);
+    gpioCapture.remapConfig(GPIO_CAPTURE_REMAP, ENABLE);
 #elif defined(STM32F0) || defined(STM32F3)
     gpioLed.init(GPIO_Mode_AF);
     gpioCapture.init(GPIO_Mode_AF);
@@ -160,10 +162,12 @@ int main()
     timer.setMOE(ENABLE);
 
     tco.init(TIM_OCMode_PWM1, 0, TIM_OutputState_Enable, TIM_OutputNState_Enable);
+    TIM_SelectInputTrigger(timerCapture.peripheral(), TIM_TS_TI1FP1);
+    TIM_SelectSlaveMode(timerCapture.peripheral(), TIM_SlaveMode_Reset);
 
     timerCapture.setupCc1Callback(&risingCallback);
     timerCapture.setupCc2Callback(&fallingCallback);
-    timerCapture.init(72); // 1MHz clock frequency
+    timerCapture.init(47); // 1MHz clock frequency
     timerCapture.setEnabled(ENABLE);    
     timerCapture.interruptConfig(TIM_IT_CC1, ENABLE);
     timerCapture.interruptConfig(TIM_IT_CC2, ENABLE);
@@ -176,19 +180,24 @@ int main()
 
 #if defined(STM32F0)
     nvic_config(TIM1_BRK_UP_TRG_COM_IRQn, 0, ENABLE);
+        nvic_config(TIM2_IRQn, 0, 0, ENABLE);
+
 #elif defined(STM32F1)
     nvic_config(TIM1_UP_IRQn, 0, 0, ENABLE);
+        nvic_config(TIM2_IRQn, 0, 0, ENABLE);
+
 #elif defined(STM32F3)
     nvic_config(TIM1_CC_IRQn, 0, 0, ENABLE);
+    nvic_config(TIM2_IRQn, 0, 0, ENABLE);
 #endif
 
     // breath
     uint16_t duty = 0;
     int8_t inc = 75;
     while (1) { 
-        mDelay(1);
+        mDelay(50);
         //print_clocks();
-        printf("T: %d, C: %d\r\n", (uint32_t)(fallTime - riseTime), (uint16_t)(fallCapture - riseCapture));
+        printf("T: %d, C: %d\r\n", (uint32_t)(fallTime - riseTime), (uint16_t)fallCapture);
         tco.setDuty(duty);
         if ( (inc > 0 && inc > 65535 - duty) ||
              (inc < 0 && duty < -inc) )
