@@ -136,7 +136,6 @@ int main()
     //initUsart3();
 #endif
 
-    print_clocks();
 
     while (1) {
         #if defined(USE_USART_1)

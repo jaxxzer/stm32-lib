@@ -171,21 +171,26 @@ const uint16_t dshot_0_tim_cnt = dshot_0_high_duration_ns / dshot_tim_period;
 
 
 volatile uint16_t dshot_threshold = 250;
+volatile uint16_t rises = 0;
+volatile uint16_t falls = 0;
+
 void risingCallback(void)
 {
     // Period
-    riseCapture = tciRising._peripheral->CCR1;
-    riseCaptures[riseCaptureIndex++] = riseCapture;
-    riseCaptureIndex = riseCaptureIndex % numCaptures;
+    // riseCapture = tciRising._peripheral->CCR1;
+    // riseCaptures[riseCaptureIndex++] = riseCapture;
+    // riseCaptureIndex = riseCaptureIndex % numCaptures;
+    rises++;
 
 }
 
 void fallingCallback(void)
 {
     // Duty cycle
-    fallCapture = tciFalling._peripheral->CCR2;
-    fallCaptures[fallCaptureIndex++] = fallCapture;
-    fallCaptureIndex = fallCaptureIndex % numCaptures;
+    // fallCapture = tciFalling._peripheral->CCR2;
+    // fallCaptures[fallCaptureIndex++] = fallCapture;
+    // fallCaptureIndex = fallCaptureIndex % numCaptures;
+    falls++;
 }
 
 volatile bool gotCapture = false;
@@ -194,14 +199,18 @@ volatile uint16_t frameRiseCaptures;
 volatile uint32_t decodedPackets = 0;
 void cc3Callback(void)
 {
-    timerCapture.setEnabled(DISABLE);    
-    frameFallCaptures = 50 - DMA1_Channel3->CNDTR;
+    //timerCapture.setEnabled(DISABLE);    
+    frameFallCaptures = 50 - DMA1_Channel7->CNDTR;
     dshot_threshold = TIM1->CCR1 / 2;
     // timeout
     dma1c7.setEnabled(DISABLE);
     DMA1_Channel7->CNDTR = 50;
     dma1c7.setEnabled(ENABLE);
     decodedPackets++;
+    for (uint8_t i = 0; i < frameFallCaptures; i++) {
+        printf("%d ", fallCaptures[i]);
+    }
+    printf("\r\n");
     //TIM_DMACmd(timerCapture.peripheral(), TIM_DMA_CC2, DISABLE);
 
     // frameFallCaptures = fallCaptureIndex;
@@ -261,17 +270,17 @@ int main()
     //TIM1->DCR = TIM_DMABase_CCR1 | TIM_DMABurstLength_1Transfer;
     TIM_DMACmd(timerCapture.peripheral(), TIM_DMA_CC2, ENABLE);
 
-    // timerCapture.setupCc1Callback(&risingCallback);
-    // timerCapture.setupCc2Callback(&fallingCallback);
+    timerCapture.setupCc1Callback(&risingCallback);
+    timerCapture.setupCc2Callback(&fallingCallback);
     timerCapture.setupCc3Callback(&cc3Callback);
-    timerCapture.init(71); // 1MHz clock frequency
+    timerCapture.init(47); // 1MHz clock frequency
     //timerCapture.setEnabled(ENABLE);    
-    // timerCapture.interruptConfig(TIM_IT_CC1, ENABLE);
-    // timerCapture.interruptConfig(TIM_IT_CC2, ENABLE);
+    timerCapture.interruptConfig(TIM_IT_CC1, ENABLE);
+    timerCapture.interruptConfig(TIM_IT_CC2, ENABLE);
     timerCapture.interruptConfig(TIM_IT_CC3, ENABLE);
 
     // Note CCxS bits only writable when CCxE is 0 (channel is disabled)
-    tcoFraming.init(TIM_OCMode_PWM1, 2000, TIM_OutputState_Enable);
+    tcoFraming.init(TIM_OCMode_PWM1, 50000, TIM_OutputState_Enable);
     tciRising.init(TIM_ICPolarity_Rising, 0x0);
     tciFalling.init(TIM_ICPolarity_Falling, 0x0, TIM_ICPSC_DIV1, TIM_ICSelection_IndirectTI);
     dma1c7.setEnabled(ENABLE);
@@ -287,6 +296,8 @@ int main()
     // breath
     uint16_t duty = 0;
     int8_t inc = 75;
+
+    print_clocks();
     while (1) { 
         mDelay(1000);
         printf("  %d    %d   %d\r\n", decodedPackets, microseconds, decodedPackets/microseconds/1000);

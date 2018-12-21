@@ -108,7 +108,11 @@ void print_clocks()
 	printf("\t- TIM17: %u\r\n", RCC_ClocksStruct.TIM17CLK_Frequency);
 	printf("\t- TIM20: %u\r\n", RCC_ClocksStruct.TIM20CLK_Frequency);
 #else
-//#error
+	printf("\t- SYSCLK: %u\r\n", RCC_ClocksStruct.SYSCLK_Frequency);
+	printf("\t- HCLK: %u\r\n", RCC_ClocksStruct.HCLK_Frequency);
+	printf("\t- PCLK1: %u\r\n", RCC_ClocksStruct.PCLK1_Frequency);
+	printf("\t- PCLK2: %u\r\n", RCC_ClocksStruct.PCLK2_Frequency);
+	printf("\t- ADC12CLK: %u\r\n", RCC_ClocksStruct.ADCCLK_Frequency);
 #endif
 }
 
