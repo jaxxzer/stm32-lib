@@ -114,6 +114,7 @@ extern "C"
 {
 void EXTI0_IRQHandler(void) {
     gpioLed.toggle();
+    EXTI_ClearFlag(EXTI_Line0);
 }
 }
 
