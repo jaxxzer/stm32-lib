@@ -25,8 +25,10 @@ public:
 
     static const uint8_t numExti = 16;
     it_callback_t* _callbacks[numExti] = { nullptr };
+    it_callback_t* _globalCallbacks = { nullptr };
 
     it_callback_t* setupCallback(uint8_t exti, void (*newCallbackFn)(void));
+    it_callback_t* setupGlobalCallback(void (*newCallbackFn)(void));
 
     void _irqHandler(uint8_t exti);
 

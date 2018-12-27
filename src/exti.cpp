@@ -69,12 +69,30 @@ void Exti::initLine(uint32_t line,
         }
         return newCb;
     }
-
+ it_callback_t* Exti::setupGlobalCallback(void (*newCallbackFn)(void)) {
+        
+        it_callback_t** callbacks = &_globalCallbacks;
+        it_callback_t* newCb = new it_callback_t;
+        newCb->callback = newCallbackFn;
+        it_callback_t* currentCb = *callbacks;
+        if (!currentCb) {
+            *callbacks = newCb;
+        } else {
+            it_callback_t* tail = *callbacks;
+            while (tail->next != nullptr) {
+                tail = tail->next;
+            }
+            tail->next = newCb;
+        }
+        return newCb;
+    }
         void Exti::_irqHandler(uint8_t exti)
     {
         if (exti >= numExti) {
             return;
         }
+        printf("%d\r\n", exti);
+        _executeCallbacks(_globalCallbacks);
         _executeCallbacks(_callbacks[exti]);
         EXTI_ClearFlag(1 << exti);
     }
@@ -116,7 +134,7 @@ void EXTI4_IRQHandler(void) {
 }
 
 void EXTI9_5_IRQHandler(void) {
-    for (uint8_t i = 5; i < 9; i++) {
+    for (uint8_t i = 5; i <= 9; i++) {
         if (EXTI_GetFlagStatus(1 << i)) {
             exti._irqHandler(i);
         }
@@ -124,7 +142,7 @@ void EXTI9_5_IRQHandler(void) {
 }
 
 void EXTI15_10_IRQHandler(void) {
-    for (uint8_t i = 10; i < 15; i++) {
+    for (uint8_t i = 10; i <= 15; i++) {
         if (EXTI_GetFlagStatus(1 << i)) {
             exti._irqHandler(i);
         }

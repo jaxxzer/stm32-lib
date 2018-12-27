@@ -42,7 +42,7 @@ public:
 	void addExtiCallback(void (*newCallbackFn)(void));
 
 	void extiConfig(FunctionalState state,
-	EXTITrigger_TypeDef trigger);
+	EXTITrigger_TypeDef trigger = EXTI_Trigger_Rising);
 	// Read
 	bool readOutput(void);
 	bool readInput(void);
