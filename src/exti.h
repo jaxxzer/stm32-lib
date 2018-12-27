@@ -7,11 +7,17 @@ public:
     Exti() = default;
 
     void initLine(uint32_t line = EXTI_Line0,
-        EXTIMode_TypeDef mode = EXTI_Mode_Interrupt,
         EXTITrigger_TypeDef trigger = EXTI_Trigger_Falling,
-        FunctionalState state = ENABLE)
+        FunctionalState state = ENABLE,
+        EXTIMode_TypeDef mode = EXTI_Mode_Interrupt)
     {
-
+        
+        EXTI_InitTypeDef extiInit;
+        extiInit.EXTI_Line = line;
+        extiInit.EXTI_Mode = mode;
+        extiInit.EXTI_Trigger = trigger;
+        extiInit.EXTI_LineCmd = state;
+        EXTI_Init(&extiInit);
     }
 
     static const uint8_t numExti = 16;
@@ -41,6 +47,7 @@ public:
             return;
         }
         _executeCallbacks(_callbacks[exti]);
+        EXTI_ClearFlag(1 << exti);
     }
 
     void _executeCallbacks(it_callback_t* callbacks)
@@ -54,6 +61,7 @@ public:
 };
 
 #ifdef USE_EXTI
+Exti exti;
 extern "C"
 {
 
@@ -66,15 +74,15 @@ void EXTI1_IRQHandler(void) {
 }
 
 void EXTI2_IRQHandler(void) {
-	exti._irq2Handler(2);
+	exti._irqHandler(2);
 }
 
 void EXTI3_IRQHandler(void) {
-	exti._irq3Handler(3);
+	exti._irqHandler(3);
 }
 
 void EXTI4_IRQHandler(void) {
-	exti._irq2Handler(4);
+	exti._irqHandler(4);
 }
 
 void EXTI5_9_IRQHandler(void) {
