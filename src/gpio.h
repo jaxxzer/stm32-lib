@@ -12,6 +12,9 @@
 
 //#include "stm32lib-conf.h"
 #include <inttypes.h>
+#include "stm32lib-conf.h"
+
+#include "exti.h"
 
 class Gpio
 {
@@ -36,7 +39,10 @@ public:
 #error
 #endif
 	void init(void);
+	void addExtiCallback(void (*newCallbackFn)(void));
 
+	void extiConfig(FunctionalState state,
+	EXTITrigger_TypeDef trigger);
 	// Read
 	bool readOutput(void);
 	bool readInput(void);

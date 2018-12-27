@@ -20,6 +20,7 @@ typedef struct it_callback
 //#define USE_USART_3
 //#define USE_TIM_1
 //#define USE_TIM_3
+#include "exti.h"
 
 #include "printing.h"
 #include "helpers.h"

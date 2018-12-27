@@ -143,24 +143,14 @@ int main()
     //initUsart3();
 #endif
 
-Gpio gpioExti(GPIOA, 0);
+Gpio gpioExti(GPIOA, 7);
 gpioExti.init(GPIO_Mode_IN_FLOATING);
-GPIO_EXTILineConfig(GPIO_PortSourceGPIOA, 0);
+gpioExti.addExtiCallback(&extiCb);
+gpioExti.extiConfig(ENABLE, EXTI_Trigger_Rising_Falling);
 
-  RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
+// exti.setupCallback(8, &extiCb);
+// exti.initLine(8, EXTI_Trigger_Rising);
 
-    nvic_config(EXTI0_IRQn, 0, 0, ENABLE);
-
-// EXTI_InitTypeDef extiInit;
-// extiInit.EXTI_Line = EXTI_Line0;
-// extiInit.EXTI_Mode = EXTI_Mode_Interrupt;
-// extiInit.EXTI_Trigger = EXTI_Trigger_Falling;
-// extiInit.EXTI_LineCmd = ENABLE;
-// EXTI_Init(&extiInit);
-    exti.setupCallback(0, &extiCb);
-    exti.initLine(EXTI_Line0, EXTI_Trigger_Rising_Falling);
-//gpioLed.init(GPIO_Mode_Out_PP);
-//gpioLed.toggle();
 while(1);
     while (1) {
         #if defined(USE_USART_1)

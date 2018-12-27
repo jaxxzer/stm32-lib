@@ -1,105 +1,36 @@
 #pragma once
+#if defined(STM32F0)
+#include "stm32f0xx_conf.h"
+#elif defined(STM32F1)
+#include "stm32f10x_conf.h"
+#elif defined(STM32F3)
+#include "stm32f30x_conf.h"
+#else
+ #error
+#endif
+
 #include "stm32f10x_exti.h"
+#include "helpers.h"
+
 
 class Exti
 {
 public:
-    Exti() = default;
+    Exti();
 
-    void initLine(uint32_t line = EXTI_Line0,
+    void initLine(uint32_t line = 0,
         EXTITrigger_TypeDef trigger = EXTI_Trigger_Falling,
         FunctionalState state = ENABLE,
-        EXTIMode_TypeDef mode = EXTI_Mode_Interrupt)
-    {
-        
-        EXTI_InitTypeDef extiInit;
-        extiInit.EXTI_Line = line;
-        extiInit.EXTI_Mode = mode;
-        extiInit.EXTI_Trigger = trigger;
-        extiInit.EXTI_LineCmd = state;
-        EXTI_Init(&extiInit);
-    }
+        EXTIMode_TypeDef mode = EXTI_Mode_Interrupt);
 
     static const uint8_t numExti = 16;
     it_callback_t* _callbacks[numExti] = { nullptr };
 
-    it_callback_t* setupCallback(uint8_t exti, void (*newCallbackFn)(void)) {
-        
-        it_callback_t** callbacks = &_callbacks[exti];
-        it_callback_t* newCb = new it_callback_t;
-        newCb->callback = newCallbackFn;
-        it_callback_t* currentCb = *callbacks;
-        if (!currentCb) {
-            *callbacks = newCb;
-        } else {
-            it_callback_t* tail = *callbacks;
-            while (tail->next != nullptr) {
-                tail = tail->next;
-            }
-            tail->next = newCb;
-        }
-        return newCb;
-    }
+    it_callback_t* setupCallback(uint8_t exti, void (*newCallbackFn)(void));
 
-    void _irqHandler(uint8_t exti)
-    {
-        if (exti >= numExti) {
-            return;
-        }
-        _executeCallbacks(_callbacks[exti]);
-        EXTI_ClearFlag(1 << exti);
-    }
+    void _irqHandler(uint8_t exti);
 
-    void _executeCallbacks(it_callback_t* callbacks)
-    {
-        it_callback_t* cb = callbacks;
-        while (cb) {
-            cb->callback();
-            cb = cb->next;
-        }
-    } 
+    void _executeCallbacks(it_callback_t* callbacks);
 };
 
-#ifdef USE_EXTI
-Exti exti;
-extern "C"
-{
-
-void EXTI0_IRQHandler(void) {
-	exti._irqHandler(0);
-}
-
-void EXTI1_IRQHandler(void) {
-	exti._irqHandler(1);
-}
-
-void EXTI2_IRQHandler(void) {
-	exti._irqHandler(2);
-}
-
-void EXTI3_IRQHandler(void) {
-	exti._irqHandler(3);
-}
-
-void EXTI4_IRQHandler(void) {
-	exti._irqHandler(4);
-}
-
-void EXTI5_9_IRQHandler(void) {
-    for (uint8_t i = 5; i < 9; i++) {
-        if (EXTI_GetFlagStatus(1 << i)) {
-            exti._irqHandler(i);
-        }
-    }
-}
-
-void EXTI10_15_IRQHandler(void) {
-    for (uint8_t i = 10; i < 15; i++) {
-        if (EXTI_GetFlagStatus(1 << i)) {
-            exti._irqHandler(i);
-        }
-    }
-}
-
-}
-#endif
+extern Exti exti;
