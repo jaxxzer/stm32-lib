@@ -1,4 +1,6 @@
 #include "stm32lib-conf.h"
+#include "exti.h"
+
 #define USART_BAUDRATE 1000000
 
 Gpio gpioLed { GPIOC, 13 };
