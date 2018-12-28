@@ -145,7 +145,8 @@ int main()
     initUsart1();
 #if defined(STM32F1)
     gpioLed.init(GPIO_Mode_AF_PP);
-    gpioCapture.init(GPIO_Mode_AF_OD);
+    // gpioCapture.init(GPIO_Mode_AF_OD);
+    gpioCapture.init(GPIO_Mode_IN_FLOATING);
     gpioLed.remapConfig(GPIO_LED1_REMAP, ENABLE);
     gpioCapture.remapConfig(GPIO_CAPTURE_REMAP, ENABLE);
 #elif defined(STM32F0) || defined(STM32F3)
@@ -168,14 +169,14 @@ int main()
     timerCapture.setupCc1Callback(&risingCallback);
     timerCapture.setupCc2Callback(&fallingCallback);
     timerCapture.init(47); // 1MHz clock frequency
-    timerCapture.setEnabled(ENABLE);    
     timerCapture.interruptConfig(TIM_IT_CC1, ENABLE);
     timerCapture.interruptConfig(TIM_IT_CC2, ENABLE);
 
     // Note CCxS bits only writable when CCxE is 0 (channel is disabled)
-    tciRising.init(TIM_ICPolarity_Falling, 0x0);
-    tciFalling.init(TIM_ICPolarity_Rising, 0x0, TIM_ICPSC_DIV1, TIM_ICSelection_IndirectTI);
+    tciRising.init(TIM_ICPolarity_Rising, 0x0);
+    tciFalling.init(TIM_ICPolarity_Falling, 0x0, TIM_ICPSC_DIV1, TIM_ICSelection_IndirectTI);
 
+    timerCapture.setEnabled(ENABLE);    
 
 
 #if defined(STM32F0)
@@ -197,7 +198,7 @@ int main()
     while (1) { 
         mDelay(50);
         //print_clocks();
-        printf("T: %d, C: %d\r\n", (uint32_t)(fallTime - riseTime), (uint16_t)fallCapture);
+        printf("T: %d, C: %d\r\n", (uint16_t)(riseCapture), (uint16_t)fallCapture);
         tco.setDuty(duty);
         if ( (inc > 0 && inc > 65535 - duty) ||
              (inc < 0 && duty < -inc) )
