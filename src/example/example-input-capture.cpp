@@ -1,6 +1,6 @@
 #include "stm32lib-conf.h"
 
-#define USART_BAUDRATE 115200
+#define USART_BAUDRATE 230400
 
 Timer& timer = GPIO_LED1_TIMER;
 Gpio gpioLed { GPIO_LED1_PORT, GPIO_LED1_PIN };
@@ -130,6 +130,7 @@ void risingCallback(void)
 {
     riseTime = microseconds;
     riseCapture = tciRising._peripheral->CCR1;
+    printf("%d\r\n", (uint16_t)riseCapture);
 }
 
 void fallingCallback(void)
@@ -196,9 +197,9 @@ int main()
     uint16_t duty = 0;
     int16_t inc = 2500;
     while (1) { 
-        mDelay(50);
+        mDelay(10);
         //print_clocks();
-        printf("T: %d, C: %d\r\n", (uint16_t)(riseCapture), (uint16_t)fallCapture);
+        //printf("T: %d, C: %d\r\n", (uint16_t)(riseCapture), (uint16_t)fallCapture);
         tco.setDuty(duty);
         if ( (inc > 0 && inc > 65535 - duty) ||
              (inc < 0 && duty < -inc) )
