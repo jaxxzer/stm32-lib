@@ -19,7 +19,7 @@
 #CK 2/14 B13
 
 #cppm 1/1 A0 (via transistor)
-#sport 2/11 B10
+#sport 2/11 B10 b11 via exti?
 
 #buzzer 2/2 B1
 #eeprom pin1 2/8

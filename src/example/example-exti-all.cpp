@@ -124,15 +124,13 @@ void setupGpio(uint8_t port, uint32_t pin) {
         ((uint32_t)ports[port] == GPIOA_BASE && pin == 13) ||
         ((uint32_t)ports[port] == GPIOA_BASE && pin == 14) ||
         ((uint32_t)ports[port] == GPIOA_BASE && pin == 9) ||
-        ((uint32_t)ports[port] == GPIOA_BASE && pin == 10) ||
-        ((uint32_t)ports[port] == GPIOB_BASE && pin == 1)
+        ((uint32_t)ports[port] == GPIOA_BASE && pin == 10)
     )
     {
         return;
     }
     Gpio gpioExti(ports[port], pin);
     gpioExti.init(GPIO_Mode_IN_FLOATING);
-                            mDelay(1000);
 
     gpioExti.extiConfig(ENABLE, EXTI_Trigger_Rising_Falling);
 }
@@ -142,9 +140,7 @@ void disableGpio(uint8_t port, uint8_t pin) {
         ((uint32_t)ports[port] == GPIOA_BASE && pin == 13) ||
         ((uint32_t)ports[port] == GPIOA_BASE && pin == 14) ||
                 ((uint32_t)ports[port] == GPIOA_BASE && pin == 9) ||
-        ((uint32_t)ports[port] == GPIOA_BASE && pin == 10) ||
-        ((uint32_t)ports[port] == GPIOB_BASE && pin == 1)
-    )
+        ((uint32_t)ports[port] == GPIOA_BASE && pin == 10)    )
     {
         return;
     }
@@ -179,21 +175,24 @@ int main()
 
     exti.setupGlobalCallback(&extiCb);
 
-    for (uint8_t i = 1; i < 2; i++) {
+    Gpio gp { GPIOA, 0 };
+    gp.init(GPIO_Mode_Out_PP);
+    gp.reset();
+    while(1) {
+    for (uint8_t i = 0; i < 3; i++) {
         printf("testing %d\r\n", i);
         for (uint8_t j = 0; j < 16; j++) {
             setupGpio(i, j);
-                        mDelay(1000);
 
         }
         mDelay(3000);
-                printf("disabling %d\r\n", i);
-
+        printf("disabling %d\r\n", i);
         for (uint8_t j = 0; j < 16; j++) {
             disableGpio(i, j);
         }
-        mDelay(3000);
     }
+    }
+
 
 // exti.setupCallback(8, &extiCb);
 // exti.initLine(8, EXTI_Trigger_Rising);
