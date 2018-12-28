@@ -121,6 +121,11 @@ void initUsart3(void)
 }
 #endif
 
+volatile uint16_t channels[16] = { 0 };
+volatile uint16_t channelIndex = 0;
+volatile uint16_t numChans = 0;
+volatile bool updateAvailable = true;
+
 Timer& timerCapture = CAPTURE_TIMER;
 Gpio gpioCapture { GPIO_CAPTURE_PORT, GPIO_CAPTURE_PIN };
 TimerChannelInput tciRising { &timerCapture, GPIO_CAPTURE_TIM_CH_RISING };
@@ -131,16 +136,26 @@ volatile uint16_t fallCapture;
 volatile uint32_t riseTime;
 volatile uint32_t fallTime;
 
+void printChannels(void) {
+        for (uint8_t i = 0; i < numChans; i++) {
+        printf("ch%d: %d\r\n", i, channels[i]);
+    }
+}
 void risingCallback(void)
 {
-    riseTime = microseconds;
     riseCapture = tciRising._peripheral->CCR1;
-    printf("%d\r\n", (uint16_t)riseCapture);
+    if (riseCapture > 2500) { // TODO needs to be more robust to deal with timer overflow during inter-frame period etc.
+        updateAvailable = true;
+        numChans = channelIndex;
+        channelIndex = 0;
+
+        return;
+    }
+    channels[channelIndex++] = riseCapture;
 }
 
 void fallingCallback(void)
 {
-    fallTime = microseconds;
     fallCapture = tciFalling._peripheral->CCR2;
 }
 
@@ -202,7 +217,11 @@ int main()
     uint16_t duty = 0;
     int16_t inc = 2500;
     while (1) { 
-        mDelay(10);
+        //mDelay(10);
+        if (updateAvailable) {
+                updateAvailable = false;
+            printChannels();
+        }
         //print_clocks();
         //printf("T: %d, C: %d\r\n", (uint16_t)(riseCapture), (uint16_t)fallCapture);
         tco.setDuty(duty);
