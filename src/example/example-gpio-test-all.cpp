@@ -8,8 +8,7 @@ void testPin(uint8_t port, uint8_t pin)
 
     if  (
         ((uint32_t)ports[port] == GPIOA_BASE && pin == 13) ||
-        ((uint32_t)ports[port] == GPIOA_BASE && pin == 14) ||
-        ((uint32_t)ports[port] == GPIOB_BASE && pin == 1)
+        ((uint32_t)ports[port] == GPIOA_BASE && pin == 14)
     )
     {
         return;

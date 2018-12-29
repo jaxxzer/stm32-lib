@@ -9,6 +9,8 @@
 Gpio gpioLed { GPIO_LED1_PORT, GPIO_LED1_PIN };
 
 Gpio gpioReset { GPIO_NRST_PORT, GPIO_NRST_PIN };
+    Gpio gpioNss = { GPIOB, 12 };
+
 Spi spi;
 uint8_t regValues[] = {
     0x0,
@@ -172,7 +174,7 @@ char readAddr(uint8_t addr)
     return ch;
 }
 
-SX1276 sx1276(spi);
+SX1276 sx1276(spi, gpioNss, gpioReset);
 
 int main(void)
 {

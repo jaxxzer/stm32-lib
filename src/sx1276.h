@@ -72,12 +72,11 @@
 
 #include "spi.h"
 
-    Gpio gpioNss = { GPIOB, 12 };
 
 class SX1276
 {
     public:
-    SX1276(Spi& spi, Gpio& nss, Gpio& nrst) : _spi(spi) {};
+    SX1276(Spi& spi, Gpio& nss, Gpio& nrst) : _spi(spi), _gpioNss(nss), _gpioNrst(nrst) {};
     Spi& _spi;
     Gpio& _gpioNss;
     Gpio& _gpioNrst;
@@ -170,6 +169,24 @@ class SX1276
         setMode(0x1);
         setMode(0x1);
     }
+
+    void transmit(char* data, uint8_t length) {
+        writeFIFO(data, length);
+        tranny();
+    }
+
+    void tranny() {
+        writeRegister(REG_IRQ_FLAGS, 0xFF); // todo reset tx only
+        setMode(0b011); // todo enum
+        bool txDone = false;
+        while (!txDone)
+        {
+            readRegister(REG_OP_MODE);
+            char flags = readRegister(REG_IRQ_FLAGS);
+            txDone = flags & IRQ_MASK_TX_DONE;
+        }
+    }
+
     void transmit()
     {
         writeFIFO("as", 2);
@@ -191,29 +208,24 @@ class SX1276
         writeRegister(REG_IRQ_FLAGS, 0xFF);
     }
     void setFrequency(long frequency)
-{
+    {
+        uint64_t frf = ((uint64_t)frequency << 19) / 32000000;
 
-  uint64_t frf = ((uint64_t)frequency << 19) / 32000000;
-
-  writeRegister(REG_FRF_MSB, (uint8_t)(frf >> 16));
-  writeRegister(REG_FRF_MID, (uint8_t)(frf >> 8));
-  writeRegister(REG_FRF_LSB, (uint8_t)(frf >> 0));
-}
+        writeRegister(REG_FRF_MSB, (uint8_t)(frf >> 16));
+        writeRegister(REG_FRF_MID, (uint8_t)(frf >> 8));
+        writeRegister(REG_FRF_LSB, (uint8_t)(frf >> 0));
+    }
 
     void receive()
     {
-
-         writeRegister(REG_IRQ_FLAGS, 0xFF);
+        writeRegister(REG_IRQ_FLAGS, 0xFF);
 
         setMode(0b110);
-
 
         bool rxDone = false;
 
         while (!rxDone)
         {
-
-
             char flags = readRegister(REG_IRQ_FLAGS);
             rxDone = flags & IRQ_MASK_RX_DONE;
             bool rxTimeout = flags & IRQ_MASK_RX_TIMEOUT;
@@ -222,9 +234,9 @@ class SX1276
                 writeRegister(REG_IRQ_FLAGS, 0xFF);
                 setMode(0b110);
             }
-
         }
-
     }
+
     void readFIFO(uint8_t length);
+
 };

@@ -2,6 +2,9 @@
 // Channel 1 gives the frequency (rise -> rise time)
 // Channel 2 gives the pulse width
 
+// packet structure
+// uint8_t numChannels
+// uint16[n] channel0...
 
 #include "stm32lib-conf.h"
 
@@ -159,6 +162,15 @@ void fallingCallback(void)
     fallCapture = tciFalling._peripheral->CCR2;
 }
 
+
+void writePacket(void) {
+    uint16_t buf[8];
+    buf[0] = numChans;
+    for (uint8_t i = 0; i < numChans; i++) {
+        buf[i + 1] = channels[i];
+    }
+    sx1276.transmit(buf, numChans * sizeof(uint16_t));
+}
 
 int main()
 {
