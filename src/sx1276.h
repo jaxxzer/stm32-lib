@@ -95,68 +95,51 @@ class SX1276
         _gpioNss.set();
     }
 
-    char readRegister(uint8_t base, uint16_t length = 1) {
+    char readRegister(uint8_t base, uint16_t length = 1)
+    {
         _gpioNss.reset();
         _spi.read(base, length);
         _gpioNss.set();
         return _spi.rxBuf[0];
     }
 
-
-
-    void setMode(uint8_t mode) {
-        uint8_t m = 0x80;
-        mode |= m;
-        writeRegister(REG_OP_MODE, mode);
-    }
-    void dumpRegs()
-
+void setMode(uint8_t mode)
 {
-      for (int i = 0; i < 128; i++) {
-          uart1.write("0x",2);
-    printHex(i);
-    uart1.write(": 0x", 4);
-    printHex(readRegister(i));
-    printf("\r\n");
-  }
-}    void init()
-    {
-        setMode(0x0);
+    uint8_t m = 0x80;
+    mode |= m;
+    writeRegister(REG_OP_MODE, mode);
+}
+
+void dumpRegs()
+{
+    for (int i = 0; i < 128; i++) {
+        uart1.write("0x",2);
+        printHex(i);
+        uart1.write(": 0x", 4);
+        printHex(readRegister(i));
+        printf("\r\n");
+    }
+}    
+
+void init()
+{
         setMode(0x0);
         setFrequency(900E6);
-        // readRegister(REG_IRQ_FLAGS_MASK);
-        // writeRegister(REG_IRQ_FLAGS_MASK, ~IRQ_MASK_RX_DONE);
-        // readRegister(REG_IRQ_FLAGS_MASK);
 
         // set lna boost
-    writeRegister(REG_LNA, readRegister(REG_LNA) | 0x03);
-  // set auto AGC
+        writeRegister(REG_LNA, readRegister(REG_LNA) | 0x03);
+        // set auto AGC
 
-  writeRegister(REG_MODEM_CONFIG_3, 0x04);
+        writeRegister(REG_MODEM_CONFIG_3, 0x04);
 
-    // writeRegister(REG_PA_CONFIG, 0x70 | 14);
-
-    writeRegister(REG_PA_DAC, 0x84);
-    writeRegister(REG_OCP, 0x20 | (0x1F & 11));
-    writeRegister(REG_PA_CONFIG, PA_BOOST | 15);
-    
-    // 
-  writeRegister(REG_MODEM_CONFIG_1, readRegister(REG_MODEM_CONFIG_1) & 0xfe);
-  writeRegister(REG_MODEM_CONFIG_1, 0b10010010);
-  writeRegister(REG_MODEM_CONFIG_2, 0x70);// spreading factor
+        writeRegister(REG_PA_DAC, 0x84);
+        writeRegister(REG_OCP, 0x20 | (0x1F & 11));
+        writeRegister(REG_PA_CONFIG, PA_BOOST | 15);
 
 
-//     uint8_t temp = readRegister(REG_DETECTION_OPTIMIZE) & 0xF8;
-// if (true) {
-//     writeRegister(REG_DETECTION_OPTIMIZE, (temp | 0x05)); // SF6
-//     writeRegister(REG_DETECTION_THRESHOLD, 0x0C); // SF6
-// } else {
-//     writeRegister(REG_DETECTION_OPTIMIZE, (temp | 0x03)); // SF7-12
-//     writeRegister(REG_DETECTION_THRESHOLD, 0x0A); // SF7-12  
-// }
-//         readRegister(REG_IRQ_FLAGS);
-//         writeRegister(REG_IRQ_FLAGS, 0xFF);
-//         readRegister(REG_IRQ_FLAGS);
+        writeRegister(REG_MODEM_CONFIG_1, readRegister(REG_MODEM_CONFIG_1) & 0xfe);
+        writeRegister(REG_MODEM_CONFIG_1, 0b10010010);
+        writeRegister(REG_MODEM_CONFIG_2, 0x70);// spreading factor
 
         setMode(0x1);
         setMode(0x1);
