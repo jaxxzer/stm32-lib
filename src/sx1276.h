@@ -182,7 +182,7 @@ class SX1276
     void transmit()
     {
         static uint16_t data = 1;
-        writeFIFO((char*)&data, 2);
+        writeFIFO((char*)&data, 16);
         data++;
         readRegister(REG_OP_MODE);
         readRegister(REG_IRQ_FLAGS);
@@ -210,7 +210,7 @@ class SX1276
         writeRegister(REG_FRF_LSB, (uint8_t)(frf >> 0));
     }
 
-    void receive()
+    uint8_t receive()
     {
         writeRegister(REG_IRQ_FLAGS, 0xFF);
 
@@ -231,6 +231,7 @@ class SX1276
                 setMode(0b110);
             }
         }
+        return readRegister(REG_FIFO_RX_NB_BYTES);
     }
 
     uint8_t* readFIFO(uint8_t length) {
