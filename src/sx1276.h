@@ -102,15 +102,7 @@ class SX1276
         return _spi.rxBuf[0];
     }
 
-    void writeFIFO(char* data, uint8_t length)
-    {
-        // set FifoPtrAddr to FifoTxPtrBase
-        writeRegister(REG_FIFO_PTR_ADDR, FIFO_TX_BASE_ADDR);
-        writeRegister(REG_PAYLOAD_LENGTH, length);
-        writeRegister(REG_FIFO, data, length);
 
-        // write PayloadLength bytes to the FIFO
-    };
 
     void setMode(uint8_t mode) {
         uint8_t m = 0x80;
@@ -189,7 +181,9 @@ class SX1276
 
     void transmit()
     {
-        writeFIFO("as", 2);
+        static uint16_t data = 1;
+        writeFIFO((char*)&data, 2);
+        data++;
         readRegister(REG_OP_MODE);
         readRegister(REG_IRQ_FLAGS);
         writeRegister(REG_IRQ_FLAGS, 0xFF);
@@ -220,6 +214,8 @@ class SX1276
     {
         writeRegister(REG_IRQ_FLAGS, 0xFF);
 
+        writeRegister(REG_FIFO_PTR_ADDR, REG_FIFO_RX_BASE_ADDR);
+
         setMode(0b110);
 
         bool rxDone = false;
@@ -237,6 +233,20 @@ class SX1276
         }
     }
 
-    void readFIFO(uint8_t length);
+    uint8_t* readFIFO(uint8_t length) {
+        writeRegister(REG_FIFO_PTR_ADDR, REG_FIFO_RX_CURRENT_ADDR);
+        // writeRegister(REG_PAYLOAD_LENGTH, length);
+        readRegister(REG_FIFO, length);
+        return _spi.rxBuf;
+    };
 
+    void writeFIFO(char* data, uint8_t length)
+    {
+        // set FifoPtrAddr to FifoTxPtrBase
+        writeRegister(REG_FIFO_PTR_ADDR, FIFO_TX_BASE_ADDR);
+        writeRegister(REG_PAYLOAD_LENGTH, length);
+        writeRegister(REG_FIFO, data, length);
+
+        // write PayloadLength bytes to the FIFO
+    };
 };

@@ -4,7 +4,7 @@
 #include "spi.h"
 #include "sx1276.h"
 
-#define USART_BAUDRATE 1e6
+#define USART_BAUDRATE 115200
 
 Gpio gpioLed { GPIO_LED1_PORT, GPIO_LED1_PIN };
 
@@ -212,8 +212,18 @@ int main(void)
         //spi.write(&transferVal, 1);
         //spi.write(&str[idx++], 1);
         // spi.write("hellolll", 8);
-
         sx1276.receive();
+
+        sx1276.writeRegister(REG_FIFO_PTR_ADDR, 0);
+        // writeRegister(REG_PAYLOAD_LENGTH, length);
+        sx1276.readRegister(REG_FIFO);
+        uart1.write((char*)spi.rxBuf);
+        sx1276.readRegister(REG_FIFO);
+        uart1.write((char*)spi.rxBuf);
+        // uint8_t length = 2;
+
+        // char* data = (char*)sx1276.readFIFO(length);
+        // uart1.write((char*)spi.rxBuf, length);
         gpioLed.toggle();
     }
 
