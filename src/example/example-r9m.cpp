@@ -14,7 +14,9 @@ Timer& timer = GPIO_LED1_TIMER;
 Gpio gpioLed { GPIO_LED1_PORT, GPIO_LED1_PIN };
 TimerChannelOutput tco { &timer, GPIO_LED1_TIM_CH };
 
-
+Gpio gpioReset { GPIO_NRST_PORT, GPIO_NRST_PIN };
+Gpio gpioNss = { GPIOB, 12 };
+Spi spi;
 
 #if defined(USE_USART_1)
 Gpio gpioUsart1Tx         { GPIO_USART1_TX_PORT, GPIO_USART1_TX_PIN };
@@ -124,6 +126,36 @@ void initUsart3(void)
 }
 #endif
 
+
+
+void initGpio()
+{
+    gpioLed.init(GPIO_Mode_Out_PP);
+    Gpio gpioMosi = { GPIOB, 15 };
+    Gpio gpioMiso = { GPIOB, 14 };
+    Gpio gpioSck = { GPIOB, 13 };
+
+    gpioNss.init(GPIO_Mode_Out_PP);
+    gpioMosi.init(GPIO_Mode_AF_PP);
+    gpioMiso.init(GPIO_Mode_IN_FLOATING);
+    gpioSck.init(GPIO_Mode_AF_PP);
+            gpioNss.set();
+
+    gpioReset.init(GPIO_Mode_Out_PP);
+    gpioReset.set();
+}
+void resetDev()
+{
+    gpioReset.reset();
+    mDelay(10);
+    gpioReset.set();
+    mDelay(10);
+}
+
+
+SX1276 sx1276(spi, gpioNss, gpioReset);
+
+
 volatile uint16_t channels[16] = { 0 };
 volatile uint16_t channelIndex = 0;
 volatile uint16_t numChans = 0;
@@ -190,6 +222,13 @@ int main()
 #else
  #error
 #endif
+
+
+
+
+    
+
+
 
     timer.initFreq(1e3); // 10kHz pwm frequency
     timer.setEnabled(ENABLE);

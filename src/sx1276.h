@@ -235,7 +235,7 @@ class SX1276
     }
 
     uint8_t* readFIFO(uint8_t length) {
-        writeRegister(REG_FIFO_PTR_ADDR, REG_FIFO_RX_CURRENT_ADDR);
+        writeRegister(REG_FIFO_PTR_ADDR, 0);
         // writeRegister(REG_PAYLOAD_LENGTH, length);
         readRegister(REG_FIFO, length);
         return _spi.rxBuf;

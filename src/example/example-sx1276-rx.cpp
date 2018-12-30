@@ -213,14 +213,18 @@ int main(void)
         //spi.write(&str[idx++], 1);
         // spi.write("hellolll", 8);
         uint8_t payload_length = sx1276.receive();
-
-        sx1276.writeRegister(REG_FIFO_PTR_ADDR, 0);
-        // writeRegister(REG_PAYLOAD_LENGTH, length);
-        for (uint8_t i = 0; i < payload_length; i++)
-        {
-            sx1276.readRegister(REG_FIFO);
-            uart1.write((char*)spi.rxBuf);
+        sx1276.readFIFO(payload_length);
+        for (uint8_t i = 0; i < payload_length; i++) {
+            uart1.write((char*)&spi.rxBuf[i]);
         }
+
+
+        // sx1276.writeRegister(REG_FIFO_PTR_ADDR, 0);
+        // for (uint8_t i = 0; i < payload_length; i++)
+        // {
+        //     sx1276.readRegister(REG_FIFO);
+        //     uart1.write((char*)spi.rxBuf);
+        // }
 
         // sx1276.readRegister(REG_FIFO);
         // uart1.write((char*)spi.rxBuf);
