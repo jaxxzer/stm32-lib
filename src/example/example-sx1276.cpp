@@ -168,8 +168,9 @@ int main(void)
         resetDev();
         sx1276.init();
         while(1) {
-            sx1276.transmit("hello", 5);
-            // sx1276.transmit((char*)&inc, 4);
+            //sx1276.transmit("hello", 5);
+            sx1276.transmit((char*)&inc, 4);
+            inc++;
             gpioLed.toggle();
         }
     }
