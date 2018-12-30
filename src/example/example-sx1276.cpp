@@ -220,7 +220,8 @@ int main(void)
 
         while(1) {
             // mDelay(20);
-            sx1276.transmit();
+            sx1276.transmit("hello", 5);
+            //sx1276.transmit();
             // sx1276.dumpRegs();
             // //while(1);
             // mDelay(100);
