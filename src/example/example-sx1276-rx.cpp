@@ -4,7 +4,7 @@
 #include "spi.h"
 #include "sx1276.h"
 
-#define USART_BAUDRATE 115200
+#define USART_BAUDRATE 1e6
 
 Gpio gpioLed { GPIO_LED1_PORT, GPIO_LED1_PIN };
 

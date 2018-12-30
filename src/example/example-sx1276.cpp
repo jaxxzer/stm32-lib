@@ -163,12 +163,13 @@ int main(void)
     SPI_SSOutputCmd(SPI2, DISABLE);
 
     spi.enable(ENABLE);
-
+    uint32_t inc = 0;
     while (1) {
         resetDev();
         sx1276.init();
         while(1) {
             sx1276.transmit("hello", 5);
+            // sx1276.transmit((char*)&inc, 4);
             gpioLed.toggle();
         }
     }
