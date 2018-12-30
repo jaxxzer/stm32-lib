@@ -11,19 +11,7 @@ Gpio gpioLed { GPIO_LED1_PORT, GPIO_LED1_PIN };
 Gpio gpioReset { GPIO_NRST_PORT, GPIO_NRST_PIN };
 Gpio gpioNss = { GPIOB, 12 };
 Spi spi;
-uint8_t regValues[] = {
-    0x0,
-    0x9,
-    0x1a,
-    0xb,
-    0x0,
-    0x52,
-    0x6c,
-    0x80,
-    0x0,
-    0x4f,
 
-};
 
 #if defined(USE_USART_1)
 Gpio gpioUsart1Tx         { GPIO_USART1_TX_PORT, GPIO_USART1_TX_PIN };
@@ -157,21 +145,6 @@ void resetDev()
     mDelay(10);
 }
 
-char readAddr(uint8_t addr)
-{
-    char ch;
-    spi.write((char*)&addr, 1);
-    while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
-    while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_RXNE));
-    ch = SPI_I2S_ReceiveData(SPI2);
-
-    spi.write((uint8_t)0);
-    while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
-    while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_RXNE));
-    ch = SPI_I2S_ReceiveData(SPI2);
-
-    return ch;
-}
 
 
 SX1276 sx1276(spi, gpioNss, gpioReset);
@@ -188,50 +161,24 @@ int main(void)
 #else
  #error
 #endif
-    mDelay(10);
-    char* str = "abcd";
+
     initGpio();
 
     spi.init(SPI_BaudRatePrescaler_16);
     SPI_SSOutputCmd(SPI2, ENABLE);
 
     spi.enable(ENABLE);
-    uint8_t idx = 0;
 
-    uint8_t reg = 0x1;
-    uint8_t writeFlag = 0x80;
-    uint8_t transferVal = 0x0;
-    uint8_t a = 0;
-    printf("hello\r\n");
-    mDelay(1000);
-            resetDev();
+    resetDev();
 
-        sx1276.init();
+    sx1276.init();
     while (1) {
-        transferVal = reg;
-        //spi.write(&transferVal, 1);
-        //spi.write(&str[idx++], 1);
-        // spi.write("hellolll", 8);
         uint8_t payload_length = sx1276.receive();
         sx1276.readFIFO(payload_length);
         for (uint8_t i = 0; i < payload_length; i++) {
             uart1.write((char*)&spi.rxBuf[i]);
         }
 
-
-        // sx1276.writeRegister(REG_FIFO_PTR_ADDR, 0);
-        // for (uint8_t i = 0; i < payload_length; i++)
-        // {
-        //     sx1276.readRegister(REG_FIFO);
-        //     uart1.write((char*)spi.rxBuf);
-        // }
-
-        // sx1276.readRegister(REG_FIFO);
-        // uart1.write((char*)spi.rxBuf);
-        // uint8_t length = 2;
-
-        // char* data = (char*)sx1276.readFIFO(length);
-        // uart1.write((char*)spi.rxBuf, length);
         gpioLed.toggle();
     }
 
