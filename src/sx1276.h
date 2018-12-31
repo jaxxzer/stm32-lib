@@ -86,7 +86,7 @@ class SX1276
     {
         writeRegister(base, &data, 1);
     }
-
+    // TODO add confirm option to read back data
     void writeRegister(uint8_t base, char* data, uint16_t length)
     {
         static const uint8_t WRITE = 0x80;
@@ -132,26 +132,116 @@ void init()
         setLnaBoostHfEnabled(true);
         
         // set auto AGC
-        writeRegister(REG_MODEM_CONFIG_3, 0x04);
-
-        writeRegister(REG_PA_DAC, 0x84);
+        setAgc(AGC_ENABLED);
 
         setOcpEnabled(true);
-        setOcpCurrent(100);
+        setOcpCurrent(240);
 
 
         paSelect(PA_SELECT_BOOST);
-        setPaOutputPower(15);
+        setPaOutputPower(1);
 
-
-        writeRegister(REG_MODEM_CONFIG_1, readRegister(REG_MODEM_CONFIG_1) & 0xfe);
-        writeRegister(REG_MODEM_CONFIG_1, 0b10010010);
-
-        writeRegister(REG_MODEM_CONFIG_2, 0x70);// spreading factor
-
+        setBandwidth(BANDWIDTH_500);
+        setCodingRate(CODING_RATE_4_5);
+        setHeaderMode(HEADER_MODE_EXPLICIT);
+        setSpreadingFactor(7);
         setMode(0x1);
     }
 
+    // may be 0 - 12
+    void setSpreadingFactor(uint8_t sf) {
+        if (sf > 12 || sf < 6) {
+            return;
+        }
+
+        static const uint16_t SPREADING_FACTOR_OFFSET = 4;
+        static const uint16_t SPREADING_FACTOR_MASK = 0b1111 << SPREADING_FACTOR_OFFSET;
+        
+
+        uint8_t value = readRegister(REG_MODEM_CONFIG_2);
+
+        value = (value & ~SPREADING_FACTOR_MASK) | (sf << SPREADING_FACTOR_OFFSET);
+        writeRegister(REG_MODEM_CONFIG_2, value);
+    }
+
+    typedef enum {
+        BANDWIDTH_7_8 = 0,
+        BANDWIDTH_10_4,
+        BANDWIDTH_15_6,
+        BANDWIDTH_20_8,
+        BANDWIDTH_31_25,
+        BANDWIDTH_41_7,
+        BANDWIDTH_62_5,
+        BANDWIDTH_125,
+        BANDWIDTH_250,
+        BANDWIDTH_500
+    } bandwidth_t;
+
+    void setBandwidth(bandwidth_t b) {
+        static const uint8_t BANDWIDTH_OFFSET = 4;
+        static const uint8_t BANDWIDTH_MASK = 0b1111 << BANDWIDTH_OFFSET;
+        uint8_t value = readRegister(REG_MODEM_CONFIG_1);
+        uint8_t bandwidth = b << BANDWIDTH_OFFSET;
+        value = (value & ~BANDWIDTH_MASK) | bandwidth;
+        writeRegister(REG_MODEM_CONFIG_1, value);
+
+    }
+
+    typedef enum {
+        AGC_DISABLED = 0,
+        AGC_ENABLED
+    } agc_t;
+
+    // set automatic gain control
+    void setAgc(agc_t a) {
+        static const uint8_t AGC_OFFSET = 2;
+        static const uint8_t AGC_MASK = 0b1 << AGC_OFFSET;
+        uint8_t value = readRegister(REG_MODEM_CONFIG_3);
+        uint8_t agc = a << AGC_OFFSET;
+        value = (value & ~AGC_MASK) | agc;
+        writeRegister(REG_MODEM_CONFIG_3, value);
+    }
+
+    typedef enum {
+        AFC_ENABLED = 0,
+        AFC_DISABLED
+    } afc_t;
+
+    // set automatic frequency correction
+    void setAfcEnabled(afc_t a) {
+
+    }
+
+    typedef enum {
+        CODING_RATE_4_5 = 1,
+        CODING_RATE_4_6,
+        CODING_RATE_4_7,
+        CODING_RATE_4_8
+    } coding_rate_t;
+
+    void setCodingRate(coding_rate_t r) {
+        static const uint8_t CODING_RATE_OFFSET = 1;
+        static const uint8_t CODING_RATE_MASK = 0b111 << CODING_RATE_OFFSET;
+        uint8_t value = readRegister(REG_MODEM_CONFIG_1);
+        uint8_t rate = r << CODING_RATE_OFFSET;
+        value = (value & ~CODING_RATE_MASK) | rate;
+
+        writeRegister(REG_MODEM_CONFIG_1, value);
+    }
+    typedef enum {
+        HEADER_MODE_EXPLICIT = 0,
+        HEADER_MODE_IMPLICIT = 1
+    } header_mode_t;
+    void setHeaderMode(header_mode_t m) {
+        static const uint8_t HEADER_MODE_MASK = 0b1;
+
+        uint8_t value = readRegister(REG_MODEM_CONFIG_1);
+
+        value = (value & ~HEADER_MODE_MASK) | m;
+
+        writeRegister(REG_MODEM_CONFIG_1, value);
+        
+    }
     void setLnaBoostHfEnabled(bool enabled) {
         static const uint8_t LNA_BOOST_HF_MASK = 0b11;
         static const uint8_t LNA_BOOST_HF_DISABLED = 0b00;
@@ -165,16 +255,18 @@ void init()
     }
 
     typedef enum {
-        PA_SELECT_RFO,
-        PA_SELECT_BOOST
+        PA_SELECT_RFO = 0,
+        PA_SELECT_BOOST = 1
     } pa_select_t;
 
     void paSelect(pa_select_t pin) {
-        static const uint8_t PA_SELECT_MASK = 1 << 7;
+        static const uint8_t PA_SELECT_OFFSET = 7;
+        static const uint8_t PA_SELECT_MASK = 1 << PA_SELECT_OFFSET;
         
-        uint8_t select = pin ? 1 << 7 : 0;
-
         uint8_t value = readRegister(REG_PA_CONFIG);
+
+        uint8_t select = pin << PA_SELECT_OFFSET;
+
         value = (value & ~PA_SELECT_MASK) | select;
         writeRegister(REG_PA_CONFIG, value);
     }
@@ -208,10 +300,6 @@ void init()
         uint8_t value = readRegister(REG_PA_CONFIG);
         value = (value & ~PA_POWER_MASK) | p;
         writeRegister(REG_PA_CONFIG, value);
-
-    }
-
-    void setSpreadingFactor(uint8_t sf) {
 
     }
 

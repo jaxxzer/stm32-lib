@@ -159,28 +159,30 @@ int main(void)
 
     initGpio();
 
-    Gpio power { GPIOA, 6 };
-    power.init(GPIO_Mode_Out_PP);
-    power.set();
+    // Gpio power { GPIOA, 6 };
+    // power.init(GPIO_Mode_Out_PP);
+    // power.reset();
     spi.init(SPI_BaudRatePrescaler_16);
     SPI_SSOutputCmd(SPI2, DISABLE);
 
     spi.enable(ENABLE);
     uint32_t inc = 0;
-    uint8_t txpower = 0;
+    uint16_t txpower = 0;
     while (1) {
         resetDev();
         sx1276.init();
         while(1) {
             //sx1276.transmit("hello", 5);
-            sx1276.transmit((char*)&txpower, 4);
+            sx1276.transmit((char*)&txpower, 2);
             inc++;
             gpioLed.toggle();
             static uint32_t last_t = 0;
             if (microseconds - last_t > 1000000) {
                 last_t = microseconds;
-                // sx1276.setPaOutputPower(txpower++);
-                // txpower = txpower % 16;
+                txpower += 1;
+                txpower = txpower % 16;
+                sx1276.setPaOutputPower(txpower);
+
                 //power.toggle();
             }
         }
