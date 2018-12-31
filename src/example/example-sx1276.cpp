@@ -173,15 +173,15 @@ int main(void)
         sx1276.init();
         while(1) {
             //sx1276.transmit("hello", 5);
-            sx1276.transmit((char*)&txpower, 2);
+            sx1276.transmit((char*)&inc, 4);
             inc++;
             gpioLed.toggle();
             static uint32_t last_t = 0;
             if (microseconds - last_t > 1000000) {
                 last_t = microseconds;
-                txpower += 1;
-                txpower = txpower % 16;
-                sx1276.setPaOutputPower(txpower);
+                // txpower += 1;
+                // txpower = txpower % 16;
+                // sx1276.setPaOutputPower(txpower);
 
                 //power.toggle();
             }

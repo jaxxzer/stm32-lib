@@ -125,7 +125,7 @@ void dumpRegs()
 void init()
 {
         setMode(0x0);
-        setFrequency(900E6);
+        setFrequency(915E6);
 
         // set lna boost
         // writeRegister(REG_LNA, readRegister(REG_LNA) | 0x03);
