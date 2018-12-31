@@ -167,17 +167,20 @@ int main(void)
 
     spi.enable(ENABLE);
     uint32_t inc = 0;
+    uint8_t txpower = 0;
     while (1) {
         resetDev();
         sx1276.init();
         while(1) {
             //sx1276.transmit("hello", 5);
-            sx1276.transmit((char*)&inc, 4);
+            sx1276.transmit((char*)&txpower, 4);
             inc++;
             gpioLed.toggle();
             static uint32_t last_t = 0;
             if (microseconds - last_t > 1000000) {
                 last_t = microseconds;
+                // sx1276.setPaOutputPower(txpower++);
+                // txpower = txpower % 16;
                 //power.toggle();
             }
         }

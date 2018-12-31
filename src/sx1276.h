@@ -128,14 +128,20 @@ void init()
         setFrequency(900E6);
 
         // set lna boost
-        writeRegister(REG_LNA, readRegister(REG_LNA) | 0x03);
-
+        // writeRegister(REG_LNA, readRegister(REG_LNA) | 0x03);
+        setLnaBoostHfEnabled(true);
+        
         // set auto AGC
         writeRegister(REG_MODEM_CONFIG_3, 0x04);
 
         writeRegister(REG_PA_DAC, 0x84);
-        writeRegister(REG_OCP, 0x20 | (0x1F & 11));
-        writeRegister(REG_PA_CONFIG, PA_BOOST | 15);
+
+        setOcpEnabled(true);
+        setOcpCurrent(100);
+
+
+        paSelect(PA_SELECT_BOOST);
+        setPaOutputPower(15);
 
 
         writeRegister(REG_MODEM_CONFIG_1, readRegister(REG_MODEM_CONFIG_1) & 0xfe);
@@ -146,10 +152,65 @@ void init()
         setMode(0x1);
     }
 
-    void setLnaBoost(uint8_t boost) {
+    void setLnaBoostHfEnabled(bool enabled) {
+        static const uint8_t LNA_BOOST_HF_MASK = 0b11;
+        static const uint8_t LNA_BOOST_HF_DISABLED = 0b00;
+        static const uint8_t LNA_BOOST_HF_ENABLED = 0b11;
+
+        uint8_t boost = enabled ? LNA_BOOST_HF_ENABLED : LNA_BOOST_HF_DISABLED;
+        uint8_t value = readRegister(REG_LNA);
+        value = (value & ~LNA_BOOST_HF_MASK) | boost;
+
+        writeRegister(REG_LNA, value);
+    }
+
+    typedef enum {
+        PA_SELECT_RFO,
+        PA_SELECT_BOOST
+    } pa_select_t;
+
+    void paSelect(pa_select_t pin) {
+        static const uint8_t PA_SELECT_MASK = 1 << 7;
+        
+        uint8_t select = pin ? 1 << 7 : 0;
+
+        uint8_t value = readRegister(REG_PA_CONFIG);
+        value = (value & ~PA_SELECT_MASK) | select;
+        writeRegister(REG_PA_CONFIG, value);
+    }
+
+    // may be a value 0 ~ 7
+    // Pmax = 10.8 + 0.6 * p
+    void setPaMaxPower(uint8_t p) {
+        static const uint8_t PA_MAX_POWER_MASK = 0b111 << 4;
+        
+        if (p > 7) {
+            p = 7;
+        }
+
+        uint8_t max = p << 4;
+        uint8_t value = readRegister(REG_PA_CONFIG);
+        value = (value & ~PA_MAX_POWER_MASK) | max;
+        writeRegister(REG_PA_CONFIG, value);
 
     }
-    
+
+    // may be a value 0 ~ 15
+    // Pout = Pmax - (15 - p) (RFO pin)
+    // Pout = 17 - (15 - p) (PA_BOOST pin)
+    void setPaOutputPower(uint8_t p) {
+        static const uint8_t PA_POWER_MASK = 0b1111;
+
+        if (p > 15) {
+            p = 15;
+        }
+
+        uint8_t value = readRegister(REG_PA_CONFIG);
+        value = (value & ~PA_POWER_MASK) | p;
+        writeRegister(REG_PA_CONFIG, value);
+
+    }
+
     void setSpreadingFactor(uint8_t sf) {
 
     }
@@ -159,7 +220,35 @@ void init()
     }
 
     void setOcpEnabled(bool enabled) {
+        static const uint8_t OCP_ENABLE_MASK = 1 << 5;
+        static const uint8_t OCP_ENABLED = 1 << 5;
+        static const uint8_t OCP_DISABLED = 0;
+        uint8_t ocpEnabled = enabled ? OCP_ENABLED : OCP_DISABLED;
+        uint8_t value = readRegister(REG_OCP);
+        value = (value & ~OCP_ENABLE_MASK) | ocpEnabled;
+        writeRegister(REG_OCP, value);
+    }
 
+    void setOcpCurrent(uint8_t mA) {
+        uint8_t ocpTrim = 0;
+        if (mA < 45) {
+            mA = 45;
+        }
+
+        if (mA < 120) {
+            mA -= 45;
+            ocpTrim = mA / 5;
+        } else if ( mA < 240) {
+            mA += 30;
+            ocpTrim = mA / 10;
+        } else {
+            ocpTrim = 27;
+        }
+
+        static const uint8_t OCP_TRIM_MASK = 0b11111;
+        uint8_t value = readRegister(REG_OCP);
+        value = (value & ~OCP_TRIM_MASK) | ocpTrim;
+        writeRegister(REG_OCP, value);
     }
 
     void setOcpTrim(uint8_t trim)  {
