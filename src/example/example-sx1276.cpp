@@ -159,6 +159,9 @@ int main(void)
 
     initGpio();
 
+    Gpio power { GPIOA, 6 };
+    power.init(GPIO_Mode_Out_PP);
+    power.set();
     spi.init(SPI_BaudRatePrescaler_16);
     SPI_SSOutputCmd(SPI2, DISABLE);
 
@@ -172,6 +175,11 @@ int main(void)
             sx1276.transmit((char*)&inc, 4);
             inc++;
             gpioLed.toggle();
+            static uint32_t last_t = 0;
+            if (microseconds - last_t > 1000000) {
+                last_t = microseconds;
+                //power.toggle();
+            }
         }
     }
     return 0;

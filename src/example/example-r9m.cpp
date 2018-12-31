@@ -7,6 +7,8 @@
 // uint16[n] channel0...
 
 #include "stm32lib-conf.h"
+#include "sx1276.h"
+#include "spi.h"
 
 #define USART_BAUDRATE 230400
 
@@ -130,7 +132,6 @@ void initUsart3(void)
 
 void initGpio()
 {
-    gpioLed.init(GPIO_Mode_Out_PP);
     Gpio gpioMosi = { GPIOB, 15 };
     Gpio gpioMiso = { GPIOB, 14 };
     Gpio gpioSck = { GPIOB, 13 };
@@ -195,14 +196,14 @@ void fallingCallback(void)
 }
 
 
-void writePacket(void) {
-    uint16_t buf[8];
-    buf[0] = numChans;
-    for (uint8_t i = 0; i < numChans; i++) {
-        buf[i + 1] = channels[i];
-    }
-    sx1276.transmit(buf, numChans * sizeof(uint16_t));
-}
+// void writePacket(void) {
+//     uint16_t buf[8];
+//     buf[0] = numChans;
+//     for (uint8_t i = 0; i < numChans; i++) {
+//         buf[i + 1] = channels[i];
+//     }
+//     sx1276.transmit(buf, numChans * sizeof(uint16_t));
+// }
 
 int main()
 {
@@ -230,11 +231,13 @@ int main()
 
 
 
-    timer.initFreq(1e3); // 10kHz pwm frequency
+    timer.initFreq(10e4); // 10kHz pwm frequency
     timer.setEnabled(ENABLE);
     timer.setMOE(ENABLE);
 
     tco.init(TIM_OCMode_PWM1, 0, TIM_OutputState_Enable, TIM_OutputNState_Enable);
+
+
     TIM_SelectInputTrigger(timerCapture.peripheral(), TIM_TS_TI1FP1);
     TIM_SelectSlaveMode(timerCapture.peripheral(), TIM_SlaveMode_Reset);
 
@@ -264,14 +267,41 @@ int main()
     nvic_config(TIM2_IRQn, 0, 0, ENABLE);
 #endif
 
+
+    initGpio();
+
+    spi.init(SPI_BaudRatePrescaler_16);
+    SPI_SSOutputCmd(SPI2, DISABLE);
+
+    spi.enable(ENABLE);
+
+        resetDev();
+        sx1276.init();
+
+
+
+
+        // while(1) {
+        //     //sx1276.transmit("hello", 5);
+        //     sx1276.transmit((char*)&inc, 4);
+        //     inc++;
+        //     gpioLed.toggle();
+        // }
+    
+
+
+
     // breath
     uint16_t duty = 0;
-    int16_t inc = 2500;
+    int16_t inc = 1;
+    tco.setDuty(30000);
     while (1) { 
         //mDelay(10);
         if (updateAvailable) {
                 updateAvailable = false;
-            printChannels();
+                sx1276.transmit((char*)channels, numChans * sizeof(channels[0]));
+
+            //printChannels();
         }
         //print_clocks();
         //printf("T: %d, C: %d\r\n", (uint16_t)(riseCapture), (uint16_t)fallCapture);

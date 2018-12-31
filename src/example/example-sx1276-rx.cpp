@@ -4,7 +4,7 @@
 #include "spi.h"
 #include "sx1276.h"
 
-#define USART_BAUDRATE 1e6
+#define USART_BAUDRATE 3e6
 
 Gpio gpioLed { GPIO_LED1_PORT, GPIO_LED1_PIN };
 
@@ -175,9 +175,13 @@ int main(void)
     while (1) {
         uint8_t payload_length = sx1276.receive();
         sx1276.readFIFO(payload_length);
-        for (uint8_t i = 0; i < payload_length; i++) {
-            uart1.write((char*)&spi.rxBuf[i]);
+        for (uint8_t i = 0; i < payload_length/2; i++) {
+            printf("%d: %d\r\n", i, ((uint16_t*)spi.rxBuf)[i]);
+            //uart1.write((char*)&spi.rxBuf[i]);
         }
+        printf("rssi: %d\r\n", sx1276.packetRssi());
+        printf("snr: %d\r\n", sx1276.packetSnr());
+        
 
         gpioLed.toggle();
     }

@@ -29,22 +29,7 @@
                 "openocd/f1.cfg"
             ],
             "svdFile": "${workspaceRoot}/svd/stm32f1/STM32F103.svd",
-            "device": "STM32F103",
-            "interface": "swd",
-            "swoConfig": {
-                    "source": "probe",
-                    "enabled": true,
-                    "swoFrequency": 2000000,
-                    "cpuFrequency": 48000000,
-                    "decoders": [
-                            {
-                                    "port": 0,
-                                    "type": "console",
-                                    "label": "Output"                                                                                               
-                            }
-                    ]
-                    
-            }
+            "device": "STM32F103"
         },
         {
             "name": "F303",

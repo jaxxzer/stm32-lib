@@ -23,6 +23,11 @@
 
 #buzzer 2/2 B1
 #eeprom pin1 2/8
+
+#power amplifier stage 1&2: 1/7 A6
+
+#RF switch ctrl: B3
+
 TARGET_MCU = STM32F103CB
 
 STARTUP = stm32f1

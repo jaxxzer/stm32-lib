@@ -33,6 +33,7 @@
 #define REG_RX_NB_BYTES          0x13
 #define REG_PKT_SNR_VALUE        0x19
 #define REG_PKT_RSSI_VALUE       0x1a
+#define REG_RSSI_VALUE           0x1b
 #define REG_MODEM_CONFIG_1       0x1d
 #define REG_MODEM_CONFIG_2       0x1e
 #define REG_PREAMBLE_MSB         0x20
@@ -128,8 +129,8 @@ void init()
 
         // set lna boost
         writeRegister(REG_LNA, readRegister(REG_LNA) | 0x03);
-        // set auto AGC
 
+        // set auto AGC
         writeRegister(REG_MODEM_CONFIG_3, 0x04);
 
         writeRegister(REG_PA_DAC, 0x84);
@@ -139,10 +140,30 @@ void init()
 
         writeRegister(REG_MODEM_CONFIG_1, readRegister(REG_MODEM_CONFIG_1) & 0xfe);
         writeRegister(REG_MODEM_CONFIG_1, 0b10010010);
+
         writeRegister(REG_MODEM_CONFIG_2, 0x70);// spreading factor
 
         setMode(0x1);
-        setMode(0x1);
+    }
+
+    void setLnaBoost(uint8_t boost) {
+
+    }
+    
+    void setSpreadingFactor(uint8_t sf) {
+
+    }
+
+    void setTxPower(uint8_t power) {
+
+    }
+
+    void setOcpEnabled(bool enabled) {
+
+    }
+
+    void setOcpTrim(uint8_t trim)  {
+     
     }
 
     void transmit(char* data, uint8_t length) {
@@ -167,22 +188,32 @@ void init()
         static uint16_t data = 1;
         writeFIFO((char*)&data, 16);
         data++;
-        readRegister(REG_OP_MODE);
-        readRegister(REG_IRQ_FLAGS);
+
         writeRegister(REG_IRQ_FLAGS, 0xFF);
-        readRegister(REG_IRQ_FLAGS);
         setMode(0b011);
-        readRegister(REG_OP_MODE);
         bool txDone = false;
         while (!txDone)
         {
-            readRegister(REG_OP_MODE);
             char flags = readRegister(REG_IRQ_FLAGS);
             txDone = flags & IRQ_MASK_TX_DONE;
         }
-        readRegister(REG_IRQ_FLAGS);
-        readRegister(REG_IRQ_FLAGS);
+
         writeRegister(REG_IRQ_FLAGS, 0xFF);
+    }
+
+    int16_t packetRssi() {
+        uint8_t pRssi = readRegister(REG_PKT_RSSI_VALUE);
+        return pRssi - 157;
+    }
+
+    int16_t packetSnr() {
+        uint8_t pSnr = readRegister(REG_PKT_SNR_VALUE);
+        return pSnr;
+    }
+
+    int16_t rssi() {
+        uint8_t rssi = readRegister(REG_RSSI_VALUE);
+        return rssi - 157;
     }
     void setFrequency(long frequency)
     {
