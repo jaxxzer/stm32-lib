@@ -4,7 +4,7 @@
 #include "spi.h"
 #include "sx1276.h"
 
-#define USART_BAUDRATE 3e6
+#define USART_BAUDRATE 460800
 
 Gpio gpioLed { GPIO_LED1_PORT, GPIO_LED1_PIN };
 
@@ -180,8 +180,7 @@ int main(void)
             //uart1.write((char*)&spi.rxBuf[i]);
         }
         printf("rssi: %d\r\n", sx1276.packetRssi());
-        printf("snr: %d\r\n", sx1276.packetSnr());
-        
+        //printf("snr: %d\r\n", sx1276.packetSnr());
 
         gpioLed.toggle();
     }

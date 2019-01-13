@@ -160,7 +160,7 @@ SX1276 sx1276(spi, gpioNss, gpioReset);
 volatile uint16_t channels[16] = { 0 };
 volatile uint16_t channelIndex = 0;
 volatile uint16_t numChans = 0;
-volatile bool updateAvailable = true;
+volatile bool updateAvailable = false;
 
 Timer& timerCapture = CAPTURE_TIMER;
 Gpio gpioCapture { GPIO_CAPTURE_PORT, GPIO_CAPTURE_PIN };
@@ -295,12 +295,17 @@ int main()
     uint16_t duty = 0;
     int16_t inc = 1;
     tco.setDuty(30000);
+
+    Gpio gpioLed2 { GPIOA, 12 };
+    gpioLed2.init(GPIO_Mode_Out_PP);
+    gpioLed2.set();
+
     while (1) { 
         //mDelay(10);
         if (updateAvailable) {
                 updateAvailable = false;
                 sx1276.transmit((char*)channels, numChans * sizeof(channels[0]));
-
+                gpioLed2.toggle();
             //printChannels();
         }
         //print_clocks();
