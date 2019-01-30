@@ -1,7 +1,8 @@
 //#include "stm32lib-conf.h"
 #include "gpio.h"
 #include "scheduling.h"
-Gpio gpioLed { GPIOB, 3 };
+
+Gpio gpioLed { GPIO_LED1_PORT, GPIO_LED1_PIN };
 
 int main(void)
 {
