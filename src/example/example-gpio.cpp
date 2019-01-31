@@ -1,4 +1,5 @@
 //#include "stm32lib-conf.h"
+#include "target.h"
 #include "gpio.h"
 #include "scheduling.h"
 

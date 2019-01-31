@@ -1,5 +1,7 @@
-BOARD ?= nucleo-f072
-include src/board/$(BOARD).mk
+BOARD ?= f103-dev
+include src/board/$(BOARD)/target.mk
+
+TARGET_DIR ?= src/board/$(BOARD)/
 
 TARGET_MCU ?= STM32F303RE
 
@@ -83,6 +85,7 @@ INCLUDES += -I $(SYSTEM_DIR)
 INCLUDES += -I $(CMSIS_DIR)/core
 INCLUDES += -I $(STDPERIPH_DIR)/inc
 INCLUDES += -I $(STM32LIB_DIR)/src
+INCLUDES += -I $(TARGET_DIR)
 
 OPTIMIZE ?= -O0
 CFLAGS = $(ARCH_FLAGS) 
