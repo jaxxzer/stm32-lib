@@ -1,7 +1,8 @@
 BOARD ?= f103-dev
-include src/board/$(BOARD)/target.mk
+STM32DIR ?= .
+include $(STM32DIR)/src/board/$(BOARD)/target.mk
 
-TARGET_DIR ?= src/board/$(BOARD)/
+TARGET_DIR ?= $(STM32DIR)/src/board/$(BOARD)/
 
 TARGET_MCU ?= STM32F303RE
 
@@ -35,10 +36,10 @@ endif
 ifneq (,$(findstring STM32F3, $(TARGET_MCU)))
 TARGET_LINE = stm32f3
 STARTUP_FILE ?= stm32f350
-OPENOCD_TARGET = target/stm32f3x.cfg
+OPENOCD_TARGET = $(STM32DIR)/target/stm32f3x.cfg
 OPENOCD_FLASH_DRIVER = stm32f1x
 ARCH_FLAGS += -DSTM32F3
-SYSTEM_FILE = system_stm32f30x.c
+SYSTEM_FILE = $(STM32DIR)/system_stm32f30x.c
 ARCH_FLAGS += -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -msoft-float -march=armv7e-m
 LD_FLAGS =  -specs=nano.specs -specs=nosys.specs --static -mthumb -march=armv7e-m -mcpu=cortex-m4 -mfpu=vfp -ggdb3 -Wl,--cref -Wl,--gc-sections -Wl,--start-group -lc -lgcc -lnosys -Wl,--end-group 
 endif
@@ -70,7 +71,7 @@ ARCH_FLAGS += -DSTM32F350x8
 endif
 endif
 
-STM32LIB_DIR = .
+STM32LIB_DIR = $(STM32DIR)
 CMSIS_DIR = $(STM32LIB_DIR)/driver/$(TARGET_LINE)/cmsis
 SYSTEM_DIR = $(CMSIS_DIR)/device
 STDPERIPH_DIR = $(STM32LIB_DIR)/driver/$(TARGET_LINE)/spl
@@ -141,11 +142,11 @@ example-%: $(TARGET_OBJS) $(OBJ_DIR)/src/example/example-%.opp
 	@echo "deps: $^"
 	mkdir -p $(BIN_DIR)
 ifneq (,$(FLASH_OVERRIDE))
-	python src/link/generate-ldscript.py -p $(TARGET_MCU) -o$(FLASH_OVERRIDE) > src/link/stm32-mem.ld
+	python $(STM32DIR)/src/link/generate-ldscript.py -p $(TARGET_MCU) -o$(FLASH_OVERRIDE) > $(STM32DIR)/src/link/stm32-mem.ld
 else
-	python src/link/generate-ldscript.py -p $(TARGET_MCU) > src/link/stm32-mem.ld
+	python $(STM32DIR)/src/link/generate-ldscript.py -p $(TARGET_MCU) > $(STM32DIR)/src/link/stm32-mem.ld
 endif
-	arm-none-eabi-g++ -o $(BIN_DIR)/$@.elf $^ -T src/link/stm32-mem.ld -T $(LD_SRC) $(LD_FLAGS)
+	arm-none-eabi-g++ -o $(BIN_DIR)/$@.elf $^ -T $(STM32DIR)/src/link/stm32-mem.ld -T $(LD_SRC) $(LD_FLAGS)
 	arm-none-eabi-size $(BIN_DIR)/$@.elf
 	cp $(BIN_DIR)/$@.elf $(BIN_DIR)/debug.elf
 	arm-none-eabi-objcopy -O ihex $(BIN_DIR)/$@.elf $(BIN_DIR)/$@.hex
