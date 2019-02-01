@@ -42,7 +42,7 @@ uint16_t Uart::txSpaceAvailable(void)
 void Uart::dmaTCcallback()
 {
 	//dma1c7.setEnabled(DISABLE);
-	DMA_Cmd(DMA1_Channel7, DISABLE);
+	DMA_Cmd(_dmaCh, DISABLE);
 	// TODO wtf is difference between clearflag and clearit in spl?
 	DMA_ClearFlag(DMA1_FLAG_TC7);
 	txHead += _dmaTransferCount;
@@ -63,7 +63,7 @@ void Uart::write(const char* ch) {
 	// Use this instead for blocking write
 	if(_dmaCh) { // dma mode
 		while (!txSpaceAvailable()) {
-			if (!(DMA1_Channel7->CCR & 0x1)) {
+			if (!(_dmaCh->CCR & 0x1)) {
 				startTxDmaTransfer();
 			}
 			txOverruns++; // block when buffer is full
@@ -96,10 +96,10 @@ void Uart::startTxDmaTransfer()
 {
 	_dmaTransferCount = dmaToTransfer();
 	if (_dmaTransferCount) {
-		DMA1_Channel7->CNDTR = _dmaTransferCount;
-		DMA1_Channel7->CMAR = (uint32_t)&txBuf[txHead];
+		_dmaCh->CNDTR = _dmaTransferCount;
+		_dmaCh->CMAR = (uint32_t)&txBuf[txHead];
 		//dma1c7.setEnabled(ENABLE);
-		DMA_Cmd(DMA1_Channel7, ENABLE);
+		DMA_Cmd(_dmaCh, ENABLE);
 	}
 }
 
@@ -108,7 +108,7 @@ void Uart::write(const char* ch, uint16_t len)
 	for (uint16_t i = 0; i < len; i++) {
 		write(ch++);
 	}
-	if (!(DMA1_Channel7->CCR & 0x1)) {
+	if (!(_dmaCh->CCR & 0x1)) {
 		startTxDmaTransfer();
 	}
 }
@@ -148,6 +148,18 @@ void Uart::bkspc(void)
 void Uart::dmaTxInit()
 {
 	uint32_t dmaIRQn = 0;
+#if defined(STM32F0)
+	switch((uint32_t)_peripheral) {
+		case USART1_BASE:
+			break;
+		case USART2_BASE:
+			_dmaCh = DMA1_Channel5;
+			dmaIRQn = DMA1_Channel4_5_IRQn;
+			break;
+		case USART3_BASE:
+			break;
+	}
+#elif defined(STM32F1)
 	switch((uint32_t)_peripheral) {
 		case USART1_BASE:
 			break;
@@ -158,6 +170,10 @@ void Uart::dmaTxInit()
 		case USART3_BASE:
 			break;
 	}
+#elif defined(STM32F3)
+#else
+ #error
+#endif
 
 	if (!_dmaCh) {
 		return;
@@ -165,7 +181,9 @@ void Uart::dmaTxInit()
 
 	Dma dma1c7 = Dma(_dmaCh);
 	dma1c7.init(
-#if defined(STM32F1)
+#if defined(STM32F0)
+		(uint32_t)&(_peripheral->TDR),
+#elif defined(STM32F1)
 		(uint32_t)&(_peripheral->DR),
 #elif defined(STM32F3)
 		(uint32_t)&(_peripheral->TDR),
@@ -188,7 +206,11 @@ void Uart::dmaTxInit()
 
 	DMA_ITConfig(_dmaCh, DMA_IT_TC, ENABLE);
     //DMA_ITConfig(_dmaCh, DMA_IT_HT, ENABLE);
+#if defined(STM32F0)
+    nvic_config(dmaIRQn, 0, ENABLE);
+#elif defined(STM32F1) || defined(STM32F3)
     nvic_config(dmaIRQn, 0, 0, ENABLE);
+#endif
 }
 
 void Uart::_irqHandler(void)

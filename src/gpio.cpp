@@ -37,6 +37,25 @@ void Gpio::init(GPIOMode_TypeDef mode // GPIO_Mode_IN, GPIO_Mode_OUT, GPIO_Mode_
 	void Gpio::extiConfig(FunctionalState state, EXTITrigger_TypeDef trigger) {
 					exti.initLine(_pinSource, trigger, state);
 
+#if defined(STM32F0)
+		switch((uint32_t)_port) {
+
+			case GPIOA_BASE:
+				SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOA, _pinSource);
+				break;
+			case GPIOB_BASE:
+				SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOB, _pinSource);
+				break;
+			case GPIOC_BASE:
+				SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOC, _pinSource);
+				break;
+			case GPIOD_BASE:
+				SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOD, _pinSource);
+				break;
+			default:
+				break;
+		}
+#elif defined(STM32F1)
 		switch((uint32_t)_port) {
 
 			case GPIOA_BASE:
@@ -54,6 +73,10 @@ void Gpio::init(GPIOMode_TypeDef mode // GPIO_Mode_IN, GPIO_Mode_OUT, GPIO_Mode_
 			default:
 				break;
 		}
+	
+#else
+ #error
+#endif
 	}
 Gpio::Gpio(GPIO_TypeDef* port, uint16_t pin)
 	: _port(port)

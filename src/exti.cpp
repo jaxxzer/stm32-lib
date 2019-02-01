@@ -1,7 +1,13 @@
 #include "exti.h"
     Exti::Exti()
     {
-          RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
+#if defined(STM32F0)
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
+#elif defined(STM32F1)
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
+#else
+ #error
+#endif
     }
 void Exti::initLine(uint32_t line,
         EXTITrigger_TypeDef trigger,
@@ -16,6 +22,34 @@ void Exti::initLine(uint32_t line,
         extiInit.EXTI_LineCmd = state;
         EXTI_Init(&extiInit);
 
+#if defined(STM32F0)
+        switch (line) {
+            case 0:
+            case 1:
+                nvic_config(EXTI0_1_IRQn, 0, ENABLE);
+                break;
+            case 2:
+            case 3:
+                nvic_config(EXTI2_3_IRQn, 0, ENABLE);
+                break;
+            case 4:
+            case 5:
+            case 6:
+            case 7:
+            case 8:
+            case 9:
+            case 10:
+            case 11:
+            case 12:
+            case 13:
+            case 14:
+            case 15:
+                nvic_config(EXTI4_15_IRQn, 0, ENABLE);
+                break;
+            default:
+                break;
+        }
+#elif defined(STM32F1)
         switch (line) {
             case 0:
                 nvic_config(EXTI0_IRQn, 0, 0, ENABLE);
@@ -50,6 +84,10 @@ void Exti::initLine(uint32_t line,
             default:
                 break;
         }
+#else
+ #error
+#endif
+
     }
 
  it_callback_t* Exti::setupCallback(uint8_t exti, void (*newCallbackFn)(void)) {

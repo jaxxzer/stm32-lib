@@ -1,8 +1,8 @@
-BOARD ?= f103-dev
 STM32DIR ?= .
-include $(STM32DIR)/src/board/$(BOARD)/target.mk
+BOARD ?= f103-dev
 
 TARGET_DIR ?= $(STM32DIR)/src/board/$(BOARD)/
+include $(TARGET_DIR)/target.mk
 
 TARGET_MCU ?= STM32F303RE
 
@@ -15,6 +15,7 @@ FLASH_RESERVE_PAGES ?= 0
 
 ifneq (,$(findstring STM32F0, $(TARGET_MCU)))
 TARGET_LINE = stm32f0
+STARTUP_FILE ?= stm32f0
 OPENOCD_TARGET = target/stm32f0x.cfg
 OPENOCD_FLASH_DRIVER = stm32f1x
 ARCH_FLAGS += -DSTM32F0
@@ -88,7 +89,7 @@ INCLUDES += -I $(STDPERIPH_DIR)/inc
 INCLUDES += -I $(STM32LIB_DIR)/src
 INCLUDES += -I $(TARGET_DIR)
 
-OPTIMIZE ?= -O0
+OPTIMIZE ?= -Os
 CFLAGS = $(ARCH_FLAGS) 
 CFLAGS += $(OPTIMIZE) -g -Wa,--warn -x assembler-with-cpp -specs=nano.specs
 CFLAGS += $(INCLUDES)
