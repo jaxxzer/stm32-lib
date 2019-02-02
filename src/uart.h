@@ -1,5 +1,4 @@
 #pragma once
-#include "target.h"
 #include "dma.h"
 
 #include "stm32lib-conf.h"

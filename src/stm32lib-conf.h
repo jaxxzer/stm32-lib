@@ -1,4 +1,5 @@
 #pragma once
+#include "target.h"
 
 #if defined(STM32F0)
 #include "stm32f0xx_conf.h"

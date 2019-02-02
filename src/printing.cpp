@@ -62,57 +62,55 @@ extern "C" {
 		}
 		return 0;
 	}
-
 }
 
 void print_clocks()
 {
-
 	RCC_ClocksTypeDef RCC_ClocksStruct;
 	RCC_GetClocksFreq(&RCC_ClocksStruct);
 
 	printf("\t***Current Clock Configuration***\r\n");
 #if defined(STM32F0)
-	printf("\t- SYSCLK: %u\r\n", RCC_ClocksStruct.SYSCLK_Frequency);
-	printf("\t- HCLK: %u\r\n", RCC_ClocksStruct.HCLK_Frequency);
-	printf("\t- PCLK: %u\r\n", RCC_ClocksStruct.PCLK_Frequency);
-	printf("\t- ADCCLK: %u\r\n", RCC_ClocksStruct.ADCCLK_Frequency);
-	printf("\t- CECCLK: %u\r\n", RCC_ClocksStruct.CECCLK_Frequency);
-	printf("\t- I2C1CLK: %u\r\n", RCC_ClocksStruct.I2C1CLK_Frequency);
-	printf("\t- USART1CLK: %u\r\n", RCC_ClocksStruct.USART1CLK_Frequency);
-	printf("\t- USART2CLK: %u\r\n", RCC_ClocksStruct.USART2CLK_Frequency);
-	printf("\t- USART3CLK: %u\r\n", RCC_ClocksStruct.USART3CLK_Frequency);
-	printf("\t- USBCLK: %u\r\n", RCC_ClocksStruct.USBCLK_Frequency);
+	printf("\t- SYSCLK: %lu\r\n", RCC_ClocksStruct.SYSCLK_Frequency);
+	printf("\t- HCLK: %lu\r\n", RCC_ClocksStruct.HCLK_Frequency);
+	printf("\t- PCLK: %lu\r\n", RCC_ClocksStruct.PCLK_Frequency);
+	printf("\t- ADCCLK: %lu\r\n", RCC_ClocksStruct.ADCCLK_Frequency);
+	printf("\t- CECCLK: %lu\r\n", RCC_ClocksStruct.CECCLK_Frequency);
+	printf("\t- I2C1CLK: %lu\r\n", RCC_ClocksStruct.I2C1CLK_Frequency);
+	printf("\t- USART1CLK: %lu\r\n", RCC_ClocksStruct.USART1CLK_Frequency);
+	printf("\t- USART2CLK: %lu\r\n", RCC_ClocksStruct.USART2CLK_Frequency);
+	printf("\t- USART3CLK: %lu\r\n", RCC_ClocksStruct.USART3CLK_Frequency);
+	printf("\t- USBCLK: %lu\r\n", RCC_ClocksStruct.USBCLK_Frequency);
 #elif defined(STM32F3)
-	printf("\t- SYSCLK: %u\r\n", RCC_ClocksStruct.SYSCLK_Frequency);
-	printf("\t- HCLK: %u\r\n", RCC_ClocksStruct.HCLK_Frequency);
-	printf("\t- PCLK1: %u\r\n", RCC_ClocksStruct.PCLK1_Frequency);
-	printf("\t- PCLK2: %u\r\n", RCC_ClocksStruct.PCLK2_Frequency);
-	printf("\t- ADC12CLK: %u\r\n", RCC_ClocksStruct.ADC12CLK_Frequency);
-	printf("\t- ADC34: %u\r\n", RCC_ClocksStruct.ADC34CLK_Frequency);
-	printf("\t- I2C1: %u\r\n", RCC_ClocksStruct.I2C1CLK_Frequency);
-	printf("\t- I2C2: %u\r\n", RCC_ClocksStruct.I2C2CLK_Frequency);
-	printf("\t- I2C3: %u\r\n", RCC_ClocksStruct.I2C3CLK_Frequency);
-	printf("\t- TIM1: %u\r\n", RCC_ClocksStruct.TIM1CLK_Frequency);
-	printf("\t- HRTIM1: %u\r\n", RCC_ClocksStruct.HRTIM1CLK_Frequency);
-	printf("\t- TIM8: %u\r\n", RCC_ClocksStruct.TIM8CLK_Frequency);
-	printf("\t- TIM2: %u\r\n", RCC_ClocksStruct.TIM2CLK_Frequency);
-	printf("\t- TIM3: %u\r\n", RCC_ClocksStruct.TIM3CLK_Frequency);
-	printf("\t- USART1CLK: %u\r\n", RCC_ClocksStruct.USART1CLK_Frequency);
-	printf("\t- USART2CLK: %u\r\n", RCC_ClocksStruct.USART2CLK_Frequency);
-	printf("\t- USART3CLK: %u\r\n", RCC_ClocksStruct.USART3CLK_Frequency);
-	printf("\t- UART4: %u\r\n", RCC_ClocksStruct.UART4CLK_Frequency);
-	printf("\t- UART5: %u\r\n", RCC_ClocksStruct.UART5CLK_Frequency);
-	printf("\t- TIM15: %u\r\n", RCC_ClocksStruct.TIM15CLK_Frequency);
-	printf("\t- TIM16: %u\r\n", RCC_ClocksStruct.TIM16CLK_Frequency);
-	printf("\t- TIM17: %u\r\n", RCC_ClocksStruct.TIM17CLK_Frequency);
-	printf("\t- TIM20: %u\r\n", RCC_ClocksStruct.TIM20CLK_Frequency);
+	printf("\t- SYSCLK: %lu\r\n", RCC_ClocksStruct.SYSCLK_Frequency);
+	printf("\t- HCLK: %lu\r\n", RCC_ClocksStruct.HCLK_Frequency);
+	printf("\t- PCLK1: %lu\r\n", RCC_ClocksStruct.PCLK1_Frequency);
+	printf("\t- PCLK2: %lu\r\n", RCC_ClocksStruct.PCLK2_Frequency);
+	printf("\t- ADC12CLK: %lu\r\n", RCC_ClocksStruct.ADC12CLK_Frequency);
+	printf("\t- ADC34: %lu\r\n", RCC_ClocksStruct.ADC34CLK_Frequency);
+	printf("\t- I2C1: %lu\r\n", RCC_ClocksStruct.I2C1CLK_Frequency);
+	printf("\t- I2C2: %lu\r\n", RCC_ClocksStruct.I2C2CLK_Frequency);
+	printf("\t- I2C3: %lu\r\n", RCC_ClocksStruct.I2C3CLK_Frequency);
+	printf("\t- TIM1: %lu\r\n", RCC_ClocksStruct.TIM1CLK_Frequency);
+	printf("\t- HRTIM1: %lu\r\n", RCC_ClocksStruct.HRTIM1CLK_Frequency);
+	printf("\t- TIM8: %lu\r\n", RCC_ClocksStruct.TIM8CLK_Frequency);
+	printf("\t- TIM2: %lu\r\n", RCC_ClocksStruct.TIM2CLK_Frequency);
+	printf("\t- TIM3: %lu\r\n", RCC_ClocksStruct.TIM3CLK_Frequency);
+	printf("\t- USART1CLK: %lu\r\n", RCC_ClocksStruct.USART1CLK_Frequency);
+	printf("\t- USART2CLK: %lu\r\n", RCC_ClocksStruct.USART2CLK_Frequency);
+	printf("\t- USART3CLK: %lu\r\n", RCC_ClocksStruct.USART3CLK_Frequency);
+	printf("\t- UART4: %lu\r\n", RCC_ClocksStruct.UART4CLK_Frequency);
+	printf("\t- UART5: %lu\r\n", RCC_ClocksStruct.UART5CLK_Frequency);
+	printf("\t- TIM15: %lu\r\n", RCC_ClocksStruct.TIM15CLK_Frequency);
+	printf("\t- TIM16: %lu\r\n", RCC_ClocksStruct.TIM16CLK_Frequency);
+	printf("\t- TIM17: %lu\r\n", RCC_ClocksStruct.TIM17CLK_Frequency);
+	printf("\t- TIM20: %lu\r\n", RCC_ClocksStruct.TIM20CLK_Frequency);
 #else
-	printf("\t- SYSCLK: %u\r\n", RCC_ClocksStruct.SYSCLK_Frequency);
-	printf("\t- HCLK: %u\r\n", RCC_ClocksStruct.HCLK_Frequency);
-	printf("\t- PCLK1: %u\r\n", RCC_ClocksStruct.PCLK1_Frequency);
-	printf("\t- PCLK2: %u\r\n", RCC_ClocksStruct.PCLK2_Frequency);
-	printf("\t- ADC12CLK: %u\r\n", RCC_ClocksStruct.ADCCLK_Frequency);
+	printf("\t- SYSCLK: %lu\r\n", RCC_ClocksStruct.SYSCLK_Frequency);
+	printf("\t- HCLK: %lu\r\n", RCC_ClocksStruct.HCLK_Frequency);
+	printf("\t- PCLK1: %lu\r\n", RCC_ClocksStruct.PCLK1_Frequency);
+	printf("\t- PCLK2: %lu\r\n", RCC_ClocksStruct.PCLK2_Frequency);
+	printf("\t- ADC12CLK: %lu\r\n", RCC_ClocksStruct.ADCCLK_Frequency);
 #endif
 }
 
@@ -180,7 +178,6 @@ void printHex(uint32_t i)
 		buf[--p] = '0';
 	}
 	_write(FD_STDOUT, &buf[p], size);
-	//uart1.write(&buf[p], size);
 }
 
 uint16_t my_atoi(char* c)
@@ -227,6 +224,4 @@ void my_printInt(uint32_t i) {
 		i -= p; // not neccessary? taken care of with integer division
 	}
 	_write(FD_STDOUT, &c[len], 10-len);
-
-	//uart1.write(&c[len], 10-len);
 }

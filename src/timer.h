@@ -1,5 +1,4 @@
 #pragma once
-
 #include "stm32lib-conf.h"
 
 class Timer

@@ -50,6 +50,6 @@ private:
 	uint16_t* pageAddress = (uint16_t*)0x08003C00; // Page 16 // TODO set this right
 	uint16_t firstAvailableWordOffset;
 	const uint16_t _pageSize = 1024 / sizeof(uint16_t); // platform dependent 'low, medium, high density..'
-	const uint8_t _pages;
 	const uint16_t _blockSize; // words
+	const uint8_t _pages;
 };

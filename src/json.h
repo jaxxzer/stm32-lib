@@ -20,7 +20,7 @@ enum {
   wait_value, // <number or string>} // wait for }
 };
 
-void printJson(char* key, uint32_t value);
+void printJson(const char* key, uint32_t value);
 
 uint8_t parseByte(const char& byte);
 #endif

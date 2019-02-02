@@ -20,9 +20,8 @@ OPENOCD_TARGET = target/stm32f0x.cfg
 OPENOCD_FLASH_DRIVER = stm32f1x
 ARCH_FLAGS += -DSTM32F0
 SYSTEM_FILE = system_stm32f0xx.c
-ARCH_FLAGS += -DSTM32F072
 ARCH_FLAGS += -mcpu=cortex-m0 -mthumb
-LD_FLAGS = -specs=nano.specs -specs=nosys.specs --static -mthumb -mcpu=cortex-m0 -mfpu=vfp -ggdb3 -Wl,--cref -Wl,--gc-sections -Wl,--start-group -lc -lgcc -lnosys -Wl,--end-group 
+LD_FLAGS = -specs=nano.specs -specs=nosys.specs --static -mthumb -mcpu=cortex-m0 -mfpu=vfp -ggdb3 -Wl,--gc-sections -Wl,--start-group -lc -lgcc -lnosys -Wl,--end-group 
 endif
 ifneq (,$(findstring STM32F1, $(TARGET_MCU)))
 TARGET_LINE = stm32f1
@@ -32,7 +31,7 @@ OPENOCD_FLASH_DRIVER = stm32f1x
 ARCH_FLAGS += -DSTM32F1
 SYSTEM_FILE = system_stm32f10x.c
 ARCH_FLAGS += -mcpu=cortex-m3 -mthumb -mfpu=vfp -msoft-float -mfix-cortex-m3-ldrd
-LD_FLAGS =  -specs=nano.specs -specs=nosys.specs --static -mthumb -mcpu=cortex-m3 -mfpu=vfp -ggdb3 -Wl,--cref -Wl,--gc-sections -Wl,--start-group -lc -lgcc -lnosys -Wl,--end-group 
+LD_FLAGS =  -specs=nano.specs -specs=nosys.specs --static -mthumb -mcpu=cortex-m3 -mfpu=vfp -ggdb3 -Wl,--gc-sections -Wl,--start-group -lc -lgcc -lnosys -Wl,--end-group 
 endif
 ifneq (,$(findstring STM32F3, $(TARGET_MCU)))
 TARGET_LINE = stm32f3
@@ -42,7 +41,44 @@ OPENOCD_FLASH_DRIVER = stm32f1x
 ARCH_FLAGS += -DSTM32F3
 SYSTEM_FILE = $(STM32DIR)/system_stm32f30x.c
 ARCH_FLAGS += -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -msoft-float -march=armv7e-m
-LD_FLAGS =  -specs=nano.specs -specs=nosys.specs --static -mthumb -march=armv7e-m -mcpu=cortex-m4 -mfpu=vfp -ggdb3 -Wl,--cref -Wl,--gc-sections -Wl,--start-group -lc -lgcc -lnosys -Wl,--end-group 
+LD_FLAGS =  -specs=nano.specs -specs=nosys.specs --static -mthumb -march=armv7e-m -mcpu=cortex-m4 -mfpu=vfp -ggdb3 -Wl,--gc-sections -Wl,--start-group -lc -lgcc -lnosys -Wl,--end-group 
+endif
+
+ifneq (,$(findstring STM32F0, $(TARGET_MCU)))
+
+ifneq (,$(findstring STM32F030, $(TARGET_MCU)))
+ifneq (,$(filter %C, $(TARGET_MCU)))
+ARCH_FLAGS += -DSTM32F030xC
+else
+ARCH_FLAGS += -DSTM32F030
+endif
+endif
+
+ifneq (,$(findstring STM32F031, $(TARGET_MCU)))
+ARCH_FLAGS += -DSTM32F10X_MD
+endif
+ifneq (,$(findstring STM32F051, $(TARGET_MCU)))
+ARCH_FLAGS += -DSTM32F10X_HD
+endif
+ifneq (,$(findstring STM32F072, $(TARGET_MCU)))
+ARCH_FLAGS += -DSTM32F10X_HD
+endif
+ifneq (,$(findstring STM32F042, $(TARGET_MCU)))
+ARCH_FLAGS += -DSTM32F10X_HD
+endif
+ifneq (,$(findstring STM32F091, $(TARGET_MCU)))
+ARCH_FLAGS += -DSTM32F10X_HD
+endif
+
+ifneq (,$(findstring STM32F070, $(TARGET_MCU)))
+ifneq (,$(filter %B, $(TARGET_MCU)))
+ARCH_FLAGS += -DSTM32F070xB
+endif
+ifneq (,$(filter %6, $(TARGET_MCU)))
+ARCH_FLAGS += -DSTM32F070x6
+endif
+endif
+
 endif
 
 ifneq (,$(findstring F103, $(TARGET_MCU)))
@@ -91,7 +127,7 @@ INCLUDES += -I $(TARGET_DIR)
 
 OPTIMIZE ?= -O0
 CFLAGS = $(ARCH_FLAGS) 
-CFLAGS += $(OPTIMIZE) -g -Wa,--warn -x assembler-with-cpp -specs=nano.specs -fdata-sections -ffunction-sections
+CFLAGS += $(OPTIMIZE) -g -Wa,--warn -specs=nano.specs -fdata-sections -ffunction-sections
 CFLAGS += $(INCLUDES)
 CXXFLAGS ?=
 CXXFLAGS += -std=gnu++14 $(ARCH_FLAGS)
@@ -123,13 +159,13 @@ TARGET_OBJS += $(patsubst %.c,$(OBJ_DIR)/%.o,$(C_SRC))
 TARGET_OBJS += $(patsubst %.s,$(OBJ_DIR)/%.os,$(S_SRC))
 
 $(OBJ_DIR)/%.o: %.c
-	@echo "dir $(dir $@)"
-	mkdir -p $(dir $@)
+	@echo "compiling $(notdir $<)"
+	@mkdir -p $(dir $@)
 	$(CC) -c -o $@ $< $(CFLAGS)
 
 $(OBJ_DIR)/%.opp: %.cpp
-	@echo "dir $(dir $@)"
-	mkdir -p $(dir $@)
+	@echo "compiling $(notdir $<)"
+	@mkdir -p $(dir $@)
 	$(CXX) -c $(CXXFLAGS) -o $@ $<
 
 debug: $(TARGET_OBJS)
@@ -141,7 +177,7 @@ debug: $(TARGET_OBJS)
 #arm-none-eabi-g++ -c  -std=gnu++14 -DSTM32F303xE -O0 -ffunction-sections -fdata-sections -fno-rtti -fno-exceptions -g -fstack-usage -Wall -fno-threadsafe-statics -specs=nano.specs -I ./driver/stm32f3/cmsis/device -I ./driver/stm32f3/cmsis/core -I ./driver/stm32f3/spl/inc -I ./src -o build/obj/./src/timer.opp src/timer.cpp
 example-%: $(TARGET_OBJS) $(OBJ_DIR)/src/example/example-%.opp
 	@echo "deps: $^"
-	mkdir -p $(BIN_DIR)
+	@mkdir -p $(BIN_DIR)
 ifneq (,$(FLASH_OVERRIDE))
 	python $(STM32DIR)/src/link/generate-ldscript.py -p $(TARGET_MCU) -o$(FLASH_OVERRIDE) > $(STM32DIR)/src/link/stm32-mem.ld
 else
@@ -155,7 +191,7 @@ endif
 	arm-none-eabi-objcopy -O binary $(BIN_DIR)/$@.elf $(BIN_DIR)/$@.bin
 
 $(OBJ_DIR)/%.os: %.s
-	@echo "dir $(dir $@)"
+	echo "compiling $(notdir $<)"
 	mkdir -p $(dir $@)
 	$(CC) -c $(ASFLAGS) -o $@ $<
 

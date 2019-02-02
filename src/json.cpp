@@ -5,7 +5,7 @@ char key[key_length_max + 1];
 char value[value_length_max + 1];
 uint8_t parse_errors;
 
-void printJson(char* key, uint32_t value)
+void printJson(const char* key, uint32_t value)
 {
  print("{\"");
  print(key);
