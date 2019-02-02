@@ -183,17 +183,17 @@ void printHex(uint32_t i)
 	//uart1.write(&buf[p], size);
 }
 
-// uint16_t my_atoi(char* c)
-// {
-// 	uint16_t r = 0;
-// 	while (*c) {
-// 		uint8_t h = *(uint8_t*)c;
-// 		uint8_t e = (uint8_t)'0';
-// 		r = r * 10 + h - e;
-// 		c++;
-// 	}
-// 	return r;
-// }
+uint16_t my_atoi(char* c)
+{
+	uint16_t r = 0;
+	while (*c) {
+		uint8_t h = *(uint8_t*)c;
+		uint8_t e = (uint8_t)'0';
+		r = r * 10 + h - e;
+		c++;
+	}
+	return r;
+}
 
 // void print(uint16_t i) {
 // 	char c[5];

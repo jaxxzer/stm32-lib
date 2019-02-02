@@ -1,13 +1,18 @@
 #include "json.h"
-//
-//void printJson(char* key, uint32_t value)
-//{
-//  print("{\"");
-//  print(key);
-//  print("\":");
-//  my_printInt(value);
-//  print("}");
-//}
+#include "printing.h"
+
+char key[key_length_max + 1];
+char value[value_length_max + 1];
+uint8_t parse_errors;
+
+void printJson(char* key, uint32_t value)
+{
+ print("{\"");
+ print(key);
+ print("\":");
+ my_printInt(value);
+ print("}");
+}
 
 uint8_t parseByte(const char& byte)
 {

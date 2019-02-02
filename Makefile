@@ -89,9 +89,9 @@ INCLUDES += -I $(STDPERIPH_DIR)/inc
 INCLUDES += -I $(STM32LIB_DIR)/src
 INCLUDES += -I $(TARGET_DIR)
 
-OPTIMIZE ?= -Os
+OPTIMIZE ?= -O0
 CFLAGS = $(ARCH_FLAGS) 
-CFLAGS += $(OPTIMIZE) -g -Wa,--warn -x assembler-with-cpp -specs=nano.specs
+CFLAGS += $(OPTIMIZE) -g -Wa,--warn -x assembler-with-cpp -specs=nano.specs -fdata-sections -ffunction-sections
 CFLAGS += $(INCLUDES)
 CXXFLAGS ?=
 CXXFLAGS += -std=gnu++14 $(ARCH_FLAGS)
