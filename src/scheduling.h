@@ -7,7 +7,7 @@
 #elif defined(STM32F3)
 #include "stm32f30x_conf.h"
 #else
- #error
+#error
 #endif
 
 //#include "stm32lib-conf.h"

@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-static const uint8_t key_length_max = 16; // ascii
+static const uint8_t key_length_max = 16;   // ascii
 static const uint8_t value_length_max = 16; // ascii
 extern char key[];
 extern char value[];
@@ -20,7 +20,7 @@ enum {
   wait_value, // <number or string>} // wait for }
 };
 
-void printJson(const char* key, uint32_t value);
+void printJson(const char *key, uint32_t value);
 
-uint8_t parseByte(const char& byte);
+uint8_t parseByte(const char &byte);
 #endif

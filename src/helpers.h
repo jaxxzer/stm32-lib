@@ -3,10 +3,10 @@
 #include "stm32lib-conf.h"
 #include <inttypes.h>
 
-#define UINT16MAX ( (1U << 16) - 1 )
+#define UINT16MAX ((1U << 16) - 1)
 // This file has some random helper and system functions
 // printf goes to __io_putchar here
-#if defined(STM32F0) 
+#if defined(STM32F0)
 void nvic_config(const uint8_t irq, const uint8_t priority, const FunctionalState enabled);
 #elif defined(STM32F1) || defined(STM32F3)
 void nvic_config(const uint8_t irq, const uint8_t priority, const uint8_t subpriority, const FunctionalState enabled);
@@ -18,7 +18,7 @@ void nvic_config(const uint8_t irq, const uint8_t priority, const uint8_t subpri
 float map(float in, float in_min, float in_max, float out_min, float out_max);
 
 // TODO Implement if necessary
-#ifdef  USE_FULL_ASSERT
+#ifdef USE_FULL_ASSERT
 /**
  * @brief  Reports the name of the source file and the source line number
  *   where the assert_param error has occurred.
@@ -26,7 +26,7 @@ float map(float in, float in_min, float in_max, float out_min, float out_max);
  * @param  line: assert_param error line source number
  * @retval None
  */
-void assert_failed(uint8_t* file, uint32_t line);
+void assert_failed(uint8_t *file, uint32_t line);
 
 #endif
 

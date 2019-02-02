@@ -3,51 +3,48 @@
 volatile uint32_t microseconds = 0;
 uint32_t systick_frequency;
 
-void configureClocks(uint32_t frequency)
-{
-	SystemInit();
+void configureClocks(uint32_t frequency) {
+  SystemInit();
 
-    // Set up 48 MHz Core Clock using HSI (4Mhz? - HSI_Div2) with PLL x 6
+  // Set up 48 MHz Core Clock using HSI (4Mhz? - HSI_Div2) with PLL x 6
 #if defined(STM32F0) || defined(STM32F3)
-    RCC_PLLConfig(RCC_PLLSource_HSI, RCC_PLLMul_12);
+  RCC_PLLConfig(RCC_PLLSource_HSI, RCC_PLLMul_12);
 #elif defined(STM32F1)
-    RCC_PLLConfig(RCC_PLLSource_HSI_Div2, RCC_PLLMul_12);
+  RCC_PLLConfig(RCC_PLLSource_HSI_Div2, RCC_PLLMul_12);
 #else
 #error
 #endif
 
-    RCC_PLLCmd(ENABLE);
+  RCC_PLLCmd(ENABLE);
 
-    // Wait for PLLRDY after enabling PLL.
-    while (RCC_GetFlagStatus(RCC_FLAG_PLLRDY) != SET) {  }
+  // Wait for PLLRDY after enabling PLL.
+  while (RCC_GetFlagStatus(RCC_FLAG_PLLRDY) != SET) {
+  }
 
-    RCC_SYSCLKConfig(RCC_SYSCLKSource_PLLCLK);  // Select the PLL as clock source.
+  RCC_SYSCLKConfig(RCC_SYSCLKSource_PLLCLK); // Select the PLL as clock source.
 
-	SystemCoreClockUpdate();
+  SystemCoreClockUpdate();
 
-	// 1millisecond system interrupt
-	SysTick_Config(SystemCoreClock/frequency);
-	systick_frequency = frequency;
+  // 1millisecond system interrupt
+  SysTick_Config(SystemCoreClock / frequency);
+  systick_frequency = frequency;
 }
 
 // Delay function for microsecond delay
 void uDelay(uint32_t us) {
-	volatile uint32_t tStart = microseconds;
-	while(microseconds < tStart + us) asm volatile("nop");
+  volatile uint32_t tStart = microseconds;
+  while (microseconds < tStart + us)
+    asm volatile("nop");
 }
 
 // Delay function for millisecond delay
-void mDelay(uint32_t ms){
-	uDelay(ms * 1000);
-}
+void mDelay(uint32_t ms) { uDelay(ms * 1000); }
 
 // Delay function for second delay
-void Delay(uint32_t s){
-	uDelay(s * 1000000);
-}
+void Delay(uint32_t s) { uDelay(s * 1000000); }
 
 extern "C" {
-	void SysTick_Handler(void){
-		microseconds += 1000000/systick_frequency; //Increment millisecond variable
-	}
+void SysTick_Handler(void) {
+  microseconds += 1000000 / systick_frequency; // Increment millisecond variable
+}
 }
