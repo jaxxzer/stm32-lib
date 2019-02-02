@@ -1,14 +1,14 @@
-#include "lookup.h"
+#include "sine-lookup.h"
 #include "stm32lib-conf.h"
 #include <math.h>
 
 #define PI 3.141593f
 
-#ifdef STM32F0
+#if defined(STM32F0)
 Timer &timer = timer3;
 Gpio gpio_Led{GPIOB, 1};
 TimerChannelOutput tco{TIM3, TIM_Channel_4};
-#elif STM32F1
+#elif defined(STM32F1)
 Timer &timer = timer3;
 Gpio gpio_Led{GPIOB, 13};
 
@@ -16,11 +16,11 @@ Gpio gpio_m2{GPIOA, 7};
 Gpio gpio_m3{GPIOB, 0};
 Gpio gpio_m4{GPIOB, 1};
 
-TimerChannelOutput tco1{TIM1, TIM_Channel_1};
+TimerChannelOutput tco1{&timer1, TIM_Channel_1};
 
-TimerChannelOutput tco2{TIM3, TIM_Channel_2};
-TimerChannelOutput tco3{TIM3, TIM_Channel_3};
-TimerChannelOutput tco4{TIM3, TIM_Channel_4};
+TimerChannelOutput tco2{&timer3, TIM_Channel_2};
+TimerChannelOutput tco3{&timer3, TIM_Channel_3};
+TimerChannelOutput tco4{&timer3, TIM_Channel_4};
 #endif
 
 uint16_t _field_angle = 0;

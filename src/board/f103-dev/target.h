@@ -4,6 +4,9 @@
 // :(
 
 #define USE_USART_1
+#define USE_TIM_1
+#define USE_TIM_2
+#define USE_TIM_3
 #define STDOUT_USART uart1
 #define GPIO_USART1_TX_PORT GPIOA
 #define GPIO_USART1_TX_PIN 9
