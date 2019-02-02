@@ -306,10 +306,10 @@ public:
 
   void transmit(char *data, uint8_t length) {
     writeFIFO(data, length);
-    tranny();
+    transfer();
   }
 
-  void tranny() {
+  void transfer() {
     writeRegister(REG_IRQ_FLAGS, 0xFF); // todo reset tx only
     setMode(0b011);                     // todo enum
     bool txDone = false;
