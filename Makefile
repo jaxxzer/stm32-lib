@@ -150,9 +150,9 @@ CC = arm-none-eabi-gcc
 CXX = arm-none-eabi-g++
 AS = arm-none-eabi-as
 
-BUILD_DIR = build
-OBJ_DIR = $(BUILD_DIR)/obj
-BIN_DIR = $(BUILD_DIR)/bin
+BUILD_DIR ?= build
+OBJ_DIR ?= $(BUILD_DIR)/obj
+BIN_DIR ?= $(BUILD_DIR)/bin
 
 TARGET_OBJS = $(patsubst %.cpp,$(OBJ_DIR)/%.opp,$(CXX_SRC))
 TARGET_OBJS += $(patsubst %.c,$(OBJ_DIR)/%.o,$(C_SRC))
