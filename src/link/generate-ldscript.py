@@ -20,8 +20,8 @@ productRamsizes = {
     #F0x2
     #https://www.st.com/content/st_com/en/products/microcontrollers/stm32-32-bit-arm-cortex-mcus/stm32-mainstream-mcus/stm32f0-series/stm32f0x2.html?querycriteria=productId=LN1823
     "072": {
-        "8": 4,
-        "B": 4,
+        "8": 16,
+        "B": 16,
     },
     #F103
     #https://www.st.com/content/st_com/en/products/microcontrollers/stm32-32-bit-arm-cortex-mcus/stm32-mainstream-mcus/stm32f1-series/stm32f103.html?querycriteria=productId=LN1565
