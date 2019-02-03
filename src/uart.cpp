@@ -94,7 +94,7 @@ void Uart::write(const char *ch, uint16_t len) {
   for (uint16_t i = 0; i < len; i++) {
     write(ch++);
   }
-  if (!(_dmaCh->CCR & 0x1)) {
+  if (_dmaCh && !(_dmaCh->CCR & 0x1)) {
     startTxDmaTransfer();
   }
 }
