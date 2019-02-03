@@ -55,19 +55,19 @@ endif
 endif
 
 ifneq (,$(findstring STM32F031, $(TARGET_MCU)))
-ARCH_FLAGS += -DSTM32F10X_MD
+ARCH_FLAGS += -DSTM32F031
 endif
 ifneq (,$(findstring STM32F051, $(TARGET_MCU)))
-ARCH_FLAGS += -DSTM32F10X_HD
+ARCH_FLAGS += -DSTM32F051
 endif
 ifneq (,$(findstring STM32F072, $(TARGET_MCU)))
-ARCH_FLAGS += -DSTM32F10X_HD
+ARCH_FLAGS += -DSTM32F072
 endif
 ifneq (,$(findstring STM32F042, $(TARGET_MCU)))
-ARCH_FLAGS += -DSTM32F10X_HD
+ARCH_FLAGS += -DSTM32F042
 endif
 ifneq (,$(findstring STM32F091, $(TARGET_MCU)))
-ARCH_FLAGS += -DSTM32F10X_HD
+ARCH_FLAGS += -DSTM32F091
 endif
 
 ifneq (,$(findstring STM32F070, $(TARGET_MCU)))
