@@ -136,10 +136,10 @@ void Adc::_enableClock(void) {
 void Adc::enable(void) {
 #if defined(STM32F0) || defined(STM32F3)
   _calibrate();
-  //_dmaConfig();
+  _dmaConfig();
   ADC_Cmd(ADC1, ENABLE);
 #elif defined(STM32F1)
-  //_dmaConfig();
+  _dmaConfig();
   ADC_Cmd(ADC1, ENABLE);
   _calibrate();
 #else
