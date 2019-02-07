@@ -5,7 +5,7 @@ Exti::Exti() {
 #elif defined(STM32F1)
   RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
 #else
-#error
+#warning "no support for exti"
 #endif
 }
 void Exti::initLine(uint32_t line, EXTITrigger_TypeDef trigger, FunctionalState state, EXTIMode_TypeDef mode) {
@@ -80,7 +80,7 @@ void Exti::initLine(uint32_t line, EXTITrigger_TypeDef trigger, FunctionalState 
     break;
   }
 #else
-#error
+#warning "no support for exti"
 #endif
 }
 

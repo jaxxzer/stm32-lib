@@ -70,7 +70,7 @@ void Gpio::extiConfig(FunctionalState state, EXTITrigger_TypeDef trigger) {
   }
 
 #else
-#error
+#warning "no exti support"
 #endif
 }
 Gpio::Gpio(GPIO_TypeDef *port, uint16_t pin) : _port(port), _pin(1 << pin), _pinSource(pin) {
