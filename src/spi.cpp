@@ -14,9 +14,9 @@ uint16_t Spi::read(uint8_t base, uint16_t len) {
   while (!SPI_I2S_GetFlagStatus(_peripheral, SPI_I2S_FLAG_RXNE))
     ;
 
-#if defined(STM32F0)
+#if defined(STM32F0) || defined(STM32F3)
   rxBuf[_rxTail] = SPI_ReceiveData8(SPI2);
-#elif defined(STM32F1) || defined(STM32F3)
+#elif defined(STM32F1)
   rxBuf[_rxTail] = SPI_I2S_ReceiveData(SPI2);
 #else
 #error
@@ -27,9 +27,9 @@ uint16_t Spi::read(uint8_t base, uint16_t len) {
     while (!SPI_I2S_GetFlagStatus(_peripheral, SPI_I2S_FLAG_RXNE))
       ;
 
-#if defined(STM32F0)
+#if defined(STM32F0) || defined(STM32F3)
     rxBuf[_rxTail++] = SPI_ReceiveData8(SPI2);
-#elif defined(STM32F1) || defined(STM32F3)
+#elif defined(STM32F1)
     rxBuf[_rxTail++] = SPI_I2S_ReceiveData(SPI2);
 #else
 #error
@@ -42,9 +42,9 @@ void Spi::write(char d) {
   while (!SPI_I2S_GetFlagStatus(_peripheral, SPI_I2S_FLAG_TXE))
     ;
 
-#if defined(STM32F0)
+#if defined(STM32F0) || defined(STM32F3)
   SPI_SendData8(_peripheral, d);
-#elif defined(STM32F1) || defined(STM32F3)
+#elif defined(STM32F1)
   SPI_I2S_SendData(_peripheral, d);
 #else
 #error
