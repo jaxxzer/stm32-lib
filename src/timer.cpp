@@ -263,11 +263,11 @@ bool Timer::setFrequency(uint32_t f) // Hz
   RCC_GetClocksFreq(&RCC_ClocksStruct);
 
 #if defined(STM32F0)
-  uint32_t clk_f = RCC_ClocksStruct.PCLK_Frequency / _config.TIM_Prescaler;
+  uint32_t clk_f = RCC_ClocksStruct.PCLK_Frequency / (_config.TIM_Prescaler + 1);
 #elif defined(STM32F1)
-  uint32_t clk_f = RCC_ClocksStruct.PCLK1_Frequency / _config.TIM_Prescaler;
+  uint32_t clk_f = RCC_ClocksStruct.PCLK1_Frequency / (_config.TIM_Prescaler + 1);
 #elif defined(STM32F3)
-  uint32_t clk_f = RCC_ClocksStruct.PCLK1_Frequency / _config.TIM_Prescaler;
+  uint32_t clk_f = RCC_ClocksStruct.PCLK1_Frequency / (_config.TIM_Prescaler + 1);
 #else
 #error
 #endif
