@@ -2,6 +2,7 @@
 #define GPIO_LED1_PIN 13
 #define GPIO_LED1_AF 1
 #define USE_TIM_1
+#define USE_TIM_2
 #define STDOUT_USART uart1
 #define USE_USART_1
 #define GPIO_USART1_TX_PORT GPIOA
