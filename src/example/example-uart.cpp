@@ -4,22 +4,11 @@
 Gpio gpioLed{GPIO_LED1_PORT, GPIO_LED1_PIN};
 
 #if defined(USE_USART_1)
-Gpio gpioUsart1Tx{GPIO_USART1_TX_PORT, GPIO_USART1_TX_PIN};
-Gpio gpioUsart1Rx{GPIO_USART1_RX_PORT, GPIO_USART1_RX_PIN};
-#endif
-
-#if defined(USE_USART_2)
-Gpio gpioUsart2Tx{GPIO_USART2_TX_PORT, GPIO_USART2_TX_PIN};
-Gpio gpioUsart2Rx{GPIO_USART2_RX_PORT, GPIO_USART2_RX_PIN};
-#endif
-
-#if defined(USE_USART_3)
-Gpio gpioUsart3Tx{GPIO_USART3_TX_PORT, GPIO_USART3_TX_PIN};
-Gpio gpioUsart3Rx{GPIO_USART3_RX_PORT, GPIO_USART3_RX_PIN};
-#endif
-
-#if defined(USE_USART_1)
 void initUsart1(void) {
+
+  Gpio gpioUsart1Tx{GPIO_USART1_TX_PORT, GPIO_USART1_TX_PIN};
+  Gpio gpioUsart1Rx{GPIO_USART1_RX_PORT, GPIO_USART1_RX_PIN};
+
 #if defined(STM32F0)
   nvic_config(USART1_IRQn, 0, ENABLE);
 #elif defined(STM32F1) || defined(STM32F3)
@@ -29,10 +18,10 @@ void initUsart1(void) {
 #endif
 
 #if defined(STM32F0) || defined(STM32F3)
-  gpioUsart1Rx.init(GPIO_Mode_AF, GPIO_PuPd_UP);
-  gpioUsart1Tx.init(GPIO_Mode_AF, GPIO_PuPd_UP);
-  gpioUsart1Rx.configAF(GPIO_USART1_RX_AF);
-  gpioUsart1Tx.configAF(GPIO_USART1_TX_AF);
+  gpioUsart1Rx.init(GPIO_Mode_AF);
+  gpioUsart1Tx.init(GPIO_Mode_AF);
+  gpioUsart1Rx.configAF(GPIO_USART1_AF);
+  gpioUsart1Tx.configAF(GPIO_USART1_AF);
 #elif defined(STM32F1)
   gpioUsart1Rx.init(GPIO_Mode_AF_PP);
   gpioUsart1Tx.init(GPIO_Mode_AF_PP);
@@ -50,6 +39,9 @@ void initUsart1(void) {
 
 #if defined(USE_USART_2)
 void initUsart2(void) {
+  Gpio gpioUsart2Tx{GPIO_USART2_TX_PORT, GPIO_USART2_TX_PIN};
+  Gpio gpioUsart2Rx{GPIO_USART2_RX_PORT, GPIO_USART2_RX_PIN};
+
 #if defined(STM32F0)
   nvic_config(USART2_IRQn, 0, ENABLE);
 #elif defined(STM32F1) || defined(STM32F3)
@@ -58,13 +50,14 @@ void initUsart2(void) {
 #error
 #endif
 
+#if defined(STM32F0) || defined(STM32F3)
   gpioUsart2Rx.init(GPIO_Mode_AF);
   gpioUsart2Tx.init(GPIO_Mode_AF);
-
-#if defined(STM32F0) || defined(STM32F3)
-  gpioUsart2Rx.configAF(GPIO_USART2_RX_AF);
-  gpioUsart2Tx.configAF(GPIO_USART2_TX_AF);
+  gpioUsart2Rx.configAF(GPIO_USART2_AF);
+  gpioUsart2Tx.configAF(GPIO_USART2_AF);
 #elif defined(STM32F1)
+  gpioUsart2Rx.init(GPIO_Mode_AF_PP);
+  gpioUsart2Tx.init(GPIO_Mode_AF_PP);
   Gpio::remapConfig(GPIO_USART2_REMAP, ENABLE);
 #else
 #error
@@ -79,6 +72,9 @@ void initUsart2(void) {
 
 #if defined(USE_USART_3)
 void initUsart3(void) {
+  Gpio gpioUsart3Tx{GPIO_USART3_TX_PORT, GPIO_USART3_TX_PIN};
+  Gpio gpioUsart3Rx{GPIO_USART3_RX_PORT, GPIO_USART3_RX_PIN};
+
 #if defined(STM32F0)
   nvic_config(USART3_IRQn, 0, ENABLE);
 #elif defined(STM32F1) || defined(STM32F3)
@@ -87,13 +83,14 @@ void initUsart3(void) {
 #error
 #endif
 
+#if defined(STM32F0) || defined(STM32F3)
   gpioUsart3Rx.init(GPIO_Mode_AF);
   gpioUsart3Tx.init(GPIO_Mode_AF);
-
-#if defined(STM32F0) || defined(STM32F3)
-  gpioUsart3Rx.configAF(GPIO_USART3_RX_AF);
-  gpioUsart3Tx.configAF(GPIO_USART3_TX_AF);
+  gpioUsart3Rx.configAF(GPIO_USART3_AF);
+  gpioUsart3Tx.configAF(GPIO_USART3_AF);
 #elif defined(STM32F1)
+  gpioUsart3Rx.init(GPIO_Mode_AF_PP);
+  gpioUsart3Tx.init(GPIO_Mode_AF_PP);
   Gpio::remapConfig(GPIO_USART3_REMAP, ENABLE);
 #else
 #error
