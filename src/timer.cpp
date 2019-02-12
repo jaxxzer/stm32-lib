@@ -333,27 +333,27 @@ void Timer::_deleteCallbacks(void) { return; }
 void Timer::_irqHandler(void) {
   // Note TIM_GetITStatus checks flag status as well as that interrupt is enabled
   // TIM_GetFlagStatus only checks the flag status, and you can pass a bitmask
-  if (TIM_GetITStatus(_peripheral, TIM_IT_Update)) {
+  if (TIM_GetFlagStatus(_peripheral, TIM_IT_Update)) {
     _executeCallbacks(upCallbacks);
     _peripheral->SR &= (uint16_t) ~(TIM_IT_Update);
   }
 
-  else if (IS_TIM_LIST4_PERIPH(_peripheral) && TIM_GetITStatus(_peripheral, TIM_IT_CC1)) {
+  else if (IS_TIM_LIST4_PERIPH(_peripheral) && TIM_GetFlagStatus(_peripheral, TIM_IT_CC1)) {
     _executeCallbacks(cc1Callbacks);
     _peripheral->SR &= (uint16_t) ~(TIM_IT_CC1);
   }
 
-  if (IS_TIM_LIST6_PERIPH(_peripheral) && TIM_GetITStatus(_peripheral, TIM_IT_CC2)) {
+  if (IS_TIM_LIST6_PERIPH(_peripheral) && TIM_GetFlagStatus(_peripheral, TIM_IT_CC2)) {
     _executeCallbacks(cc2Callbacks);
     _peripheral->SR = (uint16_t) ~(TIM_IT_CC2);
   }
 
-  if (IS_TIM_LIST3_PERIPH(_peripheral) && TIM_GetITStatus(_peripheral, TIM_IT_CC3)) {
+  if (IS_TIM_LIST3_PERIPH(_peripheral) && TIM_GetFlagStatus(_peripheral, TIM_IT_CC3)) {
     _executeCallbacks(cc3Callbacks);
     _peripheral->SR = (uint16_t) ~(TIM_IT_CC3);
   }
 
-  if (IS_TIM_LIST3_PERIPH(_peripheral) && TIM_GetITStatus(_peripheral, TIM_IT_CC4)) {
+  if (IS_TIM_LIST3_PERIPH(_peripheral) && TIM_GetFlagStatus(_peripheral, TIM_IT_CC4)) {
     _executeCallbacks(cc4Callbacks);
     _peripheral->SR = (uint16_t) ~(TIM_IT_CC4);
   }
