@@ -224,9 +224,11 @@ void Timer::setClockEnabled(FunctionalState enabled) {
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM14, enabled);
     break;
 #endif
-    //    case TIM15_BASE:
-    //        RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM15, ENABLE);
-    //        break;
+#ifdef TIM15
+       case TIM15_BASE:
+           RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM15, ENABLE);
+           break;
+#endif
     //    case TIM16_BASE:
     //        RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM16, ENABLE);
     //        break;
