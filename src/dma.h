@@ -6,8 +6,6 @@ class Dma {
 public:
   Dma(DMA_Channel_TypeDef *peripheral) : _peripheral(peripheral) { _clockEnable(); };
 
-  DMA_Channel_TypeDef *_peripheral;
-
   void init(uint32_t peripheralBaseAddr, uint32_t memoryBaseAddr, uint32_t bufferSize,
             uint32_t direction = DMA_DIR_PeripheralSRC, uint32_t peripheralDataSize = DMA_PeripheralDataSize_Byte,
             uint32_t memoryDataSize = DMA_MemoryDataSize_Byte, uint32_t mode = DMA_Mode_Normal,
@@ -31,8 +29,13 @@ public:
 
   void setEnabled(FunctionalState enabled) { DMA_Cmd(_peripheral, enabled); }
 
+  DMA_Channel_TypeDef* peripheral() { return _peripheral; };
+
   void _clockEnable(void) {
     RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);
     // RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA2, ENABLE); TODO: pick
   }
+
+private:
+  DMA_Channel_TypeDef *_peripheral;
 };
