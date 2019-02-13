@@ -39,9 +39,7 @@ void testPin(uint8_t port, uint8_t pin) {
 
 int main(void) {
   configureClocks(1000);
-  Gpio gpioLed{GPIOA, 0};
-  gpioLed.init(GPIO_Mode_Out_PP);
-  gpioLed.set();
+
   for (uint8_t i = 0; i < 5; i++) {
     for (uint8_t j = 0; j < 16; j++) {
       testPin(i, j);
