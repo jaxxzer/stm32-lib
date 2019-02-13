@@ -31,15 +31,15 @@ public:
   void setMOE(FunctionalState newState) { TIM_CtrlPWMOutputs(_peripheral, newState); }
   void setOSSR(FunctionalState newState) {
     _config_bdtr.TIM_OSSRState = newState ? TIM_OSSRState_Enable : TIM_OSSRState_Disable;
-    _initBDTR();
+    _configBDTR();
   }
   void setOSSI(FunctionalState newState) {
     _config_bdtr.TIM_OSSIState = newState ? TIM_OSSIState_Enable : TIM_OSSIState_Disable;
-    _initBDTR();
+    _configBDTR();
   }
   void setDTG(uint16_t deadTime) {
     _config_bdtr.TIM_DeadTime = deadTime;
-    _initBDTR();
+    _configBDTR();
   } // in nanoseconds
 
   // Defaults
