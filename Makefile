@@ -21,7 +21,7 @@ OPENOCD_FLASH_DRIVER = stm32f1x
 ARCH_FLAGS += -DSTM32F0
 SYSTEM_FILE = system_stm32f0xx.c
 ARCH_FLAGS += -mcpu=cortex-m0 -mthumb
-LD_FLAGS = -specs=nano.specs -specs=nosys.specs --static -mthumb -mcpu=cortex-m0 -mfpu=vfp -ggdb3 -Wl,--gc-sections -Wl,--start-group -lc -lgcc -lnosys -Wl,--end-group 
+LD_FLAGS = -specs=nano.specs -specs=nosys.specs --static -mthumb -mcpu=cortex-m0 -mfpu=vfp -ggdb3 -Wl,--gc-sections -Wl,--start-group -lc -lgcc -lnosys -Wl,--end-group
 endif
 ifneq (,$(findstring STM32F1, $(TARGET_MCU)))
 TARGET_LINE = stm32f1
@@ -31,7 +31,7 @@ OPENOCD_FLASH_DRIVER = stm32f1x
 ARCH_FLAGS += -DSTM32F1
 SYSTEM_FILE = system_stm32f10x.c
 ARCH_FLAGS += -mcpu=cortex-m3 -mthumb -mfpu=vfp -msoft-float -mfix-cortex-m3-ldrd
-LD_FLAGS =  -specs=nano.specs -specs=nosys.specs --static -mthumb -mcpu=cortex-m3 -mfpu=vfp -ggdb3 -Wl,--gc-sections -Wl,--start-group -lc -lgcc -lnosys -Wl,--end-group 
+LD_FLAGS =  -specs=nano.specs -specs=nosys.specs --static -mthumb -mcpu=cortex-m3 -mfpu=vfp -ggdb3 -Wl,--gc-sections -Wl,--start-group -lc -lgcc -lnosys -Wl,--end-group
 endif
 ifneq (,$(findstring STM32F3, $(TARGET_MCU)))
 TARGET_LINE = stm32f3
@@ -40,8 +40,8 @@ OPENOCD_TARGET = target/stm32f3x.cfg
 OPENOCD_FLASH_DRIVER = stm32f1x
 ARCH_FLAGS += -DSTM32F3
 SYSTEM_FILE = system_stm32f30x.c
-ARCH_FLAGS += -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -msoft-float -march=armv7e-m
-LD_FLAGS =  -specs=nano.specs -specs=nosys.specs --static -mthumb -march=armv7e-m -mcpu=cortex-m4 -mfpu=vfp -ggdb3 -Wl,--gc-sections -Wl,--start-group -lc -lgcc -lnosys -Wl,--end-group 
+ARCH_FLAGS += -mcpu=cortex-m4 -mthumb -march=armv7e-m
+LD_FLAGS =  -specs=nano.specs -specs=nosys.specs --static -mthumb -march=armv7e-m -mcpu=cortex-m4 -ggdb3 -Wl,--gc-sections -Wl,--start-group -lc -lgcc -lnosys -Wl,--end-group
 endif
 
 ifneq (,$(findstring STM32F0, $(TARGET_MCU)))
