@@ -38,10 +38,10 @@ TARGET_LINE = stm32f3
 STARTUP_FILE ?= stm32f3
 OPENOCD_TARGET = target/stm32f3x.cfg
 OPENOCD_FLASH_DRIVER = stm32f1x
-ARCH_FLAGS += -DSTM32F3
+ARCH_FLAGS += -DSTM32F3 -DARM_MATH_CM4
 SYSTEM_FILE = system_stm32f30x.c
-ARCH_FLAGS += -mcpu=cortex-m4 -mthumb -march=armv7e-m
-LD_FLAGS =  -specs=nano.specs -specs=nosys.specs --static -mthumb -march=armv7e-m -mcpu=cortex-m4 -ggdb3 -Wl,--gc-sections -Wl,--start-group -lc -lgcc -lnosys -Wl,--end-group
+ARCH_FLAGS += -mcpu=cortex-m4 -mthumb -march=armv7e-m -mthumb -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16
+LD_FLAGS =  -specs=nano.specs -specs=nosys.specs --static -mthumb -march=armv7e-m -mcpu=cortex-m4 -mthumb -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -ggdb3 -Wl,--gc-sections -Wl,--start-group -lc -lgcc -lnosys -Wl,--end-group
 endif
 
 ifneq (,$(findstring STM32F0, $(TARGET_MCU)))
