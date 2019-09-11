@@ -3,20 +3,76 @@ AdcChannel *Adc::addChannel(uint32_t channel) {
   GPIO_TypeDef *gpiox;
   uint8_t pinx;
   switch (channel) {
-#ifdef ADC_Channel_0
+  // NOTE this only works with F0. F3 channel indicies are offset by one (no channel 0)
   case ADC_Channel_0:
     gpiox = GPIOA;
-    pinx = 0;
+    pinx = GPIO_Pin_0;
     break;
-#endif
-  case ADC_Channel_1 ... ADC_Channel_7:
+  case ADC_Channel_1:
     gpiox = GPIOA;
-    pinx = 0 + (channel - ADC_Channel_1);
+    pinx = GPIO_Pin_1;
     break;
-  case ADC_Channel_10 ... ADC_Channel_15:
+  case ADC_Channel_2:
+    gpiox = GPIOA;
+    pinx = GPIO_Pin_2;
+    break;
+  case ADC_Channel_3:
+    gpiox = GPIOA;
+    pinx = GPIO_Pin_3;
+    break;
+  case ADC_Channel_4:
+    gpiox = GPIOA;
+    pinx = GPIO_Pin_4;
+    break;
+  case ADC_Channel_5:
+    gpiox = GPIOA;
+    pinx = GPIO_Pin_5;
+    break;
+  case ADC_Channel_6:
+    gpiox = GPIOA;
+    pinx = GPIO_Pin_6;
+    break;
+  case ADC_Channel_7:
+    gpiox = GPIOA;
+    pinx = GPIO_Pin_7;
+    break;
+
+  // GPIOB
+  case ADC_Channel_8:
+    gpiox = GPIOB;
+    pinx = GPIO_Pin_0;
+    break;
+  case ADC_Channel_9:
+    gpiox = GPIOB;
+    pinx = GPIO_Pin_1;
+    break;
+
+  // GPIOC
+  case ADC_Channel_10:
     gpiox = GPIOC;
-    pinx = 0 + (channel - ADC_Channel_10);
+    pinx = GPIO_Pin_0;
     break;
+  case ADC_Channel_11:
+    gpiox = GPIOC;
+    pinx = GPIO_Pin_1;
+    break;
+  case ADC_Channel_12:
+    gpiox = GPIOC;
+    pinx = GPIO_Pin_2;
+    break;
+  case ADC_Channel_13:
+    gpiox = GPIOC;
+    pinx = GPIO_Pin_3;
+    break;
+  case ADC_Channel_14:
+    gpiox = GPIOC;
+    pinx = GPIO_Pin_4;
+    break;
+  case ADC_Channel_15:
+    gpiox = GPIOC;
+    pinx = GPIO_Pin_5;
+    break;
+
   default:
     return nullptr;
   }
