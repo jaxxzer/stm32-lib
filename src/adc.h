@@ -10,9 +10,9 @@ class AdcChannel {
   friend class Adc;
 
 public:
-  AdcChannel(uint8_t channel, uint8_t numSamples) : channel(channel), next(nullptr) {}
+  AdcChannel(uint32_t channel, uint8_t numSamples) : channel(channel), next(nullptr) {}
 
-  uint8_t channel;
+  uint32_t channel;
   uint32_t accumulator = 0;
   uint16_t average;
 
